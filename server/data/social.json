@@ -1,0 +1,2995 @@
+{
+  "users": [
+    {
+      "id": "user-1787250050266",
+      "username": "kfasi5032",
+      "fullName": "kfasi5032",
+      "email": "kfasi5032@gmail.com",
+      "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg",
+      "coverUrl": "/uploads/covers/cover-1787261690974-6af15a61.jpg",
+      "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+      "location": "Islamabad, Pakistan",
+      "occupation": "Software Engineer",
+      "education": "CUST Islamabad",
+      "joinedDate": "Joined Today",
+      "friendsCount": 2,
+      "followersCount": 2,
+      "followingCount": 2,
+      "isVerified": true,
+      "passwordHash": "d0c3d81b65ee0f525af26da81194c2b5:4fc133e140e6879edf2e2b800d3207cebbc8cab1397bb74a1259cae2d2675959e8b8e6d2abdaf9b23a9e829937bcc9a5eb10b757123e62b76621826e1f30b893",
+      "isPrivate": true,
+      "privacySettings": {
+        "whoCanSeePosts": "friends",
+        "isPrivate": true,
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true
+      }
+    },
+    {
+      "id": "user-1787250333857",
+      "username": "furqanaseelrawalakot",
+      "fullName": "furqanaseelrawalakot",
+      "email": "furqanaseelrawalakot@gmail.com",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+      "location": "Islamabad, Pakistan",
+      "occupation": "Software Engineer",
+      "education": "CUST Islamabad",
+      "joinedDate": "Joined Today",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": true,
+      "passwordHash": "5da0bdef8a120c0e21616172787c490f:7b92a822126a26b984f89ee1d619de423dd249bd1f3dc6ff90a0ae6fc36741a066cb614c60daa67dd611357092754a7488b31c1d9b21f57e925f09c12e1096f7"
+    },
+    {
+      "id": "user-1787251473349",
+      "username": "newtestengineer99",
+      "fullName": "Brand New User",
+      "email": "newtestengineer99@gmail.com",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "privacySettings": {
+        "whoCanSeePosts": "public",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true
+      },
+      "passwordHash": "35a49bc36354e90b6a33cdd4d0c42b57:22efc79134235ce3cc4007a9395149cd6a3fc459d547face5f5a43c0ea51141a806af470ea942614b5cce3baafad49659a89e5c20768063fe5c49a4896aaff4d"
+    },
+    {
+      "id": "user-1787251640066",
+      "username": "tabuty456cghc",
+      "fullName": "Tabu khan",
+      "email": "tabuty456cghc@gmail.com",
+      "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg",
+      "coverUrl": "/uploads/covers/cover-1787262058448-699533f0.jpg",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 1,
+      "followersCount": 1,
+      "followingCount": 1,
+      "isVerified": false,
+      "privacySettings": {
+        "whoCanSeePosts": "public",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true
+      },
+      "passwordHash": "665868696176b920faef209d6a6b1ba7:1ed4a4f19190e2ac290198ccf8c53a4157e1025c493d0bdf66daf4bb0135a7a52ad1bca1871434f25b2f0d2c5b9d5f255cbe0147e94a091e21dd26374ff19531"
+    },
+    {
+      "id": "user-1787252230767",
+      "firstName": "Ali",
+      "lastName": "Hassan",
+      "fullName": "Ali Hassan",
+      "username": "ali_hassan_dev",
+      "email": "alihassan2026test@gmail.com",
+      "phone": "+92 301 9876543",
+      "dateOfBirth": "2000-03-20",
+      "gender": "male",
+      "genderCustom": "",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "status": "active",
+      "privacySettings": {
+        "whoCanSeePosts": "public",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true,
+        "showAge": false
+      },
+      "passwordHash": "07ca4f9765d25e2f8b25a4692e11abfabf713110e35f24e917355a8e98942e3eded5cf3e4b86573a3bb4e5a6112139844fe5bdd3c60c4b9f931bc589cc302829"
+    },
+    {
+      "id": "user-1787253378054",
+      "firstName": "wahab",
+      "lastName": "khan",
+      "fullName": "wahab khan",
+      "username": "wahab_khan234",
+      "email": "hassantrae236@gmail.com",
+      "phone": "+923109211802",
+      "dateOfBirth": "2004-06-15",
+      "gender": "male",
+      "genderCustom": "",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "accountStatus": "active",
+      "privacySettings": {
+        "whoCanSeePosts": "public",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true,
+        "showAge": false
+      },
+      "passwordHash": "c096c59e6d796fdee71cd25768c6dd73:f5d5f80094578e00d6c2d9a9240c48a1d598e0e98299d1f5e9b2363cf6339a86c92aba0f47f22d2380dc478f94cc2a601d4cd296c9dd63eb9102cd4e778c5cd0"
+    },
+    {
+      "id": "user-1787253951640",
+      "firstName": "Zain",
+      "lastName": "Malik",
+      "fullName": "Zain Malik",
+      "username": "zain_malik_dev",
+      "email": "zain.malik.tech2026@gmail.com",
+      "passwordHash": "1df8ac671b40e8f063febb9076a2a4a9:e318bd54b41fe4a75a5f0a9bdf74b64833a7d5d5cc6de8129d9c9d033dcae97c43c9cfdc514d4cd20f6d80e5e4ec189aa993312d15a9b3e5b69c2ecd09c20179",
+      "phone": "+92 302 4455667",
+      "dateOfBirth": "1998-11-20",
+      "gender": "male",
+      "genderCustom": "",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+      "location": "San Francisco, CA",
+      "occupation": "Principal Cloud Architect",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 1,
+      "followersCount": 1,
+      "followingCount": 1,
+      "isVerified": false,
+      "accountStatus": "active",
+      "privacySettings": {
+        "whoCanSeePosts": "friends",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true,
+        "showAge": false,
+        "isPrivate": true
+      },
+      "isPrivate": true
+    },
+    {
+      "id": "user-1787255663175",
+      "firstName": "Bilal",
+      "lastName": "Ahmed",
+      "fullName": "Bilal Ahmed",
+      "username": "bilal_ahmed_pk",
+      "email": "bilal.engineer2026@gmail.com",
+      "passwordHash": "4565ffe8e426398ee773a6bc8cda06aa:388c676fb0f6112af58526360c94e549aeaedeb3b81be477e968bc431fc59725b44fa6da6fca24d960c4f9a4fc3e2afd13c3c317c9100bbd37b565a6ef4b20c0",
+      "phone": "+92 333 7788990",
+      "dateOfBirth": "1999-07-10",
+      "gender": "male",
+      "genderCustom": "",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 1,
+      "followersCount": 1,
+      "followingCount": 1,
+      "isVerified": false,
+      "accountStatus": "active",
+      "privacySettings": {
+        "whoCanSeePosts": "public",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true,
+        "showAge": false
+      }
+    },
+    {
+      "id": "user-1787294508333",
+      "firstName": "Alex",
+      "lastName": "Test",
+      "fullName": "Alex Test",
+      "username": "alex_1787294504861",
+      "email": "alex_1787294504861@test.com",
+      "passwordHash": "e5c3c229c3c307a54b11df7c1524eec7:3f533abd0050e733a2f85ea08c716fa73ff78f042aa56ea88fd493467b71da29cb9bdb36358cdcf66af14992ca35bd30d3cf77a05076a682789b2d5e13fe65fc",
+      "phone": "",
+      "dateOfBirth": "2000-01-01",
+      "gender": "prefer_not_to_say",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "accountStatus": "active"
+    },
+    {
+      "id": "user-1787294510942",
+      "firstName": "Beth",
+      "lastName": "Test",
+      "fullName": "Beth Test",
+      "username": "beth_1787294504861",
+      "email": "beth_1787294504861@test.com",
+      "passwordHash": "11325e4d25c51d68a5500860a36c0c75:0ced0826f71c9b35046f8d25d9ef5fc4ee13cf729d7d15f8f8f359c7cfb7479c658154fbdeda17f348dbb45843ab6908941542704f2cdcb58503a46963484c1f",
+      "phone": "",
+      "dateOfBirth": "2000-01-01",
+      "gender": "prefer_not_to_say",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "accountStatus": "active"
+    },
+    {
+      "id": "user-1787295082517",
+      "firstName": "Zulqarnain",
+      "lastName": "Haider",
+      "fullName": "Zulqarnain Haider",
+      "username": "zulqarnain_1787295079768",
+      "email": "zulqarnain_1787295079768@nexus.com",
+      "passwordHash": "7cc39bfabfe83b525f737d81fed268e4:d63ae6eb683190b8fd04f6999439069080f8d357a886083b29547dbbfbe5cb96f7353d0f3cfa6929261fe0516680aa02db7e271a14dac1db0fe052fec51ddb4a",
+      "phone": "+923001234567",
+      "dateOfBirth": "1998-04-12",
+      "gender": "male",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "accountStatus": "active"
+    },
+    {
+      "id": "user-1787295132311",
+      "firstName": "Hassan",
+      "lastName": "Tariq",
+      "fullName": "Hassan Tariq",
+      "username": "hassan_5527",
+      "email": "hassan_5527@nexus.com",
+      "passwordHash": "3678128d5a3ea29b2b4824685350a28f:e3bd8ecc0283a7524c233c43abe003122ff96308509a3efa7941763f868aca406d932637713d72a771fa273302467ea068679dbf9e7a84de578a8131e97da9a7",
+      "phone": "+923009988776",
+      "dateOfBirth": "1999-07-20",
+      "gender": "male",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "accountStatus": "active"
+    },
+    {
+      "id": "user-1787295354834",
+      "firstName": "khan",
+      "lastName": "rehman",
+      "fullName": "khan rehman",
+      "username": "khan_rehman12",
+      "email": "abduky3e@gmail.com",
+      "passwordHash": "f0333415b1f26b9a5471230ff5f520f6:c709e857426746d5231c0c94d6b40a45b57e0a198642cff68dcc660238396847291a2de90df3e316a227d0dbf9f1f074257b6627aaba71a7f44e8fd58e651d8c",
+      "phone": "+923109211802",
+      "dateOfBirth": "2001-02-15",
+      "gender": "male",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Aug 2026",
+      "friendsCount": 1,
+      "followersCount": 1,
+      "followingCount": 1,
+      "isVerified": false,
+      "accountStatus": "active"
+    }
+  ],
+  "pendingRegistrations": {
+    "usman.tariq.pk2026@gmail.com": {
+      "firstName": "Usman",
+      "lastName": "Tariq",
+      "fullName": "Usman Tariq",
+      "username": "usman_tariq_pk",
+      "email": "usman.tariq.pk2026@gmail.com",
+      "passwordHash": "bd31bf5b74721f6a9c93bca139853a7c6f449f070134bad36ede57f70a302b7b2c7ea102576560266577299781f3920977e0f14815e879a8cd9160323808728a",
+      "dateOfBirth": "1999-04-12",
+      "gender": "male",
+      "genderCustom": "",
+      "phone": "+92 321 5556677",
+      "otp": "797204",
+      "expiresAt": 1787253682989,
+      "lastRequestedAt": 1787253082989
+    }
+  },
+  "passwordResetOtps": {},
+  "failedLoginAttempts": {
+    "nonexistent_user@gmail.com": {
+      "count": 1,
+      "lockedUntil": null
+    },
+    "hassantrae236@gmail.com": {
+      "count": 5,
+      "lockedUntil": 1787257357448
+    },
+    "zain.malik.tech2026@gmail.com": {
+      "count": 1,
+      "lockedUntil": null
+    }
+  },
+  "posts": [
+    {
+      "id": "post-1787262597350",
+      "author": {
+        "id": "user-1787250050266",
+        "username": "kfasi5032",
+        "fullName": "kfasi5032",
+        "email": "kfasi5032@gmail.com",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg",
+        "coverUrl": "/uploads/covers/cover-1787261690974-6af15a61.jpg",
+        "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+        "location": "Islamabad, Pakistan",
+        "occupation": "Software Engineer",
+        "education": "CUST Islamabad",
+        "joinedDate": "Joined Today",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": true
+      },
+      "content": "classic",
+      "mediaUrls": [
+        "/uploads/post-media/post-media-1787262597345-cf2d4aa2.jpg"
+      ],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 1,
+          "userReacted": true
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 1,
+      "commentsCount": 1,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comment-1787262644116-1fl2",
+          "postId": "post-1787262597350",
+          "author": {
+            "id": "user-1787251640066",
+            "username": "tabuty456cghc",
+            "fullName": "Tabu khan",
+            "email": "tabuty456cghc@gmail.com",
+            "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg",
+            "coverUrl": "/uploads/covers/cover-1787262058448-699533f0.jpg",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true
+            }
+          },
+          "content": "perfect man",
+          "createdAt": "Just now",
+          "likesCount": 0,
+          "isLiked": false,
+          "replies": []
+        }
+      ],
+      "reactionsList": [
+        {
+          "userId": "user-1787251640066",
+          "user": {
+            "id": "user-1787251640066",
+            "username": "tabuty456cghc",
+            "fullName": "Tabu khan",
+            "email": "tabuty456cghc@gmail.com",
+            "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg",
+            "coverUrl": "/uploads/covers/cover-1787262058448-699533f0.jpg",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true
+            }
+          },
+          "type": "like",
+          "createdAt": "2026-08-20T21:50:35.765Z"
+        }
+      ]
+    },
+    {
+      "id": "post-1787262410963",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "Unique test post timestamp 1787262410951",
+      "mediaUrls": [],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 1,
+          "userReacted": true
+        }
+      ],
+      "totalReactions": 1,
+      "commentsCount": 2,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comment-1787293318550-g5lo",
+          "postId": "post-1787262410963",
+          "author": {
+            "id": "user-1787255663175",
+            "firstName": "Bilal",
+            "lastName": "Ahmed",
+            "fullName": "Bilal Ahmed",
+            "username": "bilal_ahmed_pk",
+            "email": "bilal.engineer2026@gmail.com",
+            "phone": "+92 333 7788990",
+            "dateOfBirth": "1999-07-10",
+            "gender": "male",
+            "genderCustom": "",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "accountStatus": "active",
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true,
+              "showAge": false
+            }
+          },
+          "content": "Awesome update!",
+          "createdAt": "Just now",
+          "likesCount": 0,
+          "isLiked": false,
+          "replies": []
+        },
+        {
+          "id": "comment-1787293359556-9o3o",
+          "postId": "post-1787262410963",
+          "author": {
+            "id": "user-1787255663175",
+            "firstName": "Bilal",
+            "lastName": "Ahmed",
+            "fullName": "Bilal Ahmed",
+            "username": "bilal_ahmed_pk",
+            "email": "bilal.engineer2026@gmail.com",
+            "phone": "+92 333 7788990",
+            "dateOfBirth": "1999-07-10",
+            "gender": "male",
+            "genderCustom": "",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "accountStatus": "active",
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true,
+              "showAge": false
+            }
+          },
+          "content": "Awesome update!",
+          "createdAt": "Just now",
+          "likesCount": 0,
+          "isLiked": false,
+          "replies": []
+        }
+      ],
+      "reactionsList": [
+        {
+          "userId": "user-1787255663175",
+          "user": {
+            "id": "user-1787255663175",
+            "firstName": "Bilal",
+            "lastName": "Ahmed",
+            "fullName": "Bilal Ahmed",
+            "username": "bilal_ahmed_pk",
+            "email": "bilal.engineer2026@gmail.com",
+            "phone": "+92 333 7788990",
+            "dateOfBirth": "1999-07-10",
+            "gender": "male",
+            "genderCustom": "",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "accountStatus": "active",
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true,
+              "showAge": false
+            }
+          },
+          "type": "fire",
+          "createdAt": "2026-08-21T06:22:39.591Z"
+        }
+      ]
+    },
+    {
+      "id": "post-1787262085527",
+      "author": {
+        "id": "user-1787251640066",
+        "username": "tabuty456cghc",
+        "fullName": "Tabu khan",
+        "email": "tabuty456cghc@gmail.com",
+        "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg",
+        "coverUrl": "/uploads/covers/cover-1787262058448-699533f0.jpg",
+        "bio": "",
+        "location": "",
+        "occupation": "",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true
+        }
+      },
+      "content": "my aseel roaster",
+      "mediaUrls": [
+        "/uploads/post-media/post-media-1787262085519-27b43c1c.jpg"
+      ],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 1,
+          "userReacted": true
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 1,
+      "commentsCount": 1,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comment-1787262165802-aiv8",
+          "postId": "post-1787262085527",
+          "author": {
+            "id": "user-1787250050266",
+            "username": "kfasi5032",
+            "fullName": "kfasi5032",
+            "email": "kfasi5032@gmail.com",
+            "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg",
+            "coverUrl": "/uploads/covers/cover-1787261690974-6af15a61.jpg",
+            "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+            "location": "Islamabad, Pakistan",
+            "occupation": "Software Engineer",
+            "education": "CUST Islamabad",
+            "joinedDate": "Joined Today",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": true
+          },
+          "content": "great to see it",
+          "createdAt": "Just now",
+          "likesCount": 0,
+          "isLiked": false,
+          "replies": []
+        }
+      ],
+      "reactionsList": [
+        {
+          "userId": "user-1787250050266",
+          "user": {
+            "id": "user-1787250050266",
+            "username": "kfasi5032",
+            "fullName": "kfasi5032",
+            "email": "kfasi5032@gmail.com",
+            "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg",
+            "coverUrl": "/uploads/covers/cover-1787261690974-6af15a61.jpg",
+            "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+            "location": "Islamabad, Pakistan",
+            "occupation": "Software Engineer",
+            "education": "CUST Islamabad",
+            "joinedDate": "Joined Today",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": true
+          },
+          "type": "like",
+          "createdAt": "2026-08-20T21:42:44.442Z"
+        }
+      ]
+    },
+    {
+      "id": "post-1787261644382",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "Testing reactions and comment system end-to-end!",
+      "mediaUrls": [],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 0,
+      "commentsCount": 1,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comment-1787261644440-l52d",
+          "postId": "post-1787261644382",
+          "author": {
+            "id": "user-1787255663175",
+            "firstName": "Bilal",
+            "lastName": "Ahmed",
+            "fullName": "Bilal Ahmed",
+            "username": "bilal_ahmed_pk",
+            "email": "bilal.engineer2026@gmail.com",
+            "phone": "+92 333 7788990",
+            "dateOfBirth": "1999-07-10",
+            "gender": "male",
+            "genderCustom": "",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "accountStatus": "active",
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true,
+              "showAge": false
+            }
+          },
+          "content": "Incredible system design! Loving the real-time speed.",
+          "createdAt": "Just now",
+          "likesCount": 0,
+          "isLiked": false,
+          "replies": []
+        }
+      ],
+      "reactionsList": []
+    },
+    {
+      "id": "post-1787261221960",
+      "author": {
+        "id": "user-1787250050266",
+        "username": "kfasi5032",
+        "fullName": "kfasi5032",
+        "email": "kfasi5032@gmail.com",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg",
+        "coverUrl": "/uploads/covers/cover-1787261690974-6af15a61.jpg",
+        "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+        "location": "Islamabad, Pakistan",
+        "occupation": "Software Engineer",
+        "education": "CUST Islamabad",
+        "joinedDate": "Joined Today",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": true
+      },
+      "content": "enjoying the moments",
+      "mediaUrls": [
+        "/uploads/post-media/post-media-1787261221955-a64d6689.mp4"
+      ],
+      "mediaType": "video",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 1,
+          "userReacted": true
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 1,
+      "commentsCount": 1,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comment-1787261266512",
+          "postId": "post-1787261221960",
+          "author": {
+            "id": "user-1787251640066",
+            "username": "tabuty456cghc",
+            "fullName": "Tabu khan",
+            "email": "tabuty456cghc@gmail.com",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true
+            }
+          },
+          "content": "great",
+          "createdAt": "Just now",
+          "likesCount": 1,
+          "isLiked": true,
+          "replies": []
+        }
+      ],
+      "reactionsList": [
+        {
+          "userId": "user-1787251640066",
+          "user": {
+            "id": "user-1787251640066",
+            "username": "tabuty456cghc",
+            "fullName": "Tabu khan",
+            "email": "tabuty456cghc@gmail.com",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true
+            }
+          },
+          "type": "love",
+          "createdAt": "2026-08-20T21:36:35.286Z"
+        }
+      ]
+    },
+    {
+      "id": "post-1787261136184",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "Demo recording of the feed live sync 🎥",
+      "mediaUrls": [
+        "/uploads/chat-media/demo-video.mp4"
+      ],
+      "mediaType": "video",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 0,
+      "commentsCount": 0,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": []
+    },
+    {
+      "id": "post-1787261136173",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "System architecture diagram preview 📊",
+      "mediaUrls": [
+        "/uploads/post-media/post-media-1787261136170-ac0114f6.png"
+      ],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 0,
+      "commentsCount": 0,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": []
+    },
+    {
+      "id": "post-1787261136158",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "Just deployed the new real-time synchronization engine! 🚀",
+      "mediaUrls": [],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 0,
+      "commentsCount": 0,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": []
+    },
+    {
+      "id": "post-1787260491260",
+      "author": {
+        "id": "user-1787255663175",
+        "firstName": "Bilal",
+        "lastName": "Ahmed",
+        "fullName": "Bilal Ahmed",
+        "username": "bilal_ahmed_pk",
+        "email": "bilal.engineer2026@gmail.com",
+        "phone": "+92 333 7788990",
+        "dateOfBirth": "1999-07-10",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "",
+        "location": "",
+        "occupation": "",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "Must read! Big congrats to the engineering crew.",
+      "sharedPost": {
+        "id": "post-1787260491242",
+        "author": {
+          "id": "user-1787253951640",
+          "firstName": "Zain",
+          "lastName": "Malik",
+          "fullName": "Zain Malik",
+          "username": "zain_malik_dev",
+          "email": "zain.malik.tech2026@gmail.com",
+          "phone": "+92 302 4455667",
+          "dateOfBirth": "1998-11-20",
+          "gender": "male",
+          "genderCustom": "",
+          "avatarUrl": "",
+          "coverUrl": "",
+          "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+          "location": "",
+          "occupation": "",
+          "education": "",
+          "website": "",
+          "joinedDate": "Joined Aug 2026",
+          "friendsCount": 1,
+          "followersCount": 0,
+          "followingCount": 0,
+          "isVerified": false,
+          "accountStatus": "active",
+          "privacySettings": {
+            "whoCanSeePosts": "public",
+            "whoCanSendRequests": "everyone",
+            "showOnlineStatus": true,
+            "showAge": false
+          }
+        },
+        "content": "Excited to announce the new Nexus multimedia architecture release! 🚀",
+        "mediaUrls": [],
+        "mediaType": "image",
+        "visibility": "public",
+        "createdAt": "Just now",
+        "reactions": [
+          {
+            "type": "like",
+            "count": 0,
+            "userReacted": false
+          },
+          {
+            "type": "love",
+            "count": 0,
+            "userReacted": false
+          },
+          {
+            "type": "haha",
+            "count": 0,
+            "userReacted": false
+          },
+          {
+            "type": "wow",
+            "count": 0,
+            "userReacted": false
+          },
+          {
+            "type": "sad",
+            "count": 0,
+            "userReacted": false
+          },
+          {
+            "type": "fire",
+            "count": 0,
+            "userReacted": false
+          }
+        ],
+        "totalReactions": 0,
+        "commentsCount": 1,
+        "sharesCount": 1,
+        "isSaved": false,
+        "comments": [
+          {
+            "id": "comment-1787260491250",
+            "postId": "post-1787260491242",
+            "author": {
+              "id": "user-1787255663175",
+              "firstName": "Bilal",
+              "lastName": "Ahmed",
+              "fullName": "Bilal Ahmed",
+              "username": "bilal_ahmed_pk",
+              "email": "bilal.engineer2026@gmail.com",
+              "phone": "+92 333 7788990",
+              "dateOfBirth": "1999-07-10",
+              "gender": "male",
+              "genderCustom": "",
+              "avatarUrl": "",
+              "coverUrl": "",
+              "bio": "",
+              "location": "",
+              "occupation": "",
+              "education": "",
+              "website": "",
+              "joinedDate": "Joined Aug 2026",
+              "friendsCount": 1,
+              "followersCount": 0,
+              "followingCount": 0,
+              "isVerified": false,
+              "accountStatus": "active",
+              "privacySettings": {
+                "whoCanSeePosts": "public",
+                "whoCanSendRequests": "everyone",
+                "showOnlineStatus": true,
+                "showAge": false
+              }
+            },
+            "content": "Incredible work team! Looks super smooth.",
+            "createdAt": "Just now",
+            "likesCount": 0,
+            "isLiked": false,
+            "replies": []
+          }
+        ]
+      },
+      "sharedFrom": "post-1787260491242",
+      "mediaUrls": [],
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 0,
+      "commentsCount": 0,
+      "sharesCount": 0,
+      "isSaved": false,
+      "comments": []
+    },
+    {
+      "id": "post-1787260491242",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "",
+        "occupation": "",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "content": "Excited to announce the new Nexus multimedia architecture release! 🚀",
+      "mediaUrls": [],
+      "mediaType": "image",
+      "visibility": "public",
+      "createdAt": "Just now",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "fire",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 0,
+      "commentsCount": 1,
+      "sharesCount": 1,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comment-1787260491250",
+          "postId": "post-1787260491242",
+          "author": {
+            "id": "user-1787255663175",
+            "firstName": "Bilal",
+            "lastName": "Ahmed",
+            "fullName": "Bilal Ahmed",
+            "username": "bilal_ahmed_pk",
+            "email": "bilal.engineer2026@gmail.com",
+            "phone": "+92 333 7788990",
+            "dateOfBirth": "1999-07-10",
+            "gender": "male",
+            "genderCustom": "",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "accountStatus": "active",
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true,
+              "showAge": false
+            }
+          },
+          "content": "Incredible work team! Looks super smooth.",
+          "createdAt": "Just now",
+          "likesCount": 0,
+          "isLiked": false,
+          "replies": []
+        }
+      ]
+    }
+  ],
+  "stories": [
+    {
+      "id": "story-1787263021342-5c9d2a",
+      "author": {
+        "id": "user-1787251640066",
+        "username": "tabuty456cghc",
+        "fullName": "Tabu khan",
+        "email": "tabuty456cghc@gmail.com",
+        "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg",
+        "coverUrl": "/uploads/covers/cover-1787262058448-699533f0.jpg",
+        "bio": "",
+        "location": "",
+        "occupation": "",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true
+        }
+      },
+      "type": "image",
+      "mediaUrl": "/uploads/stories/story-1787263021335-a931256e.jpg",
+      "mediaType": "image",
+      "textContent": "",
+      "backgroundStyle": "from-indigo-600 to-purple-600",
+      "caption": "best aseel madi",
+      "createdAt": "2026-08-20T21:57:01.343Z",
+      "expiresAt": "2026-08-21T21:57:01.343Z",
+      "viewedBy": [
+        {
+          "userId": "user-1787250050266",
+          "user": {
+            "id": "user-1787250050266",
+            "username": "kfasi5032",
+            "fullName": "kfasi5032",
+            "email": "kfasi5032@gmail.com",
+            "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg",
+            "coverUrl": "/uploads/covers/cover-1787261690974-6af15a61.jpg",
+            "bio": "Software Engineer & Tech Enthusiast | Nexus Member 🚀",
+            "location": "Islamabad, Pakistan",
+            "occupation": "Software Engineer",
+            "education": "CUST Islamabad",
+            "joinedDate": "Joined Today",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": true
+          },
+          "viewedAt": "2026-08-20T21:57:14.807Z"
+        }
+      ]
+    },
+    {
+      "id": "story-1787262942952-d993bd",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "type": "text",
+      "mediaUrl": "",
+      "mediaType": "image",
+      "textContent": "Building the full 24h stories system with direct message replies! 🚀",
+      "backgroundStyle": "from-indigo-600 via-purple-600 to-pink-600",
+      "caption": "",
+      "createdAt": "2026-08-20T21:55:42.952Z",
+      "expiresAt": "2026-08-21T21:55:42.952Z",
+      "viewedBy": []
+    },
+    {
+      "id": "story-1787262942911-0a1181",
+      "author": {
+        "id": "user-1787253951640",
+        "firstName": "Zain",
+        "lastName": "Malik",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "email": "zain.malik.tech2026@gmail.com",
+        "phone": "+92 302 4455667",
+        "dateOfBirth": "1998-11-20",
+        "gender": "male",
+        "genderCustom": "",
+        "avatarUrl": "",
+        "coverUrl": "",
+        "bio": "Senior Distributed Systems Architect & Open Source Contributor 💻 (Updated 1787261136117)",
+        "location": "San Francisco, CA",
+        "occupation": "Principal Cloud Architect",
+        "education": "",
+        "website": "",
+        "joinedDate": "Joined Aug 2026",
+        "friendsCount": 1,
+        "followersCount": 0,
+        "followingCount": 0,
+        "isVerified": false,
+        "accountStatus": "active",
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true,
+          "showAge": false
+        }
+      },
+      "type": "image",
+      "mediaUrl": "/uploads/stories/story-1787262942908-f2033e60.png",
+      "mediaType": "image",
+      "textContent": "",
+      "backgroundStyle": "from-indigo-600 to-purple-600",
+      "caption": "Sunset snapshot from the rooftop! 🌅",
+      "createdAt": "2026-08-20T21:55:42.911Z",
+      "expiresAt": "2026-08-21T21:55:42.913Z",
+      "viewedBy": [
+        {
+          "userId": "user-1787255663175",
+          "user": {
+            "id": "user-1787255663175",
+            "firstName": "Bilal",
+            "lastName": "Ahmed",
+            "fullName": "Bilal Ahmed",
+            "username": "bilal_ahmed_pk",
+            "email": "bilal.engineer2026@gmail.com",
+            "phone": "+92 333 7788990",
+            "dateOfBirth": "1999-07-10",
+            "gender": "male",
+            "genderCustom": "",
+            "avatarUrl": "",
+            "coverUrl": "",
+            "bio": "",
+            "location": "",
+            "occupation": "",
+            "education": "",
+            "website": "",
+            "joinedDate": "Joined Aug 2026",
+            "friendsCount": 1,
+            "followersCount": 0,
+            "followingCount": 0,
+            "isVerified": false,
+            "accountStatus": "active",
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "whoCanSendRequests": "everyone",
+              "showOnlineStatus": true,
+              "showAge": false
+            }
+          },
+          "viewedAt": "2026-08-20T21:55:42.974Z"
+        }
+      ]
+    }
+  ],
+  "friendRequests": [
+    {
+      "id": "freq-1787256550701-86s9z",
+      "fromUserId": "user-1787250050266",
+      "toUserId": "user-1787250333857",
+      "createdAt": "Just now",
+      "timestamp": 1787256550701,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1787256560153-33q0m",
+      "fromUserId": "user-1787250050266",
+      "toUserId": "user-1787253378054",
+      "createdAt": "Just now",
+      "timestamp": 1787256560153,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1787294568089-uzo2r",
+      "fromUserId": "user-1787251640066",
+      "toUserId": "user-1787250333857",
+      "createdAt": "Just now",
+      "timestamp": 1787294568089,
+      "status": "pending"
+    }
+  ],
+  "friendships": [
+    {
+      "id": "friendship-1787256344442",
+      "userA": "user-1787255663175",
+      "userB": "user-1787253951640",
+      "createdAt": "2026-08-20T20:05:44.442Z"
+    },
+    {
+      "id": "friendship-1787256701912",
+      "userA": "user-1787251640066",
+      "userB": "user-1787250050266",
+      "createdAt": "2026-08-20T20:11:41.912Z"
+    },
+    {
+      "id": "friendship-1787295462962",
+      "userA": "user-1787250050266",
+      "userB": "user-1787295354834",
+      "createdAt": "2026-08-21T06:57:42.962Z"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conv-user-1787250050266-user-1787295354834",
+      "participants": [
+        "user-1787250050266",
+        "user-1787295354834"
+      ],
+      "lastMessage": "🎤 Voice message",
+      "lastMessageType": "voice",
+      "lastMessageTime": "11:12 AM",
+      "messages": [
+        {
+          "id": "msg-1787295549965-i48x",
+          "conversationId": "conv-user-1787250050266-user-1787295354834",
+          "senderId": "user-1787295354834",
+          "recipientId": "user-1787250050266",
+          "type": "text",
+          "text": "hi",
+          "createdAt": "10:59 AM",
+          "timestamp": 1787295549965,
+          "status": "read",
+          "deliveredAt": "2026-08-21T06:59:09.965Z",
+          "readAt": "2026-08-21T06:59:18.733Z",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787296348943-h6co",
+          "conversationId": "conv-user-1787250050266-user-1787295354834",
+          "senderId": "user-1787295354834",
+          "recipientId": "user-1787250050266",
+          "type": "voice",
+          "mediaUrl": "/uploads/chat-media/media-1787296348821-7ae0ab35783984ae.webm",
+          "fileName": "voice_note.webm",
+          "fileSize": "71 KB",
+          "duration": "0:05",
+          "createdAt": "11:12 AM",
+          "timestamp": 1787296348943,
+          "status": "delivered",
+          "deliveredAt": "2026-08-21T07:12:28.942Z",
+          "readAt": null,
+          "isRead": false
+        },
+        {
+          "id": "msg-1787296371328-2o22",
+          "conversationId": "conv-user-1787250050266-user-1787295354834",
+          "senderId": "user-1787250050266",
+          "recipientId": "user-1787295354834",
+          "type": "voice",
+          "mediaUrl": "/uploads/chat-media/media-1787296371325-fb36fab80057e4ad.webm",
+          "fileName": "voice_note.webm",
+          "fileSize": "82 KB",
+          "duration": "0:06",
+          "createdAt": "11:12 AM",
+          "timestamp": 1787296371328,
+          "status": "delivered",
+          "deliveredAt": "2026-08-21T07:12:51.328Z",
+          "readAt": null,
+          "isRead": false
+        }
+      ]
+    },
+    {
+      "id": "conv-user-1787294508333-user-1787294510942",
+      "participants": [
+        "user-1787294510942",
+        "user-1787294508333"
+      ],
+      "lastMessage": "Connected on Nexus Social! Say hello 👋",
+      "lastMessageType": "text",
+      "lastMessageTime": "Just now",
+      "messages": []
+    },
+    {
+      "id": "conv-user-1787250050266-user-1787251640066",
+      "participants": [
+        "user-1787251640066",
+        "user-1787250050266"
+      ],
+      "lastMessage": "Reacted 😂 to your story",
+      "lastMessageType": "story_reply",
+      "lastMessageTime": "2026-08-20T21:57:17.785Z",
+      "messages": [
+        {
+          "id": "msg-1787256710494-g0jm",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787251640066",
+          "recipientId": "user-1787250050266",
+          "type": "text",
+          "text": "hi",
+          "createdAt": "12:11 AM",
+          "timestamp": 1787256710494,
+          "status": "read",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787256719170-d1q9",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787251640066",
+          "recipientId": "user-1787250050266",
+          "type": "text",
+          "text": "how are you mama",
+          "createdAt": "12:11 AM",
+          "timestamp": 1787256719170,
+          "status": "read",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787256748407-wayg",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787251640066",
+          "recipientId": "user-1787250050266",
+          "type": "image",
+          "mediaUrl": "/uploads/chat/chat-1787256748401-qb3bp.jpg",
+          "fileName": "IMG_1666.JPG",
+          "fileSize": "2.0 MB",
+          "text": "check it",
+          "createdAt": "12:12 AM",
+          "timestamp": 1787256748407,
+          "status": "read",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787258483100-t4ad",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787250050266",
+          "recipientId": "user-1787251640066",
+          "type": "voice",
+          "mediaUrl": "/uploads/chat-media/media-1787258483096-c81923484122897c.webm",
+          "fileName": "voice_note.webm",
+          "fileSize": "64 KB",
+          "duration": "0:00",
+          "createdAt": "12:41 AM",
+          "timestamp": 1787258483100,
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-20T21:02:54.969Z"
+        },
+        {
+          "id": "msg-1787259342767-5mb3",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787251640066",
+          "recipientId": "user-1787250050266",
+          "type": "video",
+          "mediaUrl": "/uploads/chat-media/media-1787259342601-00279e2678f7319b.mp4",
+          "fileName": "WhatsApp Video 2026-08-20 at 11.57.21 PM.mp4",
+          "fileSize": "1.7 MB",
+          "text": "check the place plece mind blowing",
+          "createdAt": "12:55 AM",
+          "timestamp": 1787259342767,
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-20T21:35:45.442Z"
+        },
+        {
+          "id": "msg-1787259687225-g751",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787250050266",
+          "recipientId": "user-1787251640066",
+          "type": "text",
+          "text": "hi",
+          "createdAt": "01:01 AM",
+          "timestamp": 1787259687225,
+          "status": "read",
+          "deliveredAt": "2026-08-20T21:01:41.800Z",
+          "readAt": "2026-08-20T21:02:54.969Z",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787261743167-uggh",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787250050266",
+          "recipientId": "user-1787251640066",
+          "type": "text",
+          "text": "ok",
+          "createdAt": "01:35 AM",
+          "timestamp": 1787261743167,
+          "status": "read",
+          "deliveredAt": "2026-08-20T21:35:43.167Z",
+          "readAt": "2026-08-20T21:36:42.661Z",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787261808659-fbbs",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787251640066",
+          "recipientId": "user-1787250050266",
+          "type": "text",
+          "text": "thanks",
+          "createdAt": "01:36 AM",
+          "timestamp": 1787261808659,
+          "status": "read",
+          "deliveredAt": "2026-08-20T21:36:48.659Z",
+          "readAt": "2026-08-20T21:50:11.611Z",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787263037785-d2d707",
+          "conversationId": "conv-user-1787250050266-user-1787251640066",
+          "senderId": "user-1787250050266",
+          "recipientId": "user-1787251640066",
+          "text": "Reacted 😂 to your story",
+          "type": "story_reply",
+          "storyReply": {
+            "storyId": "story-1787263021342-5c9d2a",
+            "type": "image",
+            "mediaUrl": "/uploads/stories/story-1787263021335-a931256e.jpg",
+            "textContent": "",
+            "backgroundStyle": "from-indigo-600 to-purple-600",
+            "caption": "best aseel madi"
+          },
+          "createdAt": "2026-08-20T21:57:17.785Z",
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-21T06:43:06.860Z"
+        }
+      ],
+      "unreadCount": 1
+    },
+    {
+      "id": "conv-user-1787253951640-user-1787255663175",
+      "participants": [
+        "user-1787255663175",
+        "user-1787253951640"
+      ],
+      "lastMessage": "Looks super clean! Love the UI design.",
+      "lastMessageType": "story_reply",
+      "lastMessageTime": "2026-08-20T21:55:43.002Z",
+      "messages": [
+        {
+          "id": "msg-1787256344516-ptpo",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787253951640",
+          "recipientId": "user-1787255663175",
+          "type": "text",
+          "text": "Hello Bilal! Great connecting with you on Nexus Social.",
+          "createdAt": "12:05 AM",
+          "timestamp": 1787256344516,
+          "status": "read",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787256344528-n9l4",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787255663175",
+          "recipientId": "user-1787253951640",
+          "type": "image",
+          "mediaUrl": "/uploads/chat/chat-1787256344524-ryb1x.png",
+          "fileName": "design_architecture.png",
+          "fileSize": "0.0 MB",
+          "text": "Check out the new system architecture!",
+          "createdAt": "12:05 AM",
+          "timestamp": 1787256344528,
+          "status": "delivered",
+          "isRead": false
+        },
+        {
+          "id": "msg-1787258432314-xicx",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787253951640",
+          "recipientId": "user-1787255663175",
+          "type": "image",
+          "mediaUrl": "/uploads/chat-media/media-1787258432241-1cc047a1c8b04a9e.png",
+          "fileName": "system_design.png",
+          "fileSize": "0.0 MB",
+          "text": "Here is the diagram!",
+          "createdAt": "12:40 AM",
+          "timestamp": 1787258432314,
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-20T21:00:55.439Z"
+        },
+        {
+          "id": "msg-1787258432353-bshb",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787253951640",
+          "recipientId": "user-1787255663175",
+          "type": "video",
+          "mediaUrl": "/uploads/chat-media/media-1787258432350-ed682b1e613e04e7.mp4",
+          "fileName": "demo_walkthrough.mp4",
+          "fileSize": "0.0 MB",
+          "text": "Check out the live demo video!",
+          "createdAt": "12:40 AM",
+          "timestamp": 1787258432353,
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-20T21:00:55.439Z"
+        },
+        {
+          "id": "msg-1787258432365-fld5",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787255663175",
+          "recipientId": "user-1787253951640",
+          "type": "voice",
+          "mediaUrl": "/uploads/chat-media/media-1787258432362-526cac509aa94dcb.webm",
+          "fileName": "voice_note.webm",
+          "fileSize": "0.0 MB",
+          "duration": "0:14",
+          "createdAt": "12:40 AM",
+          "timestamp": 1787258432365,
+          "status": "delivered",
+          "isRead": false
+        },
+        {
+          "id": "msg-1787258432377-aoq1",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787255663175",
+          "recipientId": "user-1787253951640",
+          "type": "document",
+          "mediaUrl": "/uploads/chat-media/media-1787258432374-dd387b4da0d31485.pdf",
+          "fileName": "Sprint_Plan_Q3.pdf",
+          "fileSize": "2.4 MB",
+          "createdAt": "12:40 AM",
+          "timestamp": 1787258432377,
+          "status": "delivered",
+          "isRead": false
+        },
+        {
+          "id": "msg-1787258432388-thmi",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787253951640",
+          "recipientId": "user-1787255663175",
+          "type": "location",
+          "location": {
+            "latitude": 33.6844,
+            "longitude": 73.0479,
+            "label": "Islamabad Tech Center"
+          },
+          "createdAt": "12:40 AM",
+          "timestamp": 1787258432389,
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-20T21:00:55.439Z"
+        },
+        {
+          "id": "msg-1787258908840-bys0",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787253951640",
+          "recipientId": "user-1787255663175",
+          "type": "image",
+          "mediaUrl": "/uploads/chat-media/media-1787258908765-0b400c11495d44f7.png",
+          "fileName": "live_test_architecture.png",
+          "fileSize": "0.0 MB",
+          "text": "Here is the real uploaded photo file!",
+          "createdAt": "12:48 AM",
+          "timestamp": 1787258908840,
+          "status": "read",
+          "isRead": true,
+          "readAt": "2026-08-20T21:00:55.439Z"
+        },
+        {
+          "id": "msg-1787258908889-qc2y",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787255663175",
+          "recipientId": "user-1787253951640",
+          "type": "voice",
+          "mediaUrl": "/uploads/chat-media/media-1787258908886-4d72b88f894b81b0.webm",
+          "fileName": "recorded_voice_note.webm",
+          "fileSize": "128 KB",
+          "duration": "0:08",
+          "createdAt": "12:48 AM",
+          "timestamp": 1787258908889,
+          "status": "delivered",
+          "isRead": false
+        },
+        {
+          "id": "msg-1787259654402-ugi2",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787253951640",
+          "recipientId": "user-1787255663175",
+          "type": "text",
+          "text": "Hey Bilal, are you free for a quick sync?",
+          "createdAt": "01:00 AM",
+          "timestamp": 1787259654402,
+          "status": "read",
+          "deliveredAt": "2026-08-20T21:00:54.422Z",
+          "readAt": "2026-08-20T21:00:55.439Z",
+          "isRead": true
+        },
+        {
+          "id": "msg-1787262942991-c92b46",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787255663175",
+          "recipientId": "user-1787253951640",
+          "text": "Reacted 🔥 to your story",
+          "type": "story_reply",
+          "storyReply": {
+            "storyId": "story-1787262942911-0a1181",
+            "type": "image",
+            "mediaUrl": "/uploads/stories/story-1787262942908-f2033e60.png",
+            "textContent": "",
+            "backgroundStyle": "from-indigo-600 to-purple-600",
+            "caption": "Sunset snapshot from the rooftop! 🌅"
+          },
+          "createdAt": "2026-08-20T21:55:42.991Z",
+          "status": "sent"
+        },
+        {
+          "id": "msg-1787262943002-fc344b",
+          "conversationId": "conv-user-1787253951640-user-1787255663175",
+          "senderId": "user-1787255663175",
+          "recipientId": "user-1787253951640",
+          "text": "Looks super clean! Love the UI design.",
+          "type": "story_reply",
+          "storyReply": {
+            "storyId": "story-1787262942952-d993bd",
+            "type": "text",
+            "mediaUrl": "",
+            "textContent": "Building the full 24h stories system with direct message replies! 🚀",
+            "backgroundStyle": "from-indigo-600 via-purple-600 to-pink-600",
+            "caption": ""
+          },
+          "createdAt": "2026-08-20T21:55:43.002Z",
+          "status": "sent"
+        }
+      ],
+      "unreadCount": 2
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1787296371328",
+      "userId": "user-1787295354834",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "message",
+      "content": "kfasi5032 sent you a voice message.",
+      "targetId": "conv-user-1787250050266-user-1787295354834",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787296348943",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787295354834",
+        "fullName": "khan rehman",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "khan rehman sent you a voice message.",
+      "targetId": "conv-user-1787250050266-user-1787295354834",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787295549965",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787295354834",
+        "fullName": "khan rehman",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "khan rehman: hi",
+      "targetId": "conv-user-1787250050266-user-1787295354834",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787295462963",
+      "userId": "user-1787295354834",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "friend_accept",
+      "content": "kfasi5032 accepted your friend request.",
+      "targetId": "conv-user-1787250050266-user-1787295354834",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787295445220",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787295354834",
+        "fullName": "khan rehman",
+        "username": "khan_rehman12",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehman sent you a friend request.",
+      "targetId": "freq-1787295445220-j27bb",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787294568089",
+      "userId": "user-1787250333857",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "username": "tabuty456cghc",
+        "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg"
+      },
+      "type": "friend_request",
+      "content": "Tabu khan sent you a friend request.",
+      "targetId": "freq-1787294568089-uzo2r",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787294510963",
+      "userId": "user-1787294508333",
+      "actor": {
+        "id": "user-1787294510942",
+        "fullName": "Beth Test",
+        "avatarUrl": ""
+      },
+      "type": "friend_accept",
+      "content": "Beth Test accepted your friend request.",
+      "targetId": "conv-user-1787294508333-user-1787294510942",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787294510955",
+      "userId": "user-1787294510942",
+      "actor": {
+        "id": "user-1787294508333",
+        "fullName": "Alex Test",
+        "username": "alex_1787294504861",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "Alex Test sent you a friend request.",
+      "targetId": "freq-1787294510955-01tcs",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787293359591-130k",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "like",
+      "content": "Bilal Ahmed reacted 🔥 to your post.",
+      "targetId": "post-1787262410963",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787293359556-p25x",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "comment",
+      "content": "Bilal Ahmed commented on your post: \"Awesome update!\"",
+      "targetId": "post-1787262410963",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787293318550-vif2",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "comment",
+      "content": "Bilal Ahmed commented on your post: \"Awesome update!\"",
+      "targetId": "post-1787262410963",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787293318537-6d85",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "like",
+      "content": "Bilal Ahmed reacted ❤️ to your post.",
+      "targetId": "post-1787262410963",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787263037785-400e9d",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "message",
+      "content": "kfasi5032 reacted to your story: \"Reacted 😂 to your story\"",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787262943003-44f2f4",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Bilal Ahmed replied to your story: \"Looks super clean! Love the UI design.\"",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787262942991-1357c4",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Bilal Ahmed reacted to your story: \"Reacted 🔥 to your story\"",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787262644116-3351",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg"
+      },
+      "type": "comment",
+      "content": "Tabu khan commented on your post: \"perfect man\"",
+      "targetId": "post-1787262597350",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787262635765-5n4h",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": "/uploads/avatars/avatar-1787262218214-17d552e4.jpg"
+      },
+      "type": "like",
+      "content": "Tabu khan reacted 👍 to your post.",
+      "targetId": "post-1787262597350",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787262165802-5mbd",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "comment",
+      "content": "kfasi5032 commented on your post: \"great to see it\"",
+      "targetId": "post-1787262085527",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787262164442-m0xc",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "like",
+      "content": "kfasi5032 reacted 👍 to your post.",
+      "targetId": "post-1787262085527",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261808659",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Tabu khan: thanks",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261795286-61j6",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "like",
+      "content": "Tabu khan reacted ❤️ to your post.",
+      "targetId": "post-1787261221960",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261784985-a96n",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "like",
+      "content": "Tabu khan reacted 👍 to your post.",
+      "targetId": "post-1787261221960",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261779214-3ih4",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "like",
+      "content": "Tabu khan reacted 👍 to your post.",
+      "targetId": "post-1787261221960",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261743167",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "message",
+      "content": "kfasi5032: ok",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261644440-6rcx",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "comment",
+      "content": "Bilal Ahmed commented on your post: \"Incredible system design! Loving the rea...\"",
+      "targetId": "post-1787261644382",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261644426-m9lo",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "like",
+      "content": "Bilal Ahmed reacted 🔥 to your post.",
+      "targetId": "post-1787261644382",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787261266512",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "comment",
+      "content": "Tabu khan commented on your post: \"great...\"",
+      "targetId": "post-1787261221960",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787260491260",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "share",
+      "content": "Bilal Ahmed shared your post.",
+      "targetId": "post-1787260491260",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787260491250",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "comment",
+      "content": "Bilal Ahmed commented on your post: \"Incredible work team! Looks su...\"",
+      "targetId": "post-1787260491242",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787259687225",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "message",
+      "content": "kfasi5032: hi",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787259654402",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Zain Malik: Hey Bilal, are you free for a quick sync?",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787259342767",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Tabu khan sent you a video.",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787258908889",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Bilal Ahmed sent you a voice message.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787258908840",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Zain Malik sent you a photo.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787258483100",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "message",
+      "content": "kfasi5032 sent you a voice message.",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787258432389",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Zain Malik shared their location with you.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787258432377",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Bilal Ahmed sent you a document.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787258432365",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Bilal Ahmed sent you a voice message.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787258432353",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Zain Malik sent you a video.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787258432314",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Zain Malik sent you a photo.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787256748407",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Tabu khan sent you a photo.",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256719170",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Tabu khan: how are you mama",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256710494",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Tabu khan: hi",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256701913",
+      "userId": "user-1787250050266",
+      "actor": {
+        "id": "user-1787251640066",
+        "fullName": "Tabu khan",
+        "avatarUrl": ""
+      },
+      "type": "friend_accept",
+      "content": "Tabu khan accepted your friend request.",
+      "targetId": "conv-user-1787250050266-user-1787251640066",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256560153",
+      "userId": "user-1787253378054",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787256560153-33q0m",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787256553322",
+      "userId": "user-1787251640066",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787256553322-p42oe",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256550701",
+      "userId": "user-1787250333857",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787256550701-86s9z",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787256344528",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Bilal Ahmed sent you a photo.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256344516",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "avatarUrl": ""
+      },
+      "type": "message",
+      "content": "Zain Malik: Hello Bilal! Great connecting with you on Nex",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787256344442",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787255663175",
+        "fullName": "Bilal Ahmed",
+        "avatarUrl": ""
+      },
+      "type": "friend_accept",
+      "content": "Bilal Ahmed accepted your friend request.",
+      "targetId": "conv-user-1787253951640-user-1787255663175",
+      "createdAt": "Just now",
+      "isRead": true
+    },
+    {
+      "id": "notif-1787256344422",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787253951640",
+        "fullName": "Zain Malik",
+        "username": "zain_malik_dev",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "Zain Malik sent you a friend request.",
+      "targetId": "freq-1787256344422-nx3bb",
+      "createdAt": "Just now",
+      "isRead": false
+    }
+  ],
+  "otps": {
+    "furqanseelrawalakot@gmail.com": {
+      "code": "644824",
+      "expiresAt": 1787250757217,
+      "lastRequestedAt": 1787250157217
+    },
+    "usman.tariq.pk2026@gmail.com": {
+      "code": "797204",
+      "expiresAt": 1787253682989,
+      "lastRequestedAt": 1787253082989
+    }
+  },
+  "friends": []
+}
