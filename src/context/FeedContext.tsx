@@ -56,7 +56,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const saved = localStorage.getItem(POSTS_KEY);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return initialPosts;
+    return [];
   });
 
   const [storyGroups, setStoryGroups] = useState<UserStoryGroup[]>([]);

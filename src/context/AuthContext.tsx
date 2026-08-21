@@ -19,6 +19,7 @@ interface AuthContextType {
   currentUser: User;
   usersList: User[];
   isAuthenticated: boolean;
+  isLoadingAuth: boolean;
   isAuthModalOpen: boolean;
   pendingOTP: string | null;
   otpEmail: string;
@@ -43,14 +44,21 @@ const USERS_DB_KEY = 'nexus_all_registered_users_v10';
 const ACTIVE_USER_KEY = 'nexus_active_session_user_v10';
 const AUTH_STATE_KEY = 'nexus_is_authenticated_v10';
 
-const INITIAL_USERS: User[] = [
-  {
-    ...defaultSeedUser,
-    firstName: 'Faseeh-ur',
-    lastName: 'Rehman',
-    email: 'kfasi5032@gmail.com',
-  },
-];
+export const EMPTY_GUEST_USER: User = {
+  id: '',
+  fullName: '',
+  username: '',
+  email: '',
+  avatarUrl: '',
+  coverUrl: '',
+  bio: '',
+  location: '',
+  occupation: '',
+  joinedDate: '',
+  friendsCount: 0,
+  followersCount: 0,
+  followingCount: 0,
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { showToast } = useToast();
@@ -63,31 +71,107 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch {}
-    return INITIAL_USERS;
+    return [];
   });
 
   const [currentUser, setCurrentUser] = useState<User>(() => {
     try {
       const saved = localStorage.getItem(ACTIVE_USER_KEY);
-      if (saved) return JSON.parse(saved);
+      const auth = localStorage.getItem(AUTH_STATE_KEY);
+      if (auth && JSON.parse(auth) === true && saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.id && parsed.email) return parsed;
+      }
     } catch {}
-    return INITIAL_USERS[0];
+    return EMPTY_GUEST_USER;
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem(AUTH_STATE_KEY);
-      return saved !== null ? JSON.parse(saved) : true;
+      const savedUser = localStorage.getItem(ACTIVE_USER_KEY);
+      if (saved && JSON.parse(saved) === true && savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.id && parsed.email) return true;
+      }
     } catch {}
-    return true;
+    return false;
   });
 
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingOTP, setPendingOTP] = useState<string | null>(null);
   const [otpEmail, setOtpEmail] = useState('');
 
+  // Initial Session Verification & Backend Validation
   useEffect(() => {
-    localStorage.setItem(USERS_DB_KEY, JSON.stringify(usersList));
+    let isMounted = true;
+    const verifySession = async () => {
+      try {
+        const savedAuth = localStorage.getItem(AUTH_STATE_KEY);
+        const savedUser = localStorage.getItem(ACTIVE_USER_KEY);
+
+        if (savedAuth && JSON.parse(savedAuth) === true && savedUser) {
+          const parsed: User = JSON.parse(savedUser);
+          if (parsed && parsed.id && parsed.email) {
+            try {
+              const res = await fetch(`/api/users/${encodeURIComponent(parsed.id)}/profile`, {
+                headers: { 'x-user-id': parsed.id },
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (isMounted && data.success && data.user) {
+                  setCurrentUser(data.user);
+                  setIsAuthenticated(true);
+                  localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(data.user));
+                  localStorage.setItem(AUTH_STATE_KEY, JSON.stringify(true));
+                  setIsLoadingAuth(false);
+                  return;
+                }
+              }
+            } catch {
+              // Maintain local session if offline / server booting
+              if (isMounted) {
+                setCurrentUser(parsed);
+                setIsAuthenticated(true);
+                setIsLoadingAuth(false);
+                return;
+              }
+            }
+          }
+        }
+
+        // No active session found -> default to unauthenticated
+        if (isMounted) {
+          localStorage.removeItem(ACTIVE_USER_KEY);
+          localStorage.removeItem(AUTH_STATE_KEY);
+          setCurrentUser(EMPTY_GUEST_USER);
+          setIsAuthenticated(false);
+        }
+      } catch {
+        if (isMounted) {
+          localStorage.removeItem(ACTIVE_USER_KEY);
+          localStorage.removeItem(AUTH_STATE_KEY);
+          setCurrentUser(EMPTY_GUEST_USER);
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingAuth(false);
+        }
+      }
+    };
+
+    verifySession();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (usersList.length > 0) {
+      localStorage.setItem(USERS_DB_KEY, JSON.stringify(usersList));
+    }
   }, [usersList]);
 
   useEffect(() => {
@@ -396,12 +480,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem(ACTIVE_USER_KEY);
     localStorage.removeItem(AUTH_STATE_KEY);
 
+    setCurrentUser(EMPTY_GUEST_USER);
     setIsAuthenticated(false);
     setPendingOTP(null);
     setOtpEmail('');
-    setIsAuthModalOpen(true);
+    setIsAuthModalOpen(false);
 
-    showToast('Logged Out', 'Your session has been ended.', 'info');
+    showToast('Logged Out', 'Your session has been securely ended.', 'info');
   }, [showToast]);
 
   // 10. Update Profile (Persists to server DB and syncs locally)
@@ -492,6 +577,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentUser,
         usersList,
         isAuthenticated,
+        isLoadingAuth,
         isAuthModalOpen,
         pendingOTP,
         otpEmail,

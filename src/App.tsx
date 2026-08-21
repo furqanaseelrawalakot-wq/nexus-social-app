@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { FeedProvider } from './context/FeedContext';
@@ -79,9 +80,23 @@ const AppLayout: React.FC = () => {
 };
 
 const ProtectedRoot: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoadingAuth, currentUser } = useAuth();
 
-  if (!isAuthenticated) {
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white space-y-4 select-none">
+        <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-500/30 animate-pulse">
+          <Sparkles className="w-7 h-7 text-white" />
+        </div>
+        <div className="text-center space-y-1">
+          <h2 className="text-lg font-extrabold tracking-tight">Nexus Social</h2>
+          <p className="text-xs text-slate-400">Verifying secure session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !currentUser?.id) {
     return <LoginPage />;
   }
 
