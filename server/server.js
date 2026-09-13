@@ -123,18 +123,51 @@ const registerSSEClient = (userId, res) => {
   if (!sseClients.has(userId)) {
     sseClients.set(userId, new Set());
   }
+  const wasOffline = sseClients.get(userId).size === 0;
   sseClients.get(userId).add(res);
+
+  if (wasOffline) {
+    const user = db.users.find((u) => u.id === userId);
+    const showOnline = user?.privacySettings?.showOnlineStatus !== false;
+    broadcastRealtimeEvent('presence_updated', {
+      userId,
+      isOnline: showOnline,
+      lastSeen: showOnline ? (user?.lastSeen || null) : null,
+    });
+  }
 
   res.on('close', () => {
     const userClients = sseClients.get(userId);
     if (userClients) {
       userClients.delete(res);
-      if (userClients.size === 0) sseClients.delete(userId);
+      if (userClients.size === 0) {
+        sseClients.delete(userId);
+        const user = db.users.find((u) => u.id === userId);
+        const lastSeen = new Date().toISOString();
+        if (user) {
+          user.lastSeen = lastSeen;
+          saveDB();
+        }
+        const showOnline = user?.privacySettings?.showOnlineStatus !== false;
+        broadcastRealtimeEvent('presence_updated', {
+          userId,
+          isOnline: false,
+          lastSeen: showOnline ? lastSeen : null,
+        });
+      }
     }
   });
 };
 
-const isUserOnline = (userId) => {
+const isUserOnline = (userId, viewerId = null) => {
+  if (!userId) return false;
+  const user = db.users.find((u) => u.id === userId);
+  if (user && user.privacySettings?.showOnlineStatus === false) {
+    if (viewerId && viewerId === userId) {
+      return sseClients.has(userId) && sseClients.get(userId).size > 0;
+    }
+    return false;
+  }
   return sseClients.has(userId) && sseClients.get(userId).size > 0;
 };
 
@@ -563,12 +596,16 @@ const server = http.createServer(async (req, res) => {
         : false;
 
       const { passwordHash, ...safeUser } = targetUser;
+      const showOnline = safeUser.privacySettings?.showOnlineStatus !== false;
+      const online = isUserOnline(targetUser.id, currentUserId);
       return {
         ...safeUser,
         relationshipStatus: relationship,
         isFriend,
         isFollowing,
         isFollowedBy,
+        isOnline: online,
+        lastSeen: showOnline ? (safeUser.lastSeen || null) : null,
       };
     });
 
@@ -849,7 +886,15 @@ const server = http.createServer(async (req, res) => {
       .filter((u) => friendIds.includes(u.id))
       .map((u) => {
         const { passwordHash, ...safe } = u;
-        return { ...safe, status: 'friends', mutualFriends: 0, isOnline: true };
+        const showOnline = safe.privacySettings?.showOnlineStatus !== false;
+        const online = isUserOnline(u.id, userId);
+        return {
+          ...safe,
+          status: 'friends',
+          mutualFriends: 0,
+          isOnline: online,
+          lastSeen: showOnline ? (safe.lastSeen || null) : null,
+        };
       });
 
     return sendJSON(res, 200, { success: true, friends: friendsList });
@@ -930,13 +975,17 @@ const server = http.createServer(async (req, res) => {
           else if (receivedReq) relationship = 'pending_received';
         }
 
+        const showOnline = safe.privacySettings?.showOnlineStatus !== false;
+        const online = isUserOnline(u.id, viewerId);
+
         return {
           ...safe,
           relationshipStatus: relationship,
           isFriend: viewerIsFriend,
           isFollowing: viewerIsFollowing,
           isFollowedBy: viewerIsFollowedBy,
-          isOnline: isUserOnline(u.id),
+          isOnline: online,
+          lastSeen: showOnline ? (safe.lastSeen || null) : null,
         };
       });
 
@@ -1113,6 +1162,10 @@ const server = http.createServer(async (req, res) => {
         (m) => m.recipientId === userId && !m.isRead
       ).length;
 
+      const partnerOnline = isUserOnline(partner.id, userId);
+      const partnerShowOnline = partner.privacySettings?.showOnlineStatus !== false;
+      const partnerLastSeen = partnerShowOnline ? (partner.lastSeen || null) : null;
+
       return {
         id: conv.id,
         participant: {
@@ -1121,14 +1174,17 @@ const server = http.createServer(async (req, res) => {
           username: partner.username,
           avatarUrl: partner.avatarUrl,
           occupation: partner.occupation,
-          isOnline: isUserOnline(partner.id),
+          isOnline: partnerOnline,
+          lastSeen: partnerLastSeen,
+          privacySettings: partner.privacySettings,
         },
         participants: conv.participants,
         lastMessage: conv.lastMessage,
         lastMessageType: conv.lastMessageType || 'text',
         lastMessageTime: conv.lastMessageTime || 'Just now',
         unreadCount,
-        isOnline: isUserOnline(partner.id),
+        isOnline: partnerOnline,
+        lastSeen: partnerLastSeen,
         messages: conv.messages || [],
       };
     });
@@ -1924,12 +1980,18 @@ const server = http.createServer(async (req, res) => {
       ? (db.follows || []).some((f) => f.followerId === user.id && f.followingId === viewerId)
       : false;
 
+    const showOnline = safeUser.privacySettings?.showOnlineStatus !== false;
+    const isOnline = isUserOnline(user.id, viewerId);
+    const lastSeen = showOnline ? (safeUser.lastSeen || null) : null;
+
     return sendJSON(res, 200, {
       success: true,
       user: {
         ...profilePayloadUser,
         isFollowing,
         isFollowedBy,
+        isOnline,
+        lastSeen,
       },
       relationshipStatus,
       isFriend,
@@ -1937,6 +1999,8 @@ const server = http.createServer(async (req, res) => {
       isFollowedBy,
       isLocked: isRestrictedPrivate,
       isPrivate: isUserPrivate,
+      isOnline,
+      lastSeen,
       posts: userPosts,
     });
   }

@@ -26,6 +26,8 @@ import { useAuth } from '../context/AuthContext';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { UserAvatarLink, UserNameLink } from '../components/common/UserLink';
 import { VoiceMessagePlayer } from '../components/chat/VoiceMessagePlayer';
+import { VideoRecorderModal } from '../components/chat/VideoRecorderModal';
+import { formatLastSeen } from '../utils/presence';
 
 export const MessagesPage: React.FC = () => {
   const {
@@ -58,6 +60,7 @@ export const MessagesPage: React.FC = () => {
   const [mediaCaption, setMediaCaption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [selectedLightboxMedia, setSelectedLightboxMedia] = useState<string | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   // Voice recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -288,6 +291,21 @@ export const MessagesPage: React.FC = () => {
     setRecordingSeconds(0);
   };
 
+  const handleSendVideo = async (data: {
+    base64: string;
+    duration?: string;
+    fileSize?: string;
+  }) => {
+    if (!currentConv) return;
+    await sendMediaMessage(currentConv.id, {
+      mediaBase64: data.base64,
+      mediaType: 'video',
+      fileName: 'video_note.webm',
+      fileSize: data.fileSize,
+      duration: data.duration,
+    });
+  };
+
   return (
     <div className="max-w-5xl mx-auto w-full h-[calc(100vh-8rem)] rounded-3xl bg-white border border-slate-200 shadow-card overflow-hidden flex select-none relative">
       {/* Hidden File Pickers */}
@@ -425,6 +443,8 @@ export const MessagesPage: React.FC = () => {
           {filteredConversations.length > 0 ? (
             filteredConversations.map((conv) => {
               const isSelected = conv.id === currentConv?.id;
+              const isConvOnline = conv.participant?.privacySettings?.showOnlineStatus !== false && conv.isOnline;
+
               return (
                 <div
                   key={conv.id}
@@ -439,7 +459,7 @@ export const MessagesPage: React.FC = () => {
                   <UserAvatarLink
                     user={conv.participant}
                     size="md"
-                    online={conv.isOnline}
+                    online={isConvOnline}
                     onClick={(e) => e.stopPropagation()}
                   />
 
@@ -487,7 +507,7 @@ export const MessagesPage: React.FC = () => {
               <UserAvatarLink
                 user={currentConv.participant}
                 size="md"
-                online={currentConv.isOnline}
+                online={currentConv.participant?.privacySettings?.showOnlineStatus !== false && currentConv.isOnline}
               />
               <div>
                 <UserNameLink
@@ -497,10 +517,12 @@ export const MessagesPage: React.FC = () => {
                 <span className="block text-[11px] text-slate-400">
                   {isPartnerTyping ? (
                     <span className="text-indigo-600 font-medium animate-pulse">typing...</span>
-                  ) : currentConv.isOnline ? (
-                    'Online'
                   ) : (
-                    'Offline'
+                    formatLastSeen(
+                      currentConv.participant?.lastSeen,
+                      currentConv.isOnline,
+                      currentConv.participant?.privacySettings?.showOnlineStatus !== false
+                    ) || 'Offline'
                   )}
                 </span>
               </div>
@@ -708,6 +730,20 @@ export const MessagesPage: React.FC = () => {
 
                 <button
                   type="button"
+                  onClick={() => {
+                    setShowAttachmentMenu(false);
+                    setIsVideoModalOpen(true);
+                  }}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-bold text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-colors text-left"
+                >
+                  <div className="p-1.5 rounded-xl bg-rose-100 text-rose-600">
+                    <Video className="w-4 h-4" />
+                  </div>
+                  <span>Record Video Note</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => docInputRef.current?.click()}
                   className="flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-bold text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition-colors text-left"
                 >
@@ -793,6 +829,16 @@ export const MessagesPage: React.FC = () => {
                   <Mic className="w-4 h-4" />
                 </button>
 
+                {/* Video Note Record Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="p-2.5 rounded-full hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors"
+                  title="Record Video Message"
+                >
+                  <Video className="w-4 h-4" />
+                </button>
+
                 {/* Send Button */}
                 <button
                   type="submit"
@@ -825,6 +871,13 @@ export const MessagesPage: React.FC = () => {
           </Link>
         </div>
       )}
+
+      {/* In-App Video Note Recorder Modal */}
+      <VideoRecorderModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        onSendVideo={handleSendVideo}
+      />
     </div>
   );
 };

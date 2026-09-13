@@ -27,6 +27,10 @@ interface ConnectionUser {
   bio?: string;
   isVerified?: boolean;
   isOnline?: boolean;
+  lastSeen?: string;
+  privacySettings?: {
+    showOnlineStatus?: boolean;
+  };
   friendsCount?: number;
   relationshipStatus?: 'self' | 'friends' | 'pending_sent' | 'pending_received' | 'none';
   isFriend?: boolean;
@@ -311,6 +315,7 @@ export const UserConnectionsModal: React.FC<UserConnectionsModalProps> = ({
                     <UserAvatarLink
                       user={user}
                       size="md"
+                      online={user.privacySettings?.showOnlineStatus !== false && user.isOnline}
                       className="group-hover:scale-105 transition-transform shrink-0"
                     />
                     <div className="min-w-0">

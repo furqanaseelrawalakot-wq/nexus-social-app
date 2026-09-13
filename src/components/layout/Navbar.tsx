@@ -177,7 +177,7 @@ export const Navbar: React.FC<{ onOpenCreatePost?: () => void }> = ({ onOpenCrea
                 src={currentUser.avatarUrl}
                 name={currentUser.fullName}
                 size="sm"
-                online={true}
+                online={currentUser.privacySettings?.showOnlineStatus !== false}
               />
               <span className="text-xs font-bold text-slate-800 hidden md:block max-w-[120px] truncate">
                 {currentUser.fullName}

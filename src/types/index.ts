@@ -159,6 +159,7 @@ export interface Conversation {
   lastMessageTime: string;
   unreadCount: number;
   isOnline: boolean;
+  lastSeen?: string;
   isTyping?: boolean;
   messages?: Message[];
 }
