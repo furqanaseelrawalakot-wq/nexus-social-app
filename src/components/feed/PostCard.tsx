@@ -4,16 +4,20 @@ import {
   Share2,
   Bookmark,
   MoreHorizontal,
+  MoreVertical,
   Globe,
   Users,
   Lock,
   Trash2,
+  Edit2,
+  Check,
+  X,
   CornerDownRight,
   Send,
   Heart,
   Repeat,
 } from 'lucide-react';
-import { Post, ReactionType } from '../../types';
+import { Post, ReactionType, Comment } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useFeed } from '../../context/FeedContext';
 import { UserAvatarLink, UserNameLink } from '../common/UserLink';
@@ -21,12 +25,24 @@ import { ShareModal } from './ShareModal';
 
 export const PostCard: React.FC<{ post: Post }> = ({ post }) => {
   const { currentUser } = useAuth();
-  const { reactToPost, addComment, addReply, likeComment, toggleSavePost, deletePost } = useFeed();
+  const {
+    reactToPost,
+    addComment,
+    addReply,
+    likeComment,
+    editComment,
+    deleteComment,
+    toggleSavePost,
+    deletePost,
+  } = useFeed();
 
   const [showComments, setShowComments] = useState(false);
   const [newCommentText, setNewCommentText] = useState('');
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editCommentText, setEditCommentText] = useState('');
+  const [openCommentMenuId, setOpenCommentMenuId] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showReactionsDrawer, setShowReactionsDrawer] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -79,12 +95,34 @@ export const PostCard: React.FC<{ post: Post }> = ({ post }) => {
     }
   };
 
-  const handleAddReply = (commentId: string, e: React.FormEvent) => {
+  const handleAddReply = async (commentId: string, e: React.FormEvent) => {
     e.preventDefault();
     if (!replyText.trim()) return;
-    addReply(post.id, commentId, replyText.trim());
+    const text = replyText.trim();
     setReplyText('');
     setReplyingToId(null);
+    await addReply(post.id, commentId, text);
+  };
+
+  const handleStartEdit = (item: { id: string; content: string }) => {
+    setEditingCommentId(item.id);
+    setEditCommentText(item.content);
+    setOpenCommentMenuId(null);
+  };
+
+  const handleSaveEdit = async (commentId: string, e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!editCommentText.trim()) return;
+    const text = editCommentText.trim();
+    setEditingCommentId(null);
+    await editComment(post.id, commentId, text);
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    setOpenCommentMenuId(null);
+    if (window.confirm('Delete this comment?')) {
+      await deleteComment(post.id, commentId);
+    }
   };
 
   return (
@@ -382,86 +420,277 @@ export const PostCard: React.FC<{ post: Post }> = ({ post }) => {
             </form>
 
             {/* Existing Comments List */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-4 pt-2">
               {(post.comments || []).length > 0 ? (
-                (post.comments || []).map((comment) => (
-                  <div key={comment.id} className="space-y-2">
-                    <div className="flex items-start gap-2.5">
-                      <UserAvatarLink user={comment.author} size="sm" />
-                      <div className="flex-1 min-w-0">
-                        <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200/70 inline-block max-w-full">
-                          <UserNameLink user={comment.author} className="text-xs font-bold text-slate-900" />
-                          <p className="text-xs text-slate-700 mt-1 leading-relaxed whitespace-pre-wrap">
-                            {comment.content}
-                          </p>
-                        </div>
+                (post.comments || []).map((comment) => {
+                  const isCommentAuthor = comment.author?.id === currentUser.id;
+                  const canDeleteComment = isCommentAuthor || isAuthor;
+                  const isEditingThisComment = editingCommentId === comment.id;
 
-                        <div className="flex items-center gap-3 text-[11px] text-slate-400 font-semibold px-2 mt-1">
-                          <span>{comment.createdAt}</span>
-                          <button
-                            type="button"
-                            onClick={() => likeComment(post.id, comment.id)}
-                            className={`flex items-center gap-1 hover:text-indigo-600 transition-colors ${
-                              comment.isLiked ? 'text-indigo-600 font-bold' : ''
-                            }`}
-                          >
-                            <Heart className={`w-3 h-3 ${comment.isLiked ? 'fill-current text-rose-500' : ''}`} />
-                            <span>{comment.likesCount > 0 ? comment.likesCount : 'Like'}</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setReplyingToId(comment.id)}
-                            className="hover:text-indigo-600 transition-colors"
-                          >
-                            Reply
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                  return (
+                    <div key={comment.id} className="space-y-2">
+                      <div className="flex items-start gap-2.5 group/comment">
+                        <UserAvatarLink user={comment.author} size="sm" />
+                        <div className="flex-1 min-w-0">
+                          {/* Comment Bubble or Edit Form */}
+                          <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200/70 inline-block max-w-full relative group">
+                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                              <UserNameLink user={comment.author} className="text-xs font-bold text-slate-900" />
+                              
+                              {/* Comment Options Dropdown (Author or Post Owner) */}
+                              {canDeleteComment && !isEditingThisComment && (
+                                <div className="relative inline-block">
+                                  <button
+                                    type="button"
+                                    onClick={() => setOpenCommentMenuId(openCommentMenuId === comment.id ? null : comment.id)}
+                                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 opacity-0 group-hover/comment:opacity-100 transition-opacity"
+                                    title="Options"
+                                  >
+                                    <MoreHorizontal className="w-3.5 h-3.5" />
+                                  </button>
 
-                    {/* Replies */}
-                    {comment.replies && comment.replies.length > 0 && (
-                      <div className="pl-9 space-y-2">
-                        {comment.replies.map((reply) => (
-                          <div key={reply.id} className="flex items-start gap-2">
-                            <UserAvatarLink user={reply.author} size="xs" />
-                            <div className="bg-slate-50/70 rounded-2xl p-2.5 border border-slate-200/50 inline-block max-w-full">
-                              <UserNameLink user={reply.author} className="text-[11px] font-bold text-slate-900" />
-                              <p className="text-xs text-slate-700 mt-0.5 leading-relaxed">
-                                {reply.content}
-                              </p>
+                                  {openCommentMenuId === comment.id && (
+                                    <div className="absolute right-0 top-6 w-28 bg-white rounded-xl shadow-xl border border-slate-200 p-1 z-30 animate-in fade-in">
+                                      {isCommentAuthor && (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleStartEdit(comment)}
+                                          className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-slate-700 hover:bg-slate-50 font-medium transition-colors"
+                                        >
+                                          <Edit2 className="w-3 h-3 text-slate-500" />
+                                          <span>Edit</span>
+                                        </button>
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteComment(comment.id)}
+                                        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-rose-600 hover:bg-rose-50 font-medium transition-colors"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                        <span>Delete</span>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
 
-                    {/* Reply Input Box */}
-                    {replyingToId === comment.id && (
-                      <form
-                        onSubmit={(e) => handleAddReply(comment.id, e)}
-                        className="pl-9 flex items-center gap-2 pt-1 animate-in fade-in"
-                      >
-                        <CornerDownRight className="w-3.5 h-3.5 text-slate-400" />
-                        <input
-                          type="text"
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          placeholder={`Reply to ${comment.author?.fullName?.split(' ')[0] || 'comment'}...`}
-                          className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
-                          autoFocus
-                        />
-                        <button
-                          type="submit"
-                          disabled={!replyText.trim()}
-                          className="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white"
+                            {/* Comment Content / Inline Edit Form */}
+                            {isEditingThisComment ? (
+                              <form onSubmit={(e) => handleSaveEdit(comment.id, e)} className="space-y-2 mt-1">
+                                <input
+                                  type="text"
+                                  value={editCommentText}
+                                  onChange={(e) => setEditCommentText(e.target.value)}
+                                  className="w-full px-2.5 py-1.5 text-xs rounded-xl bg-white border border-indigo-400 text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                  autoFocus
+                                />
+                                <div className="flex items-center gap-1.5 justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingCommentId(null)}
+                                    className="px-2 py-1 rounded-lg text-[11px] font-semibold text-slate-500 hover:bg-slate-200/60"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    disabled={!editCommentText.trim()}
+                                    className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold hover:bg-indigo-700 disabled:opacity-50"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </form>
+                            ) : (
+                              <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                                {comment.content}
+                                {comment.isEdited && (
+                                  <span className="text-[10px] text-slate-400 font-normal italic ml-1.5 select-none">
+                                    (edited)
+                                  </span>
+                                )}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Comment Action Bar (Timestamp, Like, Reply) */}
+                          <div className="flex items-center gap-3 text-[11px] text-slate-400 font-semibold px-2 mt-1">
+                            <span>{comment.createdAt}</span>
+                            <button
+                              type="button"
+                              onClick={() => likeComment(post.id, comment.id)}
+                              className={`flex items-center gap-1 hover:text-indigo-600 transition-colors ${
+                                comment.isLiked ? 'text-indigo-600 font-bold' : ''
+                              }`}
+                            >
+                              <Heart className={`w-3 h-3 ${comment.isLiked ? 'fill-current text-rose-500' : ''}`} />
+                              <span>{comment.likesCount && comment.likesCount > 0 ? comment.likesCount : 'Like'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setReplyingToId(replyingToId === comment.id ? null : comment.id);
+                                setReplyText('');
+                              }}
+                              className="hover:text-indigo-600 transition-colors"
+                            >
+                              Reply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Nested Threaded Replies (1-level deep) */}
+                      {comment.replies && comment.replies.length > 0 && (
+                        <div className="pl-6 sm:pl-8 space-y-2.5 mt-2.5 border-l-2 border-indigo-100/80 ml-4">
+                          {comment.replies.map((reply) => {
+                            const isReplyAuthor = reply.author?.id === currentUser.id;
+                            const canDeleteReply = isReplyAuthor || isAuthor;
+                            const isEditingThisReply = editingCommentId === reply.id;
+
+                            return (
+                              <div key={reply.id} className="flex items-start gap-2 group/reply">
+                                <UserAvatarLink user={reply.author} size="xs" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="bg-slate-50/90 rounded-2xl p-2.5 border border-slate-200/60 inline-block max-w-full relative group">
+                                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                                      <UserNameLink user={reply.author} className="text-[11px] font-bold text-slate-900" />
+                                      
+                                      {canDeleteReply && !isEditingThisReply && (
+                                        <div className="relative inline-block">
+                                          <button
+                                            type="button"
+                                            onClick={() => setOpenCommentMenuId(openCommentMenuId === reply.id ? null : reply.id)}
+                                            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 opacity-0 group-hover/reply:opacity-100 transition-opacity"
+                                            title="Options"
+                                          >
+                                            <MoreHorizontal className="w-3 h-3" />
+                                          </button>
+
+                                          {openCommentMenuId === reply.id && (
+                                            <div className="absolute right-0 top-5 w-28 bg-white rounded-xl shadow-xl border border-slate-200 p-1 z-30 animate-in fade-in">
+                                              {isReplyAuthor && (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => handleStartEdit(reply)}
+                                                  className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-slate-700 hover:bg-slate-50 font-medium transition-colors"
+                                                >
+                                                  <Edit2 className="w-3 h-3 text-slate-500" />
+                                                  <span>Edit</span>
+                                                </button>
+                                              )}
+                                              <button
+                                                type="button"
+                                                onClick={() => handleDeleteComment(reply.id)}
+                                                className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-rose-600 hover:bg-rose-50 font-medium transition-colors"
+                                              >
+                                                <Trash2 className="w-3 h-3" />
+                                                <span>Delete</span>
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* Reply Content / Inline Edit Form */}
+                                    {isEditingThisReply ? (
+                                      <form onSubmit={(e) => handleSaveEdit(reply.id, e)} className="space-y-2 mt-1">
+                                        <input
+                                          type="text"
+                                          value={editCommentText}
+                                          onChange={(e) => setEditCommentText(e.target.value)}
+                                          className="w-full px-2.5 py-1.5 text-xs rounded-xl bg-white border border-indigo-400 text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                          autoFocus
+                                        />
+                                        <div className="flex items-center gap-1.5 justify-end">
+                                          <button
+                                            type="button"
+                                            onClick={() => setEditingCommentId(null)}
+                                            className="px-2 py-1 rounded-lg text-[11px] font-semibold text-slate-500 hover:bg-slate-200/60"
+                                          >
+                                            Cancel
+                                          </button>
+                                          <button
+                                            type="submit"
+                                            disabled={!editCommentText.trim()}
+                                            className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold hover:bg-indigo-700 disabled:opacity-50"
+                                          >
+                                            Save
+                                          </button>
+                                        </div>
+                                      </form>
+                                    ) : (
+                                      <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                                        {reply.content}
+                                        {reply.isEdited && (
+                                          <span className="text-[10px] text-slate-400 font-normal italic ml-1.5 select-none">
+                                            (edited)
+                                          </span>
+                                        )}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  {/* Reply Action Bar */}
+                                  <div className="flex items-center gap-3 text-[10px] text-slate-400 font-semibold px-2 mt-0.5">
+                                    <span>{reply.createdAt}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => likeComment(post.id, reply.id)}
+                                      className={`flex items-center gap-1 hover:text-indigo-600 transition-colors ${
+                                        reply.isLiked ? 'text-indigo-600 font-bold' : ''
+                                      }`}
+                                    >
+                                      <Heart className={`w-2.5 h-2.5 ${reply.isLiked ? 'fill-current text-rose-500' : ''}`} />
+                                      <span>{reply.likesCount && reply.likesCount > 0 ? reply.likesCount : 'Like'}</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Reply Input Box */}
+                      {replyingToId === comment.id && (
+                        <form
+                          onSubmit={(e) => handleAddReply(comment.id, e)}
+                          className="pl-6 sm:pl-8 flex items-center gap-2 pt-1.5 animate-in fade-in"
                         >
-                          <Send className="w-3 h-3" />
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                ))
+                          <CornerDownRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <input
+                            type="text"
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder={`Reply to ${comment.author?.fullName?.split(' ')[0] || 'comment'}...`}
+                            className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
+                            autoFocus
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReplyingToId(null);
+                              setReplyText('');
+                            }}
+                            className="px-2 py-1 rounded-lg text-xs text-slate-400 hover:text-slate-600"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={!replyText.trim()}
+                            className="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white shadow-xs transition-colors"
+                          >
+                            <Send className="w-3 h-3" />
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
                 <p className="text-xs text-slate-400 text-center py-2">
                   No comments yet. Be the first to comment!

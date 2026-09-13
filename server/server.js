@@ -2237,13 +2237,14 @@ const server = http.createServer(async (req, res) => {
       content,
       createdAt: 'Just now',
       likesCount: 0,
-      isLiked: false,
+      likedBy: [],
+      isEdited: false,
       replies: [],
     };
 
     if (!post.comments) post.comments = [];
     post.comments.push(newComment);
-    post.commentsCount = post.comments.length;
+    post.commentsCount = (post.commentsCount || 0) + 1;
 
     // Notify post author if another user commented
     if (post.author?.id && post.author.id !== userId) {
@@ -2270,6 +2271,71 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 201, { success: true, comment: newComment, post, commentsCount: post.commentsCount });
   }
 
+  // 12b. Add Reply to a Comment (1a)
+  if (pathname.match(/^\/api\/posts\/[^\/]+\/comments\/[^\/]+\/replies$/) && method === 'POST') {
+    const parts = pathname.split('/');
+    const postId = parts[3];
+    const commentId = parts[5];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const content = (body.content || '').trim();
+
+    if (!content) {
+      return sendJSON(res, 400, { success: false, message: 'Reply content is required.' });
+    }
+
+    const post = db.posts.find((p) => p.id === postId);
+    if (!post) {
+      return sendJSON(res, 404, { success: false, message: 'Post not found.' });
+    }
+
+    const parentComment = (post.comments || []).find((c) => c.id === commentId);
+    if (!parentComment) {
+      return sendJSON(res, 404, { success: false, message: 'Parent comment not found.' });
+    }
+
+    const commenter = db.users.find((u) => u.id === userId) || db.users[0] || {};
+    const { passwordHash, ...safeCommenter } = commenter;
+
+    const newReply = {
+      id: `reply-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      postId,
+      parentCommentId: commentId,
+      author: safeCommenter,
+      content,
+      createdAt: 'Just now',
+      likesCount: 0,
+      likedBy: [],
+      isEdited: false,
+    };
+
+    if (!parentComment.replies) parentComment.replies = [];
+    parentComment.replies.push(newReply);
+    post.commentsCount = (post.commentsCount || 0) + 1;
+
+    // Notify parent comment author if replying to someone else
+    if (parentComment.author?.id && parentComment.author.id !== userId) {
+      const preview = content.length > 40 ? `${content.slice(0, 40)}...` : content;
+      const notif = {
+        id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        userId: parentComment.author.id,
+        actor: { id: safeCommenter.id, fullName: safeCommenter.fullName, avatarUrl: safeCommenter.avatarUrl },
+        type: 'comment',
+        content: `${safeCommenter.fullName} replied to your comment: "${preview}"`,
+        targetId: post.id,
+        createdAt: 'Just now',
+        isRead: false,
+      };
+      db.notifications.unshift(notif);
+      dispatchRealtimeEvent(parentComment.author.id, 'new_notification', { notification: notif });
+    }
+
+    saveDB();
+    broadcastRealtimeEvent('post_updated', { post });
+
+    return sendJSON(res, 201, { success: true, reply: newReply, post, commentsCount: post.commentsCount });
+  }
+
   // 13. Get Post Comments
   if (pathname.match(/^\/api\/posts\/[^\/]+\/comments$/) && method === 'GET') {
     const postId = pathname.split('/')[3];
@@ -2277,25 +2343,157 @@ const server = http.createServer(async (req, res) => {
     if (!post) {
       return sendJSON(res, 404, { success: false, message: 'Post not found.' });
     }
-    return sendJSON(res, 200, { success: true, comments: post.comments || [], commentsCount: (post.comments || []).length });
+    return sendJSON(res, 200, { success: true, comments: post.comments || [], commentsCount: post.commentsCount || (post.comments || []).length });
   }
 
-  // 14. Like Comment Endpoint
+  // 14. Like Comment & Reply Endpoint (Per-User Likes 1b)
   if (pathname.match(/^\/api\/posts\/[^\/]+\/comments\/[^\/]+\/like$/) && method === 'POST') {
-    const postId = pathname.split('/')[3];
-    const commentId = pathname.split('/')[5];
+    const parts = pathname.split('/');
+    const postId = parts[3];
+    const commentId = parts[5];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+
+    if (!userId) {
+      return sendJSON(res, 400, { success: false, message: 'User ID is required.' });
+    }
+
     const post = db.posts.find((p) => p.id === postId);
     if (!post) return sendJSON(res, 404, { success: false, message: 'Post not found.' });
 
-    const comment = (post.comments || []).find((c) => c.id === commentId);
-    if (!comment) return sendJSON(res, 404, { success: false, message: 'Comment not found.' });
+    let target = (post.comments || []).find((c) => c.id === commentId);
+    if (!target) {
+      for (const c of (post.comments || [])) {
+        if (c.replies) {
+          const found = c.replies.find((r) => r.id === commentId);
+          if (found) {
+            target = found;
+            break;
+          }
+        }
+      }
+    }
 
-    comment.isLiked = !comment.isLiked;
-    comment.likesCount = comment.isLiked ? (comment.likesCount || 0) + 1 : Math.max(0, (comment.likesCount || 1) - 1);
+    if (!target) return sendJSON(res, 404, { success: false, message: 'Comment or reply not found.' });
+
+    if (!Array.isArray(target.likedBy)) {
+      target.likedBy = [];
+    }
+
+    const userIndex = target.likedBy.indexOf(userId);
+    let isLikedNow = false;
+    if (userIndex > -1) {
+      target.likedBy.splice(userIndex, 1);
+      isLikedNow = false;
+    } else {
+      target.likedBy.push(userId);
+      isLikedNow = true;
+    }
+
+    target.likesCount = target.likedBy.length;
+    delete target.isLiked; // Keep state per-user
 
     saveDB();
     broadcastRealtimeEvent('post_updated', { post });
-    return sendJSON(res, 200, { success: true, comment, post });
+    return sendJSON(res, 200, { success: true, comment: target, post, isLiked: isLikedNow, likesCount: target.likesCount });
+  }
+
+  // 15. Edit Comment or Reply: PUT /api/posts/:postId/comments/:commentId (1c)
+  if (pathname.match(/^\/api\/posts\/[^\/]+\/comments\/[^\/]+$/) && method === 'PUT') {
+    const parts = pathname.split('/');
+    const postId = parts[3];
+    const commentId = parts[5];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const content = (body.content || '').trim();
+
+    if (!content) {
+      return sendJSON(res, 400, { success: false, message: 'Comment content cannot be empty.' });
+    }
+
+    const post = db.posts.find((p) => p.id === postId);
+    if (!post) return sendJSON(res, 404, { success: false, message: 'Post not found.' });
+
+    let target = (post.comments || []).find((c) => c.id === commentId);
+    if (!target) {
+      for (const c of (post.comments || [])) {
+        if (c.replies) {
+          const found = c.replies.find((r) => r.id === commentId);
+          if (found) {
+            target = found;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!target) return sendJSON(res, 404, { success: false, message: 'Comment or reply not found.' });
+
+    if (target.author?.id !== userId && post.author?.id !== userId) {
+      return sendJSON(res, 403, { success: false, message: 'You do not have permission to edit this comment.' });
+    }
+
+    target.content = content;
+    target.isEdited = true;
+
+    saveDB();
+    broadcastRealtimeEvent('post_updated', { post });
+    return sendJSON(res, 200, { success: true, comment: target, post });
+  }
+
+  // 16. Delete Comment or Reply: DELETE /api/posts/:postId/comments/:commentId (1c)
+  if (pathname.match(/^\/api\/posts\/[^\/]+\/comments\/[^\/]+$/) && method === 'DELETE') {
+    const parts = pathname.split('/');
+    const postId = parts[3];
+    const commentId = parts[5];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId || urlObj.searchParams.get('userId');
+
+    const post = db.posts.find((p) => p.id === postId);
+    if (!post) return sendJSON(res, 404, { success: false, message: 'Post not found.' });
+
+    let targetTopLevelIndex = (post.comments || []).findIndex((c) => c.id === commentId);
+    if (targetTopLevelIndex > -1) {
+      const target = post.comments[targetTopLevelIndex];
+      if (target.author?.id !== userId && post.author?.id !== userId) {
+        return sendJSON(res, 403, { success: false, message: 'You do not have permission to delete this comment.' });
+      }
+
+      const countToSubtract = 1 + ((target.replies && target.replies.length) || 0);
+      post.comments.splice(targetTopLevelIndex, 1);
+      post.commentsCount = Math.max(0, (post.commentsCount || 0) - countToSubtract);
+
+      saveDB();
+      broadcastRealtimeEvent('post_updated', { post });
+      return sendJSON(res, 200, { success: true, message: 'Comment deleted successfully.', post, commentsCount: post.commentsCount });
+    }
+
+    // Check if it's a nested reply
+    let replyFound = false;
+    for (const parentComment of (post.comments || [])) {
+      if (parentComment.replies) {
+        const replyIndex = parentComment.replies.findIndex((r) => r.id === commentId);
+        if (replyIndex > -1) {
+          const replyTarget = parentComment.replies[replyIndex];
+          if (replyTarget.author?.id !== userId && post.author?.id !== userId) {
+            return sendJSON(res, 403, { success: false, message: 'You do not have permission to delete this reply.' });
+          }
+
+          parentComment.replies.splice(replyIndex, 1);
+          post.commentsCount = Math.max(0, (post.commentsCount || 0) - 1);
+          replyFound = true;
+          break;
+        }
+      }
+    }
+
+    if (!replyFound) {
+      return sendJSON(res, 404, { success: false, message: 'Comment or reply not found.' });
+    }
+
+    saveDB();
+    broadcastRealtimeEvent('post_updated', { post });
+    return sendJSON(res, 200, { success: true, message: 'Reply deleted successfully.', post, commentsCount: post.commentsCount });
   }
 
   // 12. Global Feed Posts (Privacy Protected)
