@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useFeed } from '../context/FeedContext';
+import { useAuth } from '../context/AuthContext';
 import { PostCard } from '../components/feed/PostCard';
 import { Post } from '../types';
 
 export const PostDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { posts } = useFeed();
+  const { currentUser } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -23,7 +25,10 @@ export const PostDetailPage: React.FC = () => {
       }
 
       try {
-        const res = await fetch(`/api/posts/${id}`);
+        const viewerId = currentUser?.id || '';
+        const res = await fetch(`/api/posts/${id}?viewerId=${viewerId}`, {
+          headers: viewerId ? { 'x-user-id': viewerId } : {},
+        });
         if (res.ok) {
           const data = await res.json();
           if (data.success && isMounted) {
@@ -41,7 +46,7 @@ export const PostDetailPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [id, posts]);
+  }, [id, posts, currentUser?.id]);
 
   return (
     <div className="max-w-2xl mx-auto w-full space-y-4 pb-20 select-none">

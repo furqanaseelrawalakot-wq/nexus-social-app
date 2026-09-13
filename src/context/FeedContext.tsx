@@ -71,7 +71,10 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // 1. Fetch Posts from Server Database
   const fetchPosts = useCallback(async () => {
     try {
-      const res = await fetch('/api/posts');
+      const url = currentUser?.id ? `/api/posts?viewerId=${currentUser.id}` : '/api/posts';
+      const res = await fetch(url, {
+        headers: currentUser?.id ? { 'x-user-id': currentUser.id } : {},
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.posts)) {
