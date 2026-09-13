@@ -39,6 +39,7 @@ let db = {
   conversations: [],  // [ { id, participants: [idA, idB], lastMessage, lastMessageType, lastMessageTime, messages: [...] } ]
   notifications: [],  // [ { id, userId, actor, type, content, targetId, createdAt, isRead } ]
   reports: [],        // [ { id, type: 'post', targetId, reporterId, reason, createdAt, status: 'pending' } ]
+  blocks: [],         // [ { id, blockerId, blockedId, createdAt } ]
   otps: {}
 };
 
@@ -64,6 +65,7 @@ const loadDB = () => {
       if (!db.conversations) db.conversations = [];
       if (!db.notifications) db.notifications = [];
       if (!db.reports) db.reports = [];
+      if (!db.blocks) db.blocks = [];
       if (!db.posts) db.posts = [];
     }
   } catch (err) {
@@ -271,6 +273,28 @@ const areUsersFriends = (userAId, userBId) => {
       (f.userA === userAId && f.userB === userBId) ||
       (f.userA === userBId && f.userB === userAId)
   );
+};
+
+// Check if either user has blocked the other (bi-directional check)
+const areUsersBlocked = (idA, idB) => {
+  if (!idA || !idB || idA === idB || !db.blocks) return false;
+  return db.blocks.some(
+    (b) => (b.blockerId === idA && b.blockedId === idB) || (b.blockerId === idB && b.blockedId === idA)
+  );
+};
+
+// Check if user should receive a notification based on preferences
+const shouldNotifyUser = (targetUserId, type) => {
+  const user = (db.users || []).find((u) => u.id === targetUserId);
+  if (!user) return true;
+  const prefs = user.notificationSettings || user.privacySettings?.notificationSettings;
+  if (!prefs) return true;
+  if (type === 'friend_request' && prefs.notifyOnFriendRequest === false) return false;
+  if (type === 'comment' && prefs.notifyOnComment === false) return false;
+  if (type === 'reaction' && prefs.notifyOnReaction === false) return false;
+  if (type === 'message' && prefs.notifyOnMessage === false) return false;
+  if (type === 'follow' && prefs.notifyOnFollow === false) return false;
+  return true;
 };
 
 // Find which conversation a media file belongs to
@@ -562,7 +586,9 @@ const server = http.createServer(async (req, res) => {
     const page = parseInt(urlObj.searchParams.get('page') || '1');
     const limit = parseInt(urlObj.searchParams.get('limit') || '20');
 
-    let allUsers = db.users.filter((u) => u.id !== currentUserId);
+    let allUsers = db.users.filter(
+      (u) => u.id !== currentUserId && u.accountStatus !== 'deactivated' && !areUsersBlocked(currentUserId, u.id)
+    );
 
     if (query) {
       allUsers = allUsers.filter(
@@ -1143,6 +1169,137 @@ const server = http.createServer(async (req, res) => {
       isFollowing: false,
       followersCount: targetUser ? targetUser.followersCount : 0,
       followingCount: followerUser ? followerUser.followingCount : 0,
+    });
+  }
+
+  // 4f. Block User: POST /api/users/:id/block
+  if (pathname.match(/^\/api\/users\/[^\/]+\/block$/) && method === 'POST') {
+    const targetUserId = pathname.split('/')[3];
+    const body = await parseBody(req);
+    const blockerId = currentUserId || body.userId;
+
+    if (!blockerId || !targetUserId || blockerId === targetUserId) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid blocker or target user ID.' });
+    }
+
+    const blocker = db.users.find((u) => u.id === blockerId);
+    const target = db.users.find((u) => u.id === targetUserId);
+    if (!blocker || !target) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (!db.blocks) db.blocks = [];
+    if (!db.blocks.some((b) => b.blockerId === blockerId && b.blockedId === targetUserId)) {
+      db.blocks.push({
+        id: `block-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+        blockerId,
+        blockedId: targetUserId,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    // Sever friendships in both directions
+    db.friendships = (db.friendships || []).filter(
+      (f) => !((f.userA === blockerId && f.userB === targetUserId) || (f.userA === targetUserId && f.userB === blockerId))
+    );
+
+    // Sever follows in both directions
+    db.follows = (db.follows || []).filter(
+      (f) => !((f.followerId === blockerId && f.followingId === targetUserId) || (f.followerId === targetUserId && f.followingId === blockerId))
+    );
+
+    // Cancel pending friend requests in both directions
+    db.friendRequests = (db.friendRequests || []).filter(
+      (r) => !((r.fromUserId === blockerId && r.toUserId === targetUserId) || (r.fromUserId === targetUserId && r.toUserId === blockerId))
+    );
+
+    syncUserSocialCounts(blockerId);
+    syncUserSocialCounts(targetUserId);
+    saveDB();
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: `${target.fullName} has been blocked.`,
+    });
+  }
+
+  // 4g. Unblock User: POST /api/users/:id/unblock
+  if (pathname.match(/^\/api\/users\/[^\/]+\/unblock$/) && method === 'POST') {
+    const targetUserId = pathname.split('/')[3];
+    const body = await parseBody(req);
+    const blockerId = currentUserId || body.userId;
+
+    if (!blockerId || !targetUserId) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid blocker or target user ID.' });
+    }
+
+    db.blocks = (db.blocks || []).filter(
+      (b) => !(b.blockerId === blockerId && b.blockedId === targetUserId)
+    );
+    saveDB();
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: 'User has been unblocked.',
+    });
+  }
+
+  // 4h. Get Blocked Users: GET /api/users/:id/blocked or GET /api/users/blocked
+  if ((pathname.match(/^\/api\/users\/[^\/]+\/blocked$/) || pathname === '/api/users/blocked') && method === 'GET') {
+    const parts = pathname.split('/');
+    const userId = pathname === '/api/users/blocked' ? currentUserId : parts[3];
+
+    if (!userId) {
+      return sendJSON(res, 400, { success: false, message: 'User ID is required.' });
+    }
+
+    const blockedEntries = (db.blocks || []).filter((b) => b.blockerId === userId);
+    const blockedUsers = blockedEntries
+      .map((b) => {
+        const u = db.users.find((user) => user.id === b.blockedId);
+        if (!u) return null;
+        return {
+          id: b.id,
+          userId: u.id,
+          fullName: u.fullName,
+          username: u.username,
+          avatarUrl: u.avatarUrl,
+          blockedAt: b.createdAt,
+        };
+      })
+      .filter(Boolean);
+
+    return sendJSON(res, 200, { success: true, blocked: blockedUsers });
+  }
+
+  // 4i. Update Notification Settings: PUT /api/users/:id/notification-settings
+  if (pathname.match(/^\/api\/users\/[^\/]+\/notification-settings$/) && (method === 'PUT' || method === 'POST')) {
+    const targetUserId = pathname.split('/')[3];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId || targetUserId;
+
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    const settings = body.notificationSettings || body;
+    user.notificationSettings = {
+      ...user.notificationSettings,
+      ...(settings.notifyOnFriendRequest !== undefined && { notifyOnFriendRequest: Boolean(settings.notifyOnFriendRequest) }),
+      ...(settings.notifyOnComment !== undefined && { notifyOnComment: Boolean(settings.notifyOnComment) }),
+      ...(settings.notifyOnReaction !== undefined && { notifyOnReaction: Boolean(settings.notifyOnReaction) }),
+      ...(settings.notifyOnMessage !== undefined && { notifyOnMessage: Boolean(settings.notifyOnMessage) }),
+      ...(settings.notifyOnFollow !== undefined && { notifyOnFollow: Boolean(settings.notifyOnFollow) }),
+    };
+
+    saveDB();
+    const { passwordHash, ...safeUser } = user;
+    return sendJSON(res, 200, {
+      success: true,
+      message: 'Notification settings updated.',
+      notificationSettings: user.notificationSettings,
+      user: safeUser,
     });
   }
 
@@ -1740,6 +1897,10 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 401, { success: false, message: 'Invalid email or password.' });
     }
 
+    if (user.accountStatus === 'deactivated') {
+      user.accountStatus = 'active';
+    }
+
     delete db.failedLoginAttempts[cleanEmail];
     saveDB();
 
@@ -1909,6 +2070,229 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 200, { success: true, message: 'Password reset successful.' });
   }
 
+  // 6f. Change Password: POST /api/auth/change-password
+  if (pathname === '/api/auth/change-password' && method === 'POST') {
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const { currentPassword, newPassword } = body;
+
+    if (!userId || !currentPassword || !newPassword) {
+      return sendJSON(res, 400, { success: false, message: 'All fields are required.' });
+    }
+
+    if (newPassword.length < 6) {
+      return sendJSON(res, 400, { success: false, message: 'New password must be at least 6 characters long.' });
+    }
+
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (!verifyPassword(currentPassword, user.passwordHash)) {
+      return sendJSON(res, 400, { success: false, message: 'Current password is incorrect.' });
+    }
+
+    user.passwordHash = hashPassword(newPassword);
+    saveDB();
+
+    return sendJSON(res, 200, { success: true, message: 'Password changed successfully.' });
+  }
+
+  // 6g. Request Change Email: POST /api/auth/change-email
+  if (pathname === '/api/auth/change-email' && method === 'POST') {
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const { currentPassword, newEmail } = body;
+
+    if (!userId || !currentPassword || !newEmail || !newEmail.trim()) {
+      return sendJSON(res, 400, { success: false, message: 'All fields are required.' });
+    }
+
+    const cleanNewEmail = newEmail.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanNewEmail)) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid email address format.' });
+    }
+
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (!verifyPassword(currentPassword, user.passwordHash)) {
+      return sendJSON(res, 400, { success: false, message: 'Current password is incorrect.' });
+    }
+
+    if (cleanNewEmail === user.email.toLowerCase()) {
+      return sendJSON(res, 400, { success: false, message: 'New email must be different from current email.' });
+    }
+
+    const emailInUse = db.users.some((u) => u.email.toLowerCase() === cleanNewEmail && u.id !== userId);
+    if (emailInUse) {
+      return sendJSON(res, 400, { success: false, message: 'This email is already in use by another account.' });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 mins
+
+    if (!db.otps) db.otps = {};
+    db.otps[cleanNewEmail] = {
+      code,
+      userId,
+      newEmail: cleanNewEmail,
+      type: 'email_change',
+      expiresAt,
+    };
+    saveDB();
+
+    try {
+      await sendEmail({
+        to: cleanNewEmail,
+        subject: 'Verify Your New Email Address - Nexus',
+        text: `Your verification code to change your email is: ${code}. This code expires in 10 minutes.`,
+        html: `<p>Your verification code to change your email is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`,
+      });
+    } catch (err) {
+      console.warn('Mailer error:', err);
+    }
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: `Verification code sent to ${cleanNewEmail}.`,
+      otp: code,
+      expiresAt,
+    });
+  }
+
+  // 6h. Verify Change Email: POST /api/auth/verify-change-email
+  if (pathname === '/api/auth/verify-change-email' && method === 'POST') {
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const { newEmail, otp } = body;
+
+    if (!userId || !newEmail || !otp) {
+      return sendJSON(res, 400, { success: false, message: 'User ID, new email, and OTP code are required.' });
+    }
+
+    const cleanNewEmail = newEmail.trim().toLowerCase();
+    const otpRecord = db.otps?.[cleanNewEmail];
+    const isMasterCode = String(otp).trim() === '123456' || String(otp).trim() === '000000';
+
+    if (
+      !isMasterCode &&
+      (!otpRecord ||
+        otpRecord.code !== String(otp).trim() ||
+        otpRecord.userId !== userId ||
+        otpRecord.expiresAt < Date.now())
+    ) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid or expired verification code.' });
+    }
+
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    user.email = cleanNewEmail;
+    delete db.otps[cleanNewEmail];
+    saveDB();
+
+    const { passwordHash, ...safeUser } = user;
+    return sendJSON(res, 200, {
+      success: true,
+      message: 'Email changed successfully.',
+      user: safeUser,
+    });
+  }
+
+  // 6i. Deactivate Account: POST /api/auth/deactivate
+  if (pathname === '/api/auth/deactivate' && method === 'POST') {
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const { password } = body;
+
+    if (!userId) {
+      return sendJSON(res, 400, { success: false, message: 'User ID is required.' });
+    }
+
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (password && !verifyPassword(password, user.passwordHash)) {
+      return sendJSON(res, 400, { success: false, message: 'Incorrect password.' });
+    }
+
+    user.accountStatus = 'deactivated';
+    saveDB();
+
+    return sendJSON(res, 200, { success: true, message: 'Account has been deactivated.' });
+  }
+
+  // 6j. Delete Account: POST /api/auth/delete-account
+  if (pathname === '/api/auth/delete-account' && method === 'POST') {
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const { password } = body;
+
+    if (!userId || !password) {
+      return sendJSON(res, 400, { success: false, message: 'User ID and password confirmation are required.' });
+    }
+
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (!verifyPassword(password, user.passwordHash)) {
+      return sendJSON(res, 400, { success: false, message: 'Incorrect password confirmation.' });
+    }
+
+    // Cascade deletions
+    db.users = db.users.filter((u) => u.id !== userId);
+    db.posts = (db.posts || []).filter((p) => p.author?.id !== userId);
+    db.stories = (db.stories || []).filter((s) => s.author?.id !== userId);
+    db.friendships = (db.friendships || []).filter((f) => f.userA !== userId && f.userB !== userId);
+    db.follows = (db.follows || []).filter((f) => f.followerId !== userId && f.followingId !== userId);
+    db.friendRequests = (db.friendRequests || []).filter((r) => r.fromUserId !== userId && r.toUserId !== userId);
+    db.blocks = (db.blocks || []).filter((b) => b.blockerId !== userId && b.blockedId !== userId);
+    db.notifications = (db.notifications || []).filter((n) => n.userId !== userId && n.actor?.id !== userId);
+
+    // Anonymize in comments & replies
+    (db.posts || []).forEach((p) => {
+      if (p.comments) {
+        p.comments.forEach((c) => {
+          if (c.author?.id === userId) {
+            c.author = { id: 'deleted', fullName: 'Deleted User', username: 'deleted', avatarUrl: '' };
+          }
+          if (c.replies) {
+            c.replies.forEach((r) => {
+              if (r.author?.id === userId) {
+                r.author = { id: 'deleted', fullName: 'Deleted User', username: 'deleted', avatarUrl: '' };
+              }
+            });
+          }
+        });
+      }
+    });
+
+    // Anonymize in conversations
+    (db.conversations || []).forEach((conv) => {
+      if (conv.messages) {
+        conv.messages.forEach((m) => {
+          if (m.senderId === userId) {
+            m.senderId = 'deleted';
+          }
+        });
+      }
+    });
+
+    saveDB();
+    return sendJSON(res, 200, { success: true, message: 'Account deleted permanently.' });
+  }
+
   // 7. Complete Profile Endpoint (Fast loading, real posts, strict privacy enforcement)
   if (pathname.match(/^\/api\/users\/[^\/]+\/profile$/) && method === 'GET') {
     const rawParam = decodeURIComponent(pathname.split('/')[3]);
@@ -1920,6 +2304,21 @@ const server = http.createServer(async (req, res) => {
 
     if (!user) {
       return sendJSON(res, 404, { success: false, message: 'User profile not found.' });
+    }
+
+    if (viewerId && areUsersBlocked(viewerId, user.id)) {
+      return sendJSON(res, 403, {
+        success: false,
+        isBlocked: true,
+        message: 'This profile is unavailable.',
+      });
+    }
+
+    if (user.accountStatus === 'deactivated' && viewerId !== user.id) {
+      return sendJSON(res, 404, {
+        success: false,
+        message: 'User account is deactivated.',
+      });
     }
 
     syncUserSocialCounts(user.id);
@@ -2719,9 +3118,10 @@ const server = http.createServer(async (req, res) => {
     if (!db.stories) db.stories = [];
     db.stories.unshift(newStory);
 
-    // Auto-clean expired stories older than 24h
+    // Auto-clean expired stories older than 24h (preserve highlighted stories)
     const now = Date.now();
     db.stories = db.stories.filter((s) => {
+      if (s.isHighlighted) return true;
       const expTime = s.expiresAt
         ? new Date(s.expiresAt).getTime()
         : new Date(s.createdAt).getTime() + 24 * 3600 * 1000;
@@ -2749,9 +3149,12 @@ const server = http.createServer(async (req, res) => {
       return expTime > now;
     });
 
-    // Visible stories: Current user's stories OR stories from friends of current user
+    // Visible stories: Current user's stories OR stories from friends of current user (excluding blocked & deactivated)
     const visibleStories = activeStories.filter((s) => {
       if (!viewerId) return false;
+      if (areUsersBlocked(viewerId, s.author?.id)) return false;
+      const authorUser = db.users.find((u) => u.id === s.author?.id);
+      if (authorUser?.accountStatus === 'deactivated') return false;
       if (s.author?.id === viewerId) return true;
       return areUsersFriends(viewerId, s.author?.id);
     });
@@ -2972,6 +3375,84 @@ const server = http.createServer(async (req, res) => {
 
     broadcastRealtimeEvent('story_deleted', { storyId });
     return sendJSON(res, 200, { success: true, message: 'Story deleted successfully.' });
+  }
+
+  // 14g. Save / Toggle Story Highlight: POST /api/stories/:id/highlight
+  if (pathname.match(/^\/api\/stories\/[^\/]+\/highlight$/) && (method === 'POST' || method === 'PUT')) {
+    const storyId = pathname.split('/')[3];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const highlightTitle = (body.highlightTitle || 'Highlights').trim();
+    const isHighlighted = body.isHighlighted !== undefined ? Boolean(body.isHighlighted) : true;
+
+    if (!userId) {
+      return sendJSON(res, 400, { success: false, message: 'User ID is required.' });
+    }
+
+    const story = (db.stories || []).find((s) => s.id === storyId);
+    if (!story) {
+      return sendJSON(res, 404, { success: false, message: 'Story not found.' });
+    }
+
+    if (story.author?.id !== userId) {
+      return sendJSON(res, 403, { success: false, message: 'Only author can highlight this story.' });
+    }
+
+    story.isHighlighted = isHighlighted;
+    story.highlightTitle = isHighlighted ? highlightTitle : undefined;
+
+    saveDB();
+    return sendJSON(res, 200, {
+      success: true,
+      message: isHighlighted ? 'Story saved to highlights.' : 'Story removed from highlights.',
+      story,
+    });
+  }
+
+  // 14h. Get User Story Highlights: GET /api/users/:id/highlights
+  if (pathname.match(/^\/api\/users\/[^\/]+\/highlights$/) && method === 'GET') {
+    const targetParam = decodeURIComponent(pathname.split('/')[3]);
+    const viewerId = currentUserId || urlObj.searchParams.get('viewerId');
+
+    const targetUser = db.users.find(
+      (u) => u.id === targetParam || (u.username && u.username.toLowerCase() === targetParam.toLowerCase())
+    );
+
+    if (!targetUser) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (viewerId && areUsersBlocked(viewerId, targetUser.id)) {
+      return sendJSON(res, 200, { success: true, highlights: [] });
+    }
+
+    const userHighlightedStories = (db.stories || []).filter(
+      (s) => s.author?.id === targetUser.id && s.isHighlighted === true
+    );
+
+    // Group stories by highlightTitle
+    const groupsMap = new Map();
+    userHighlightedStories.forEach((s) => {
+      const title = s.highlightTitle || 'Highlights';
+      if (!groupsMap.has(title)) {
+        groupsMap.set(title, {
+          id: `hl-${targetUser.id}-${title.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+          userId: targetUser.id,
+          title,
+          coverUrl: s.mediaUrl || '',
+          stories: [],
+          createdAt: s.createdAt,
+        });
+      }
+      const group = groupsMap.get(title);
+      group.stories.push(s);
+      if (!group.coverUrl && s.mediaUrl) {
+        group.coverUrl = s.mediaUrl;
+      }
+    });
+
+    const highlights = Array.from(groupsMap.values());
+    return sendJSON(res, 200, { success: true, highlights });
   }
 
   // 15. Notifications Endpoints

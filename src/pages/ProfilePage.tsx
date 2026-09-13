@@ -17,6 +17,9 @@ import {
   UserCheck,
   Clock,
   Lock,
+  Plus,
+  Sparkles,
+  UserX,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useFeed } from '../context/FeedContext';
@@ -25,15 +28,17 @@ import { useToast } from '../context/ToastContext';
 import { PostCard } from '../components/feed/PostCard';
 import { PostComposer } from '../components/feed/PostComposer';
 import { EditProfileModal } from '../components/profile/EditProfileModal';
+import { StoryViewerModal } from '../components/feed/StoryViewerModal';
+import { StoryCreateModal } from '../components/feed/StoryCreateModal';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { UserAvatarLink, UserNameLink } from '../components/common/UserLink';
 import { UserConnectionsModal } from '../components/profile/UserConnectionsModal';
-import { User } from '../types';
+import { User, StoryHighlightGroup } from '../types';
 
 export const ProfilePage: React.FC = () => {
   const { id: routeParam } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { currentUser, updateProfile } = useAuth();
+  const { currentUser, updateProfile, blockUser } = useAuth();
   const {
     posts,
     friends,
@@ -43,6 +48,7 @@ export const ProfilePage: React.FC = () => {
     unfriendUser,
     followUser,
     unfollowUser,
+    getUserHighlights,
   } = useFeed();
   const { openChat } = useChat();
   const { showToast } = useToast();
@@ -54,6 +60,10 @@ export const ProfilePage: React.FC = () => {
     'self' | 'friends' | 'pending_sent' | 'pending_received' | 'none'
   >('self');
   const [profilePosts, setProfilePosts] = useState<any[]>([]);
+  const [highlights, setHighlights] = useState<StoryHighlightGroup[]>([]);
+  const [selectedHighlightGroup, setSelectedHighlightGroup] = useState<StoryHighlightGroup | null>(null);
+  const [showStoryCreateModal, setShowStoryCreateModal] = useState(false);
+  const [isUnavailable, setIsUnavailable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [connectionsModalTab, setConnectionsModalTab] = useState<'friends' | 'followers' | 'following' | null>(null);
 
@@ -75,6 +85,10 @@ export const ProfilePage: React.FC = () => {
       if (isOwnProfile) {
         setProfileUser(currentUser);
         setProfileRelationship('self');
+        try {
+          const hls = await getUserHighlights(currentUser.id);
+          if (isMounted) setHighlights(hls);
+        } catch {}
         setIsLoading(false);
         return;
       }
@@ -91,13 +105,23 @@ export const ProfilePage: React.FC = () => {
             setProfileUser(data.user);
             setProfileRelationship(data.relationshipStatus || 'none');
             setProfilePosts(data.posts || []);
+            try {
+              const hls = await getUserHighlights(data.user.id);
+              if (isMounted) setHighlights(hls);
+            } catch {}
           }
+        } else if (res.status === 403 || res.status === 404) {
+          if (isMounted) setIsUnavailable(true);
         } else {
           // Fallback to searching in friends/discover lists
           const matched = friends.find((f) => f.id === routeParam || f.username === routeParam);
           if (matched && isMounted) {
             setProfileUser(matched);
             setProfileRelationship('friends');
+            try {
+              const hls = await getUserHighlights(matched.id);
+              if (isMounted) setHighlights(hls);
+            } catch {}
           }
         }
       } catch (err) {
@@ -111,7 +135,7 @@ export const ProfilePage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [routeParam, currentUser, isOwnProfile, friends]);
+  }, [routeParam, currentUser, isOwnProfile, friends, getUserHighlights]);
 
   const targetUser = isOwnProfile ? currentUser : profileUser || currentUser;
   const userPosts = isOwnProfile
@@ -229,6 +253,20 @@ export const ProfilePage: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleBlockAction = async () => {
+    if (!targetUser?.id) return;
+    if (
+      window.confirm(
+        `Block ${targetUser.fullName}? They will no longer be able to view your profile, posts, or message you.`
+      )
+    ) {
+      const res = await blockUser(targetUser.id);
+      if (res.success) {
+        navigate('/');
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto w-full space-y-6 pb-20 select-none animate-pulse">
@@ -245,6 +283,27 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (isUnavailable) {
+    return (
+      <div className="max-w-md mx-auto w-full py-16 text-center space-y-4 select-none">
+        <div className="p-4 rounded-full bg-slate-100 text-slate-400 inline-block shadow-sm">
+          <Lock className="w-8 h-8" />
+        </div>
+        <h2 className="text-lg font-black text-slate-800">Profile Unavailable</h2>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          This account is either deactivated, has blocked you, or is restricted by privacy settings.
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all active:scale-95"
+        >
+          Return to Feed
+        </button>
       </div>
     );
   }
@@ -400,6 +459,16 @@ export const ProfilePage: React.FC = () => {
                       <span>Message</span>
                     </button>
                   )}
+
+                  {/* Block User Button */}
+                  <button
+                    type="button"
+                    onClick={handleBlockAction}
+                    className="p-2.5 rounded-2xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 text-slate-500 transition-all active:scale-95 shadow-sm"
+                    title={`Block ${targetUser.fullName}`}
+                  >
+                    <UserX className="w-4 h-4" />
+                  </button>
                 </>
               )}
             </div>
@@ -504,6 +573,65 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Story Highlights Bubble Row */}
+        {(highlights.length > 0 || isOwnProfile) && (
+          <div className="px-6 sm:px-8 py-3.5 border-t border-slate-100 flex items-center gap-4 overflow-x-auto select-none">
+            {/* Add Story / New Highlight for Own Profile */}
+            {isOwnProfile && (
+              <button
+                type="button"
+                onClick={() => setShowStoryCreateModal(true)}
+                className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
+                title="Create New Story / Highlight"
+              >
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-300 group-hover:border-indigo-500 bg-slate-50 group-hover:bg-indigo-50/50 flex items-center justify-center transition-all">
+                  <Plus className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+                </div>
+                <span className="text-[11px] font-bold text-slate-600 group-hover:text-indigo-600 truncate max-w-[70px]">
+                  New
+                </span>
+              </button>
+            )}
+
+            {/* Highlights Bubbles */}
+            {highlights.map((hl) => {
+              const coverStory = hl.stories[0];
+              const isImage = coverStory && coverStory.type === 'image' && coverStory.mediaUrl;
+              return (
+                <button
+                  key={hl.id}
+                  type="button"
+                  onClick={() => setSelectedHighlightGroup(hl)}
+                  className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
+                >
+                  <div className="relative w-16 h-16 rounded-full p-0.5 ring-2 ring-amber-400/80 group-hover:ring-amber-500 bg-gradient-to-tr from-amber-400 to-rose-400 shadow-sm transition-all group-hover:scale-105">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-slate-900 flex items-center justify-center">
+                      {isImage ? (
+                        <img
+                          src={coverStory.mediaUrl}
+                          alt={hl.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className={`w-full h-full flex items-center justify-center bg-gradient-to-tr ${
+                            coverStory?.backgroundStyle || 'from-indigo-600 to-purple-600'
+                          }`}
+                        >
+                          <Sparkles className="w-6 h-6 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-700 group-hover:text-amber-600 truncate max-w-[74px]">
+                    {hl.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 px-6 sm:px-8 border-t border-slate-100 bg-slate-50/50 overflow-x-auto">
@@ -721,6 +849,35 @@ export const ProfilePage: React.FC = () => {
           userName={targetUser.fullName}
           initialTab={connectionsModalTab}
           isOwnProfile={Boolean(isOwnProfile)}
+        />
+      )}
+
+      {/* Story Highlight Viewer Modal */}
+      {selectedHighlightGroup && (
+        <StoryViewerModal
+          storyGroups={[
+            {
+              author: targetUser,
+              stories: selectedHighlightGroup.stories,
+              hasUnviewed: false,
+              latestCreatedAt: selectedHighlightGroup.createdAt,
+            },
+          ]}
+          initialGroupIndex={0}
+          onClose={() => setSelectedHighlightGroup(null)}
+        />
+      )}
+
+      {/* Story Create Modal */}
+      {showStoryCreateModal && (
+        <StoryCreateModal
+          isOpen={showStoryCreateModal}
+          onClose={() => {
+            setShowStoryCreateModal(false);
+            if (isOwnProfile) {
+              getUserHighlights(currentUser.id).then(setHighlights).catch(() => {});
+            }
+          }}
         />
       )}
     </div>
