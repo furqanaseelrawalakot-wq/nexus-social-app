@@ -37,6 +37,8 @@ interface FeedContextType {
   rejectFriendRequest: (targetUserId: string) => Promise<boolean>;
   cancelFriendRequest: (targetUserId: string) => Promise<boolean>;
   unfriendUser: (targetUserId: string) => Promise<boolean>;
+  followUser: (targetUserId: string) => Promise<boolean>;
+  unfollowUser: (targetUserId: string) => Promise<boolean>;
   fetchDiscoverUsers: (query?: string) => Promise<void>;
   refreshFriends: () => Promise<void>;
   refreshPosts: () => Promise<void>;
@@ -488,6 +490,82 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     },
     [currentUser?.id, refreshFriends, fetchStories, fetchDiscoverUsers, searchQuery, showToast]
+  );
+
+  const followUser = useCallback(
+    async (targetUserId: string): Promise<boolean> => {
+      if (!currentUser?.id) return false;
+
+      // Optimistically update discoverList
+      setDiscoverList((prev) =>
+        prev.map((u) =>
+          u.id === targetUserId
+            ? { ...u, isFollowing: true, followersCount: (u.followersCount || 0) + 1 }
+            : u
+        )
+      );
+
+      try {
+        const res = await fetch(`/api/users/${targetUserId}/follow`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': currentUser.id,
+          },
+          body: JSON.stringify({ followerId: currentUser.id }),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('Following', data.message || 'You are now following this user.', 'success');
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [currentUser?.id, showToast]
+  );
+
+  const unfollowUser = useCallback(
+    async (targetUserId: string): Promise<boolean> => {
+      if (!currentUser?.id) return false;
+
+      // Optimistically update discoverList
+      setDiscoverList((prev) =>
+        prev.map((u) =>
+          u.id === targetUserId
+            ? {
+                ...u,
+                isFollowing: false,
+                followersCount: Math.max(0, (u.followersCount || 1) - 1),
+              }
+            : u
+        )
+      );
+
+      try {
+        const res = await fetch(`/api/users/${targetUserId}/unfollow`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': currentUser.id,
+          },
+          body: JSON.stringify({ followerId: currentUser.id }),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('Unfollowed', data.message || 'You unfollowed this user.', 'info');
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [currentUser?.id, showToast]
   );
 
   // Safe localStorage persistence (never crashes on QuotaExceededError)
@@ -1061,6 +1139,8 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         rejectFriendRequest,
         cancelFriendRequest,
         unfriendUser,
+        followUser,
+        unfollowUser,
         fetchDiscoverUsers,
         refreshFriends,
         refreshPosts: fetchPosts,

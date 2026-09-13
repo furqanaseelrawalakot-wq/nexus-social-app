@@ -41,6 +41,8 @@ export const ProfilePage: React.FC = () => {
     acceptFriendRequest,
     cancelFriendRequest,
     unfriendUser,
+    followUser,
+    unfollowUser,
   } = useFeed();
   const { openChat } = useChat();
   const { showToast } = useToast();
@@ -167,6 +169,35 @@ export const ProfilePage: React.FC = () => {
             : prev
         );
       }
+    }
+  };
+
+  const handleFollowAction = async () => {
+    if (!targetUser?.id) return;
+    const isCurrentlyFollowing = Boolean(targetUser.isFollowing);
+
+    if (isCurrentlyFollowing) {
+      setProfileUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              isFollowing: false,
+              followersCount: Math.max(0, (prev.followersCount || 1) - 1),
+            }
+          : prev
+      );
+      await unfollowUser(targetUser.id);
+    } else {
+      setProfileUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              isFollowing: true,
+              followersCount: (prev.followersCount || 0) + 1,
+            }
+          : prev
+      );
+      await followUser(targetUser.id);
     }
   };
 
@@ -337,6 +368,25 @@ export const ProfilePage: React.FC = () => {
                         <UserPlus className="w-4 h-4" />
                         <span>Add Friend</span>
                       </>
+                    )}
+                  </button>
+
+                  {/* Follow / Following One-Way Action Button */}
+                  <button
+                    type="button"
+                    onClick={handleFollowAction}
+                    className={`group flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
+                      targetUser.isFollowing
+                        ? 'bg-slate-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 border border-slate-200 text-slate-700'
+                        : 'bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700'
+                    }`}
+                  >
+                    <UserCheck className="w-4 h-4 text-current" />
+                    <span className={targetUser.isFollowing ? 'group-hover:hidden' : ''}>
+                      {targetUser.isFollowing ? 'Following' : 'Follow'}
+                    </span>
+                    {targetUser.isFollowing && (
+                      <span className="hidden group-hover:inline text-rose-600">Unfollow</span>
                     )}
                   </button>
 
