@@ -12,12 +12,15 @@ import {
   ExternalLink,
   Mic,
   Trash2,
+  Video,
 } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import { useAuth } from '../../context/AuthContext';
 import { UserAvatar } from '../common/UserAvatar';
 import { UserAvatarLink, UserNameLink } from '../common/UserLink';
 import { VoiceMessagePlayer } from './VoiceMessagePlayer';
+import { VideoRecorderModal } from './VideoRecorderModal';
+import { formatLastSeen } from '../../utils/presence';
 
 export const FloatingChatWindow: React.FC = () => {
   const {
@@ -34,6 +37,7 @@ export const FloatingChatWindow: React.FC = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -148,6 +152,26 @@ export const FloatingChatWindow: React.FC = () => {
     setRecordingSeconds(0);
   };
 
+  const handleSendVideo = async (data: {
+    base64: string;
+    duration?: string;
+    fileSize?: string;
+  }) => {
+    if (!activeConversation) return;
+    await sendMediaMessage(activeConversation.id, {
+      mediaBase64: data.base64,
+      mediaType: 'video',
+      fileName: 'video_note.webm',
+      fileSize: data.fileSize,
+      duration: data.duration,
+    });
+  };
+
+  const showOnline = activeConversation.participant?.privacySettings?.showOnlineStatus !== false;
+  const presenceSubtitle = isPartnerTyping
+    ? 'typing...'
+    : formatLastSeen(activeConversation.participant?.lastSeen, activeConversation.isOnline, showOnline) || 'Offline';
+
   return (
     <div className="fixed bottom-5 right-5 z-50 w-80 sm:w-96 rounded-3xl bg-white border border-slate-200 shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200 select-none">
       <input
@@ -164,7 +188,7 @@ export const FloatingChatWindow: React.FC = () => {
           <UserAvatarLink
             user={activeConversation.participant}
             size="sm"
-            online={activeConversation.isOnline}
+            online={showOnline ? activeConversation.isOnline : false}
           />
           <div className="min-w-0">
             <UserNameLink
@@ -174,10 +198,8 @@ export const FloatingChatWindow: React.FC = () => {
             <span className="block text-[10px] text-slate-300 font-mono">
               {isPartnerTyping ? (
                 <span className="text-cyan-300 animate-pulse">typing...</span>
-              ) : activeConversation.isOnline ? (
-                'Active Now'
               ) : (
-                'Offline'
+                presenceSubtitle
               )}
             </span>
           </div>
@@ -374,6 +396,16 @@ export const FloatingChatWindow: React.FC = () => {
               <Mic className="w-4 h-4" />
             </button>
 
+            {/* Video Note Record Button */}
+            <button
+              type="button"
+              onClick={() => setIsVideoModalOpen(true)}
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-indigo-600 transition-colors"
+              title="Record Video Note"
+            >
+              <Video className="w-4 h-4" />
+            </button>
+
             <button
               type="submit"
               disabled={!inputMessage.trim()}
@@ -384,6 +416,13 @@ export const FloatingChatWindow: React.FC = () => {
           </form>
         )}
       </div>
+
+      {/* In-App Video Note Recorder Modal */}
+      <VideoRecorderModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        onSendVideo={handleSendVideo}
+      />
     </div>
   );
 };

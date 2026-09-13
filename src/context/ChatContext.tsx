@@ -258,6 +258,47 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (payload.type === 'friend_request_accepted') {
           refreshConversations();
         }
+
+        // F. Presence Updated Event (Online / Offline status & Last seen)
+        if (payload.type === 'presence_updated') {
+          const { userId, isOnline, lastSeen } = payload.data;
+          setConversations((prev) =>
+            prev.map((conv) => {
+              if (
+                conv.participant?.id === userId ||
+                (conv.participants && conv.participants.includes(userId) && conv.participant?.id === userId)
+              ) {
+                return {
+                  ...conv,
+                  isOnline,
+                  lastSeen,
+                  participant: {
+                    ...conv.participant,
+                    isOnline,
+                    lastSeen,
+                  },
+                };
+              }
+              return conv;
+            })
+          );
+
+          setActiveConversation((prev) => {
+            if (prev && prev.participant?.id === userId) {
+              return {
+                ...prev,
+                isOnline,
+                lastSeen,
+                participant: {
+                  ...prev.participant,
+                  isOnline,
+                  lastSeen,
+                },
+              };
+            }
+            return prev;
+          });
+        }
       } catch (e) {
         console.warn('SSE parsing error:', e);
       }

@@ -311,6 +311,33 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         else if (payload.type === 'story_created' || payload.type === 'story_deleted') {
           fetchStories();
         }
+
+        // F. Real-time Presence Updated (Online / Offline / Last Seen)
+        else if (payload.type === 'presence_updated' && payload.data?.userId) {
+          const { userId, isOnline, lastSeen } = payload.data;
+          setFriends((prev) =>
+            prev.map((f) =>
+              f.id === userId
+                ? {
+                    ...f,
+                    isOnline,
+                    lastSeen,
+                  }
+                : f
+            )
+          );
+          setDiscoverList((prev) =>
+            prev.map((u) =>
+              u.id === userId
+                ? {
+                    ...u,
+                    isOnline,
+                    lastSeen,
+                  }
+                : u
+            )
+          );
+        }
       } catch (err) {
         console.warn('Error parsing SSE feed event:', err);
       }
