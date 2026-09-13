@@ -39,7 +39,8 @@ export const PostComposer: React.FC = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
 
   const feelings = [
     { label: 'celebrating 🎓', emoji: '🎓' },
@@ -49,7 +50,7 @@ export const PostComposer: React.FC = () => {
     { label: 'learning 📚', emoji: '📚' },
   ];
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, preferredType?: 'image' | 'video') => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setErrorMessage(null);
@@ -57,7 +58,38 @@ export const PostComposer: React.FC = () => {
     const maxImageBytes = 15 * 1024 * 1024; // 15MB
     const maxVideoBytes = 50 * 1024 * 1024; // 50MB
 
-    Array.from(files).forEach((file) => {
+    const fileList = Array.from(files);
+    const hasIncomingVideo = fileList.some((f) => f.type.startsWith('video/'));
+    const hasIncomingImage = fileList.some((f) => f.type.startsWith('image/'));
+
+    // Enforce Facebook-style rule: either photos or a video, not both in the same post
+    if (hasIncomingVideo && hasIncomingImage) {
+      showToast('Media Note 💡', 'A post can contain either photos or a video, not both. Please select one type.', 'info');
+    }
+
+    const currentType = mediaList[0]?.type;
+    const isIncomingVideo = preferredType === 'video' || (hasIncomingVideo && !hasIncomingImage);
+
+    // If switching types, inform user that previous selection will be replaced
+    if (currentType && ((currentType === 'image' && isIncomingVideo) || (currentType === 'video' && !isIncomingVideo))) {
+      showToast(
+        'Media Switched 🔄',
+        `Switched to ${isIncomingVideo ? 'video' : 'photos'} (posts cannot mix photos and videos).`,
+        'info'
+      );
+    }
+
+    const validFiles = fileList.filter((f) => {
+      const isVid = f.type.startsWith('video/');
+      return isIncomingVideo ? isVid : !isVid;
+    });
+
+    if (validFiles.length === 0) return;
+
+    // Videos are limited to 1 per post
+    const filesToProcess = isIncomingVideo ? [validFiles[0]] : validFiles;
+
+    filesToProcess.forEach((file) => {
       const isVideo = file.type.startsWith('video/');
       const maxAllowed = isVideo ? maxVideoBytes : maxImageBytes;
 
@@ -75,15 +107,20 @@ export const PostComposer: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          setMediaList((prev) => [
-            ...prev,
-            {
-              url: event.target!.result as string,
-              type: isVideo ? 'video' : 'image',
-              name: file.name,
-              size: file.size,
-            },
-          ]);
+          const newItem: MediaItem = {
+            url: event.target!.result as string,
+            type: isVideo ? 'video' : 'image',
+            name: file.name,
+            size: file.size,
+          };
+
+          if (isIncomingVideo) {
+            // Replace any existing media with the single video
+            setMediaList([newItem]);
+          } else {
+            // If previous media was video, replace with image; otherwise append
+            setMediaList((prev) => (prev[0]?.type === 'video' ? [newItem] : [...prev, newItem]));
+          }
           setIsExpanded(true);
         }
       };
@@ -95,7 +132,8 @@ export const PostComposer: React.FC = () => {
       reader.readAsDataURL(file);
     });
 
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (imageInputRef.current) imageInputRef.current.value = '';
+    if (videoInputRef.current) videoInputRef.current.value = '';
   };
 
   const handleRemoveMedia = (index: number) => {
@@ -131,6 +169,7 @@ export const PostComposer: React.FC = () => {
       setFeeling(undefined);
       setLocation(undefined);
       setIsExpanded(false);
+      showToast('Post Published 🎉', 'Your post is now live on the feed.', 'success');
     } catch (err: any) {
       console.error('Post creation error:', err);
       setErrorMessage(err?.message || 'Failed to publish post. Please try again.');
@@ -142,13 +181,20 @@ export const PostComposer: React.FC = () => {
 
   return (
     <div className="rounded-3xl bg-white border border-slate-200 shadow-card p-4 sm:p-5 space-y-4 select-none">
-      {/* Hidden File Input */}
+      {/* Hidden File Inputs */}
       <input
         type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        accept="image/*,video/*"
+        ref={imageInputRef}
+        onChange={(e) => handleFileSelect(e, 'image')}
+        accept="image/*"
         multiple
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={videoInputRef}
+        onChange={(e) => handleFileSelect(e, 'video')}
+        accept="video/*"
         className="hidden"
       />
 
@@ -171,11 +217,19 @@ export const PostComposer: React.FC = () => {
       <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
         <button
           type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-2xl bg-indigo-50 hover:bg-indigo-100/80 text-indigo-700 text-xs font-bold transition-colors shadow-sm"
+          onClick={() => imageInputRef.current?.click()}
+          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 text-xs font-bold transition-colors shadow-sm"
         >
-          <FolderUp className="w-4 h-4 text-indigo-600" />
-          <span>Upload Photo / Video from Computer</span>
+          <ImageIcon className="w-4 h-4 text-emerald-600" />
+          <span>Photo</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => videoInputRef.current?.click()}
+          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-2xl bg-violet-50 hover:bg-violet-100/80 text-violet-700 text-xs font-bold transition-colors shadow-sm"
+        >
+          <Video className="w-4 h-4 text-violet-600" />
+          <span>Video</span>
         </button>
       </div>
 
@@ -205,42 +259,59 @@ export const PostComposer: React.FC = () => {
             autoFocus
           />
 
-          {/* Attached Media Previews (Images & Videos) */}
+          {/* Attached Media Previews (Images or Video) */}
           {mediaList.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {mediaList.map((item, i) => (
-                <div
-                  key={i}
-                  className="relative rounded-2xl overflow-hidden group h-32 border border-slate-200 bg-slate-900 flex items-center justify-center"
-                >
-                  {item.type === 'video' ? (
-                    <video
-                      src={item.url}
-                      className="w-full h-full object-cover"
-                      muted
-                    />
-                  ) : (
-                    <img
-                      src={item.url}
-                      alt={`Attached ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-
+            <div className="space-y-2">
+              {mediaList[0]?.type === 'video' ? (
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 flex items-center justify-center max-h-72">
+                  <video
+                    src={mediaList[0].url}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="max-h-72 w-full object-contain"
+                  />
                   <button
                     type="button"
-                    onClick={() => handleRemoveMedia(i)}
+                    onClick={() => handleRemoveMedia(0)}
                     disabled={isPublishing}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white backdrop-blur-md transition-all shadow-md"
+                    className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white backdrop-blur-md transition-all shadow-md z-10"
+                    title="Remove Video"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-4 h-4" />
                   </button>
-
-                  <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-slate-900/80 text-[10px] text-white font-mono backdrop-blur-sm">
-                    {item.type === 'video' ? '🎬 Video' : '📷 Image'}
+                  <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/80 text-[10px] text-white font-mono backdrop-blur-sm pointer-events-none">
+                    🎬 Video Preview
                   </span>
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {mediaList.map((item, i) => (
+                    <div
+                      key={i}
+                      className="relative rounded-2xl overflow-hidden group h-32 border border-slate-200 bg-slate-900 flex items-center justify-center"
+                    >
+                      <img
+                        src={item.url}
+                        alt={`Attached ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMedia(i)}
+                        disabled={isPublishing}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white backdrop-blur-md transition-all shadow-md"
+                        title="Remove Photo"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-slate-900/80 text-[10px] text-white font-mono backdrop-blur-sm">
+                        📷 Photo {i + 1}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -249,12 +320,21 @@ export const PostComposer: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => imageInputRef.current?.click()}
                 disabled={isPublishing}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50"
               >
                 <ImageIcon className="w-4 h-4 text-emerald-600" />
-                <span>Media</span>
+                <span>Photo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => videoInputRef.current?.click()}
+                disabled={isPublishing}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50"
+              >
+                <Video className="w-4 h-4 text-violet-600" />
+                <span>Video</span>
               </button>
 
               {/* Visibility Selector */}
