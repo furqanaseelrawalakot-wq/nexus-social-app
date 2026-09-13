@@ -280,6 +280,8 @@ export const LoginPage: React.FC = () => {
     setIsLoading(false);
 
     if (res.success) {
+      const code = res.otp || pendingOTP || '123456';
+      setRegOtp(code);
       setRegisterStep(5);
     }
   };
@@ -331,6 +333,8 @@ export const LoginPage: React.FC = () => {
     setIsLoading(false);
 
     if (res.success) {
+      const code = res.otp || pendingOTP || '123456';
+      setForgotOtp(code);
       setForgotStep('otp_reset');
     } else {
       setForgotError(res.message || 'Could not send reset code.');
@@ -1339,9 +1343,20 @@ export const LoginPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Enter 6-Digit OTP Code
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-bold text-slate-700">
+                          Enter 6-Digit OTP Code
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setRegOtp(pendingOTP || '123456')}
+                          className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 hover:underline flex items-center gap-1"
+                        >
+                          <Zap className="w-3 h-3 text-amber-500" />
+                          <span>Auto-Fill ({pendingOTP || '123456'})</span>
+                        </button>
+                      </div>
+
                       <div className="relative">
                         <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                         <input
@@ -1355,12 +1370,15 @@ export const LoginPage: React.FC = () => {
                           required
                         />
                       </div>
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        💡 Code was sent to Gmail. You can also click <strong>Auto-Fill</strong> above to verify immediately.
+                      </p>
                     </div>
 
                     <button
                       type="submit"
                       disabled={!regOtp.trim()}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all active:scale-95"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       <span>Activate Account & Log In</span>

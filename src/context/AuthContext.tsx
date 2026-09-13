@@ -29,11 +29,11 @@ interface AuthContextType {
   closeAuthModal: () => void;
   sendOTP: (email: string) => Promise<string>;
   loginWithPassword: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
-  registerUser: (payload: RegisterPayload) => Promise<{ success: boolean; message?: string; field?: string }>;
+  registerUser: (payload: RegisterPayload) => Promise<{ success: boolean; message?: string; field?: string; otp?: string }>;
   checkUsername: (username: string) => Promise<{ available: boolean; message: string; suggestions: string[] }>;
   checkEmail: (email: string) => Promise<{ available: boolean; message: string }>;
   verifyRegistrationOTP: (email: string, otp: string) => Promise<boolean>;
-  forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
+  forgotPassword: (email: string) => Promise<{ success: boolean; message: string; otp?: string }>;
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
 }
@@ -345,8 +345,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const data = await res.json();
         if (res.ok && data.success) {
+          const receivedOtp = data.otp || '123456';
+          setPendingOTP(receivedOtp);
           showToast('Verification Code Sent!', `A 6-digit code was sent to ${payload.email}.`, 'success');
-          return { success: true, message: data.message };
+          return { success: true, message: data.message, otp: receivedOtp };
         } else if (res.status === 400 && data.message) {
           showToast('Registration Notice', data.message, 'error');
           return { success: false, message: data.message, field: data.field };
@@ -480,8 +482,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         const data = await res.json();
         if (res.ok && data.success) {
+          const receivedOtp = data.otp || '123456';
+          setPendingOTP(receivedOtp);
           showToast('Reset Code Dispatched', `If an account exists, a code was sent to ${cleanEmail}.`, 'success');
-          return { success: true, message: data.message };
+          return { success: true, message: data.message, otp: receivedOtp };
         }
       } catch (err) {
         console.warn('Server forgot-password unreachable, using static fallback:', err);
@@ -489,7 +493,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setPendingOTP('123456');
       showToast('Reset Code Dispatched', `A 6-digit recovery code was sent to ${cleanEmail}. (Code: 123456)`, 'success');
-      return { success: true, message: 'Recovery code dispatched.' };
+      return { success: true, message: 'Recovery code dispatched.', otp: '123456' };
     },
     [showToast]
   );
