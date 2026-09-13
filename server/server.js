@@ -18,6 +18,7 @@ const POST_MEDIA_DIR = path.join(UPLOADS_DIR, 'post-media');
 const STORIES_DIR = path.join(UPLOADS_DIR, 'stories');
 
 const PORT = process.env.PORT || 5000;
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 
 // Ensure directories exist
 [DATA_DIR, UPLOADS_DIR, AVATARS_DIR, COVERS_DIR, CHAT_DIR, CHAT_MEDIA_DIR, POST_MEDIA_DIR, STORIES_DIR].forEach((dir) => {
@@ -29,6 +30,7 @@ const PORT = process.env.PORT || 5000;
 // Database in memory + disk persistence
 let db = {
   users: [],
+  sessions: {}, // [token]: { userId, createdAt }
   pendingRegistrations: {},
   passwordResetOtps: {},
   failedLoginAttempts: {},
@@ -55,6 +57,7 @@ const loadDB = () => {
   try {
     if (fs.existsSync(DATA_FILE)) {
       db = { ...db, ...JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8')) };
+      if (!db.sessions) db.sessions = {};
       if (!db.otps) db.otps = {};
       if (!db.pendingRegistrations) db.pendingRegistrations = {};
       if (!db.passwordResetOtps) db.passwordResetOtps = {};
@@ -117,6 +120,72 @@ const repairAllSocialCounts = () => {
 
 loadDB();
 repairAllSocialCounts();
+
+// ----------------------------------------------------
+// SESSION TOKEN MANAGEMENT
+// ----------------------------------------------------
+const generateSessionToken = (userId) => {
+  if (!db.sessions) db.sessions = {};
+  const token = crypto.randomBytes(32).toString('hex');
+  db.sessions[token] = {
+    userId,
+    createdAt: new Date().toISOString(),
+  };
+  saveDB();
+  return token;
+};
+
+const getAuthenticatedUserId = (req) => {
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7).trim();
+    if (db.sessions && db.sessions[token]) {
+      return db.sessions[token].userId;
+    }
+  }
+  const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  const queryToken = urlObj.searchParams.get('token');
+  if (queryToken && db.sessions && db.sessions[queryToken]) {
+    return db.sessions[queryToken].userId;
+  }
+  // Fallback for transition if x-user-id header is provided and has an active session
+  const xUserId = req.headers['x-user-id'];
+  if (xUserId && db.sessions) {
+    const hasSession = Object.values(db.sessions).some((s) => s.userId === xUserId);
+    if (hasSession) return xUserId;
+  }
+  return null;
+};
+
+// ----------------------------------------------------
+// IN-MEMORY RATE LIMITER
+// ----------------------------------------------------
+const rateLimits = new Map();
+
+const checkRateLimit = (key, limit, windowMs = 60000) => {
+  const now = Date.now();
+  let timestamps = rateLimits.get(key) || [];
+  timestamps = timestamps.filter((t) => now - t < windowMs);
+  if (timestamps.length >= limit) {
+    return false;
+  }
+  timestamps.push(now);
+  rateLimits.set(key, timestamps);
+  return true;
+};
+
+// ----------------------------------------------------
+// TEXT SANITIZATION (HTML ESCAPING)
+// ----------------------------------------------------
+const sanitizeText = (str) => {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
 
 // ----------------------------------------------------
 // REAL-TIME SSE (SERVER-SENT EVENTS) DISPATCHER
@@ -203,13 +272,60 @@ const broadcastRealtimeEvent = (eventType, data, excludeUserId = null) => {
   }
 };
 
-// Helper: Save Base64 File to Disk
+// ----------------------------------------------------
+// UPLOAD SIZE & MIME TYPE VALIDATION
+// ----------------------------------------------------
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'video/mp4',
+  'video/webm',
+  'video/quicktime',
+  'audio/webm',
+  'audio/mpeg',
+  'audio/ogg',
+  'audio/wav',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/zip',
+  'text/plain',
+];
+
+const MAX_UPLOAD_SIZES = {
+  avatar: 5 * 1024 * 1024,
+  cover: 5 * 1024 * 1024,
+  'post-media': 25 * 1024 * 1024,
+  story: 25 * 1024 * 1024,
+  chat: 15 * 1024 * 1024,
+  'chat-media': 15 * 1024 * 1024,
+  file: 25 * 1024 * 1024,
+};
+
+// Helper: Save Base64 File to Disk with Validation
 const saveBase64File = (base64String, targetDir, prefix = 'file') => {
   try {
     const matches = base64String.match(/^data:([A-Za-z-+\/0-9.-]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) return null;
-    const mimeType = matches[1];
+    if (!matches || matches.length !== 3) {
+      throw new Error('Invalid base64 payload.');
+    }
+    const mimeType = matches[1].toLowerCase();
+    if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+      throw new Error(`Unsupported MIME type: ${mimeType}`);
+    }
+
     const buffer = Buffer.from(matches[2], 'base64');
+    const maxSize = MAX_UPLOAD_SIZES[prefix] || 25 * 1024 * 1024;
+    if (buffer.length > maxSize) {
+      throw new Error(`File size exceeds ${(maxSize / (1024 * 1024)).toFixed(0)}MB limit.`);
+    }
+
     let ext = 'bin';
     if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
     else if (mimeType.includes('png')) ext = 'png';
@@ -228,7 +344,7 @@ const saveBase64File = (base64String, targetDir, prefix = 'file') => {
     fs.writeFileSync(filePath, buffer);
     return fileName;
   } catch (err) {
-    console.warn('Error saving base64 file:', err);
+    console.warn('Error saving base64 file:', err.message);
     return null;
   }
 };
@@ -314,7 +430,7 @@ const findConversationByMediaFilename = (filename) => {
 const sendJSON = (res, statusCode, data) => {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-user-id',
   });
@@ -364,7 +480,7 @@ const mimeTypesMap = {
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-user-id',
     });
@@ -374,7 +490,8 @@ const server = http.createServer(async (req, res) => {
   const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = urlObj.pathname;
   const method = req.method;
-  const currentUserId = req.headers['x-user-id'] || urlObj.searchParams.get('userId');
+  const authUserId = getAuthenticatedUserId(req);
+  const currentUserId = authUserId || req.headers['x-user-id'] || urlObj.searchParams.get('userId');
 
   // 1. Real-Time SSE Stream Endpoint (With Automatic Delivery Sync on Connect)
   if (pathname === '/api/realtime/stream' && method === 'GET') {
@@ -506,34 +623,36 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Process avatar if base64
-    if (body.avatarUrl && typeof body.avatarUrl === 'string' && body.avatarUrl.startsWith('data:image')) {
+    if (body.avatarUrl && typeof body.avatarUrl === 'string' && body.avatarUrl.startsWith('data:')) {
       const savedName = saveBase64File(body.avatarUrl, AVATARS_DIR, 'avatar');
-      if (savedName) {
-        user.avatarUrl = `/uploads/avatars/${savedName}`;
+      if (!savedName) {
+        return sendJSON(res, 400, { success: false, message: 'Invalid avatar image format or exceeds 5MB limit.' });
       }
+      user.avatarUrl = `/uploads/avatars/${savedName}`;
     } else if (body.avatarUrl !== undefined) {
       user.avatarUrl = body.avatarUrl;
     }
 
     // Process cover if base64
-    if (body.coverUrl && typeof body.coverUrl === 'string' && body.coverUrl.startsWith('data:image')) {
+    if (body.coverUrl && typeof body.coverUrl === 'string' && body.coverUrl.startsWith('data:')) {
       const savedName = saveBase64File(body.coverUrl, COVERS_DIR, 'cover');
-      if (savedName) {
-        user.coverUrl = `/uploads/covers/${savedName}`;
+      if (!savedName) {
+        return sendJSON(res, 400, { success: false, message: 'Invalid cover image format or exceeds 5MB limit.' });
       }
+      user.coverUrl = `/uploads/covers/${savedName}`;
     } else if (body.coverUrl !== undefined) {
       user.coverUrl = body.coverUrl;
     }
 
-    if (body.fullName !== undefined) user.fullName = body.fullName.trim();
-    if (body.firstName !== undefined) user.firstName = body.firstName.trim();
-    if (body.lastName !== undefined) user.lastName = body.lastName.trim();
-    if (body.bio !== undefined) user.bio = body.bio.trim();
-    if (body.location !== undefined) user.location = body.location.trim();
-    if (body.occupation !== undefined) user.occupation = body.occupation.trim();
-    if (body.education !== undefined) user.education = body.education.trim();
-    if (body.website !== undefined) user.website = body.website.trim();
-    if (body.phone !== undefined) user.phone = body.phone.trim();
+    if (body.fullName !== undefined) user.fullName = sanitizeText(body.fullName.trim());
+    if (body.firstName !== undefined) user.firstName = sanitizeText(body.firstName.trim());
+    if (body.lastName !== undefined) user.lastName = sanitizeText(body.lastName.trim());
+    if (body.bio !== undefined) user.bio = sanitizeText(body.bio.trim());
+    if (body.location !== undefined) user.location = sanitizeText(body.location.trim());
+    if (body.occupation !== undefined) user.occupation = sanitizeText(body.occupation.trim());
+    if (body.education !== undefined) user.education = sanitizeText(body.education.trim());
+    if (body.website !== undefined) user.website = sanitizeText(body.website.trim());
+    if (body.phone !== undefined) user.phone = sanitizeText(body.phone.trim());
     if (body.gender !== undefined) user.gender = body.gender;
     if (body.isPrivate !== undefined) {
       user.isPrivate = Boolean(body.isPrivate);
@@ -659,8 +778,40 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 400, { success: false, message: 'Invalid sender or target user ID.' });
     }
 
+    if (!checkRateLimit('freq:' + senderId, 10, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Friend request rate limit exceeded. Please wait a moment.' });
+    }
+
+    const sender = db.users.find((u) => u.id === senderId);
+    const target = db.users.find((u) => u.id === targetUserId);
+
+    if (!sender || !target) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
     if (areUsersFriends(senderId, targetUserId)) {
       return sendJSON(res, 400, { success: false, message: 'You are already friends with this user.' });
+    }
+
+    const privacy = target.privacySettings || {};
+    const whoCanSend = privacy.whoCanSendRequests || 'everyone';
+    if (whoCanSend === 'nobody') {
+      return sendJSON(res, 403, { success: false, message: 'This user is not accepting friend requests.' });
+    }
+    if (whoCanSend === 'friends_of_friends') {
+      const senderFriends = (db.friendships || [])
+        .filter((f) => f.userA === senderId || f.userB === senderId)
+        .map((f) => (f.userA === senderId ? f.userB : f.userA));
+      const targetFriends = (db.friendships || [])
+        .filter((f) => f.userA === targetUserId || f.userB === targetUserId)
+        .map((f) => (f.userA === targetUserId ? f.userB : f.userA));
+      const hasMutual = senderFriends.some((fid) => targetFriends.includes(fid));
+      if (!hasMutual) {
+        return sendJSON(res, 403, {
+          success: false,
+          message: 'This user only accepts friend requests from friends of friends.',
+        });
+      }
     }
 
     const existingReq = db.friendRequests.find(
@@ -672,13 +823,6 @@ const server = http.createServer(async (req, res) => {
 
     if (existingReq) {
       return sendJSON(res, 400, { success: false, message: 'A friend request already exists between you.' });
-    }
-
-    const sender = db.users.find((u) => u.id === senderId);
-    const target = db.users.find((u) => u.id === targetUserId);
-
-    if (!sender || !target) {
-      return sendJSON(res, 404, { success: false, message: 'User not found.' });
     }
 
     const newRequest = {
@@ -1048,6 +1192,10 @@ const server = http.createServer(async (req, res) => {
 
     if (!followerId || !targetUserId || followerId === targetUserId) {
       return sendJSON(res, 400, { success: false, message: 'Invalid follower or target user ID.' });
+    }
+
+    if (!checkRateLimit('follow:' + followerId, 10, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Follow rate limit exceeded. Please wait a moment.' });
     }
 
     const targetUser = db.users.find((u) => u.id === targetUserId);
@@ -1438,10 +1586,15 @@ const server = http.createServer(async (req, res) => {
   if (pathname.match(/^\/api\/conversations\/[^\/]+\/messages$/) && method === 'POST') {
     const convId = pathname.split('/')[3];
     const body = await parseBody(req);
-    const { senderId, text } = body;
+    const senderId = currentUserId || body.senderId;
+    const text = body.text;
 
     if (!senderId || !text || !text.trim()) {
       return sendJSON(res, 400, { success: false, message: 'Sender ID and text content are required.' });
+    }
+
+    if (!checkRateLimit('msg:' + senderId, 30, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Message rate limit exceeded. Please wait a moment.' });
     }
 
     let conv = db.conversations.find((c) => c.id === convId);
@@ -1470,7 +1623,7 @@ const server = http.createServer(async (req, res) => {
       senderId,
       recipientId,
       type: 'text',
-      text: text.trim(),
+      text: sanitizeText(text.trim()),
       createdAt: timeStr,
       timestamp: Date.now(),
       status: initialStatus,
@@ -1481,7 +1634,7 @@ const server = http.createServer(async (req, res) => {
 
     if (!conv.messages) conv.messages = [];
     conv.messages.push(newMessage);
-    conv.lastMessage = text.trim();
+    conv.lastMessage = sanitizeText(text.trim());
     conv.lastMessageType = 'text';
     conv.lastMessageTime = timeStr;
 
@@ -1517,10 +1670,15 @@ const server = http.createServer(async (req, res) => {
   if (pathname.match(/^\/api\/conversations\/[^\/]+\/messages\/media$/) && method === 'POST') {
     const convId = pathname.split('/')[3];
     const body = await parseBody(req);
-    const { senderId, mediaBase64, mediaType, fileName, fileSize, duration, text } = body;
+    const senderId = currentUserId || body.senderId;
+    const { mediaBase64, mediaType, fileName, fileSize, duration, text } = body;
 
     if (!senderId || !mediaBase64 || !mediaType) {
       return sendJSON(res, 400, { success: false, message: 'Sender ID and media data are required.' });
+    }
+
+    if (!checkRateLimit('msg:' + senderId, 30, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Message rate limit exceeded. Please wait a moment.' });
     }
 
     let conv = db.conversations.find((c) => c.id === convId);
@@ -1847,6 +2005,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 6c. Standard Auth Endpoints
+  // 6b. Logout: POST /api/auth/logout
+  if (pathname === '/api/auth/logout' && method === 'POST') {
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7).trim();
+      if (db.sessions && db.sessions[token]) {
+        delete db.sessions[token];
+        saveDB();
+      }
+    }
+    return sendJSON(res, 200, { success: true, message: 'Logged out successfully.' });
+  }
+
   if (pathname === '/api/auth/login' && method === 'POST') {
     const body = await parseBody(req);
     const { email, password } = body;
@@ -1904,8 +2075,9 @@ const server = http.createServer(async (req, res) => {
     delete db.failedLoginAttempts[cleanEmail];
     saveDB();
 
+    const token = generateSessionToken(user.id);
     const { passwordHash, ...safeUser } = user;
-    return sendJSON(res, 200, { success: true, message: 'Sign in successful.', user: safeUser });
+    return sendJSON(res, 200, { success: true, message: 'Sign in successful.', user: safeUser, token });
   }
 
   if (pathname === '/api/auth/register' && method === 'POST') {
@@ -2016,8 +2188,9 @@ const server = http.createServer(async (req, res) => {
 
     if (!user) return sendJSON(res, 404, { success: false, message: 'User not found.' });
 
+    const token = generateSessionToken(user.id);
     const { passwordHash, ...safeUser } = user;
-    return sendJSON(res, 200, { success: true, message: 'Account verified.', user: safeUser });
+    return sendJSON(res, 200, { success: true, message: 'Account verified.', user: safeUser, token });
   }
 
   if (pathname === '/api/auth/forgot-password' && method === 'POST') {
@@ -2620,11 +2793,17 @@ const server = http.createServer(async (req, res) => {
     const postId = pathname.split('/')[3];
     const body = await parseBody(req);
     const userId = currentUserId || body.userId;
-    const content = (body.content || '').trim();
+    const rawContent = (body.content || body.text || '').trim();
 
-    if (!content) {
+    if (!rawContent) {
       return sendJSON(res, 400, { success: false, message: 'Comment content is required.' });
     }
+
+    if (userId && !checkRateLimit('comment:' + userId, 30, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Comment rate limit exceeded. Please wait a moment.' });
+    }
+
+    const content = sanitizeText(rawContent);
 
     const post = db.posts.find((p) => p.id === postId);
     if (!post) {
@@ -2682,11 +2861,17 @@ const server = http.createServer(async (req, res) => {
     const commentId = parts[5];
     const body = await parseBody(req);
     const userId = currentUserId || body.userId;
-    const content = (body.content || '').trim();
+    const rawContent = (body.content || body.text || '').trim();
 
-    if (!content) {
+    if (!rawContent) {
       return sendJSON(res, 400, { success: false, message: 'Reply content is required.' });
     }
+
+    if (userId && !checkRateLimit('comment:' + userId, 30, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Comment rate limit exceeded. Please wait a moment.' });
+    }
+
+    const content = sanitizeText(rawContent);
 
     const post = db.posts.find((p) => p.id === postId);
     if (!post) {
@@ -2837,7 +3022,7 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 403, { success: false, message: 'You do not have permission to edit this comment.' });
     }
 
-    target.content = content;
+    target.content = sanitizeText(content);
     target.isEdited = true;
 
     saveDB();
@@ -2928,29 +3113,43 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/posts' && method === 'POST') {
     const body = await parseBody(req);
     const userId = currentUserId || body.userId;
+
+    if (userId && !checkRateLimit('post:' + userId, 10, 60000)) {
+      return sendJSON(res, 429, { success: false, message: 'Post creation rate limit exceeded. Please wait a moment.' });
+    }
+
     const authorUser = db.users.find((u) => u.id === userId) || db.users[0] || {};
     const { passwordHash, ...safeAuthor } = authorUser;
 
     const rawMediaUrls = Array.isArray(body.mediaUrls) ? body.mediaUrls : [];
+    let uploadFailed = false;
     const processedMediaUrls = rawMediaUrls.map((url) => {
-      if (typeof url === 'string' && (url.startsWith('data:image') || url.startsWith('data:video'))) {
+      if (typeof url === 'string' && url.startsWith('data:')) {
         const saved = saveBase64File(url, POST_MEDIA_DIR, 'post-media');
-        return saved ? `/uploads/post-media/${saved}` : url;
+        if (!saved) {
+          uploadFailed = true;
+          return null;
+        }
+        return `/uploads/post-media/${saved}`;
       }
       return url;
     });
+
+    if (uploadFailed) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid media file format or file exceeds maximum allowed size.' });
+    }
 
     const isVideo = (url) => typeof url === 'string' && (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') || body.mediaType === 'video');
 
     const newPost = {
       id: `post-${Date.now()}`,
       author: safeAuthor,
-      content: (body.content || '').trim(),
+      content: sanitizeText((body.content || '').trim()),
       mediaUrls: processedMediaUrls,
       mediaType: body.mediaType || (processedMediaUrls.length > 0 && isVideo(processedMediaUrls[0]) ? 'video' : 'image'),
       visibility: body.visibility || 'public',
-      feeling: body.feeling,
-      location: body.location,
+      feeling: body.feeling ? sanitizeText(body.feeling) : body.feeling,
+      location: body.location ? sanitizeText(body.location) : body.location,
       createdAt: 'Just now',
       reactions: [
         { type: 'like', count: 0, userReacted: false },
@@ -3002,16 +3201,16 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (typeof body.content === 'string') {
-      post.content = body.content.trim();
+      post.content = sanitizeText(body.content.trim());
     }
     if (body.visibility && ['public', 'friends', 'private'].includes(body.visibility)) {
       post.visibility = body.visibility;
     }
     if (body.feeling !== undefined) {
-      post.feeling = body.feeling;
+      post.feeling = body.feeling ? sanitizeText(body.feeling) : body.feeling;
     }
     if (body.location !== undefined) {
-      post.location = body.location;
+      post.location = body.location ? sanitizeText(body.location) : body.location;
     }
     post.isEdited = true;
 
@@ -3092,12 +3291,13 @@ const server = http.createServer(async (req, res) => {
     if (
       processedMediaUrl &&
       typeof processedMediaUrl === 'string' &&
-      (processedMediaUrl.startsWith('data:image') || processedMediaUrl.startsWith('data:video') || processedMediaUrl.startsWith('data:audio'))
+      processedMediaUrl.startsWith('data:')
     ) {
       const saved = saveBase64File(processedMediaUrl, STORIES_DIR, 'story');
-      if (saved) {
-        processedMediaUrl = `/uploads/stories/${saved}`;
+      if (!saved) {
+        return sendJSON(res, 400, { success: false, message: 'Invalid story media file format or file exceeds maximum allowed size.' });
       }
+      processedMediaUrl = `/uploads/stories/${saved}`;
     }
 
     const newStory = {
@@ -3107,9 +3307,9 @@ const server = http.createServer(async (req, res) => {
       mediaUrl: processedMediaUrl,
       mediaType: body.mediaType || (storyType === 'video' ? 'video' : storyType === 'audio' ? 'audio' : 'image'),
       duration: body.duration,
-      textContent: (body.textContent || '').trim(),
+      textContent: sanitizeText((body.textContent || '').trim()),
       backgroundStyle: body.backgroundStyle || 'from-indigo-600 to-purple-600',
-      caption: (body.caption || '').trim(),
+      caption: sanitizeText((body.caption || '').trim()),
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       viewedBy: [],

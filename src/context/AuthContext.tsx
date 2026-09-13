@@ -52,6 +52,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const USERS_DB_KEY = 'nexus_all_registered_users_v10';
 const ACTIVE_USER_KEY = 'nexus_active_session_user_v10';
 const AUTH_STATE_KEY = 'nexus_is_authenticated_v10';
+export const SESSION_TOKEN_KEY = 'nexus_session_token_v10';
+
+export const getAuthHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem(SESSION_TOKEN_KEY);
+  const activeUser = localStorage.getItem(ACTIVE_USER_KEY);
+  let userId = '';
+  try {
+    if (activeUser) {
+      const u = JSON.parse(activeUser);
+      userId = u.id || '';
+    }
+  } catch {}
+
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  if (userId) {
+    headers['x-user-id'] = userId;
+  }
+  return headers;
+};
 
 export const EMPTY_GUEST_USER: User = {
   id: '',
@@ -125,7 +147,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (parsed && parsed.id && parsed.email) {
             try {
               const res = await fetch(`/api/users/${encodeURIComponent(parsed.id)}/profile`, {
-                headers: { 'x-user-id': parsed.id },
+                headers: {
+                  ...getAuthHeaders(),
+                },
               });
               if (res.ok) {
                 const data = await res.json();
@@ -154,6 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (isMounted) {
           localStorage.removeItem(ACTIVE_USER_KEY);
           localStorage.removeItem(AUTH_STATE_KEY);
+          localStorage.removeItem(SESSION_TOKEN_KEY);
           setCurrentUser(EMPTY_GUEST_USER);
           setIsAuthenticated(false);
         }
@@ -161,6 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (isMounted) {
           localStorage.removeItem(ACTIVE_USER_KEY);
           localStorage.removeItem(AUTH_STATE_KEY);
+          localStorage.removeItem(SESSION_TOKEN_KEY);
           setCurrentUser(EMPTY_GUEST_USER);
           setIsAuthenticated(false);
         }
@@ -281,6 +307,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setCurrentUser(verifiedUser);
           setIsAuthenticated(true);
           setIsAuthModalOpen(false);
+
+          if (data.token) {
+            localStorage.setItem(SESSION_TOKEN_KEY, data.token);
+          }
 
           setUsersList((prev) => {
             const filtered = prev.filter((u) => u.email.toLowerCase() !== cleanEmail);
@@ -423,6 +453,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsAuthenticated(true);
           setIsAuthModalOpen(false);
 
+          if (data.token) {
+            localStorage.setItem(SESSION_TOKEN_KEY, data.token);
+          }
+
           setUsersList((prev) => {
             const filtered = prev.filter((u) => u.email.toLowerCase() !== cleanEmail);
             return [...filtered, verifiedUser];
@@ -544,8 +578,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 9. Logout
   const logout = useCallback(() => {
+    try {
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { ...getAuthHeaders() },
+      });
+    } catch {}
+
     localStorage.removeItem(ACTIVE_USER_KEY);
     localStorage.removeItem(AUTH_STATE_KEY);
+    localStorage.removeItem(SESSION_TOKEN_KEY);
 
     setCurrentUser(EMPTY_GUEST_USER);
     setIsAuthenticated(false);
@@ -577,7 +619,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ userId: currentUser.id, ...data }),
         });
@@ -626,7 +668,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ userId: currentUser.id, privacySettings: updatedSettings }),
         });
@@ -644,7 +686,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch('/api/auth/change-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, currentPassword, newPassword }),
         });
         const data = await res.json();
@@ -666,7 +708,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch('/api/auth/change-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, currentPassword, newEmail }),
         });
         const data = await res.json();
@@ -688,7 +730,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch('/api/auth/verify-change-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, newEmail, otp }),
         });
         const data = await res.json();
@@ -714,7 +756,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch('/api/auth/deactivate', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, password }),
         });
         const data = await res.json();
@@ -737,7 +779,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch('/api/auth/delete-account', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, password }),
         });
         const data = await res.json();
@@ -760,7 +802,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/users/${encodeURIComponent(currentUser.id)}/notification-settings`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, notificationSettings: settings }),
         });
         const data = await res.json();
@@ -800,7 +842,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/users/${encodeURIComponent(targetUserId)}/block`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id }),
         });
         const data = await res.json();
@@ -822,7 +864,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/users/${encodeURIComponent(targetUserId)}/unblock`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id }),
         });
         const data = await res.json();
@@ -842,7 +884,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getBlockedUsers = useCallback(async (): Promise<BlockedUser[]> => {
     try {
       const res = await fetch(`/api/users/${encodeURIComponent(currentUser.id)}/blocked`, {
-        headers: { 'x-user-id': currentUser.id },
+        headers: { ...getAuthHeaders() },
       });
       if (res.ok) {
         const data = await res.json();

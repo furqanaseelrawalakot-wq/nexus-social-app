@@ -5,3 +5,7 @@ dist-ssr
 .vscode
 .idea
 .DS_Store
+.env
+.env.*
+server/email-config.json
+email-config.json

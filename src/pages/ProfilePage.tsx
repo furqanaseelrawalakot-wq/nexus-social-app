@@ -21,7 +21,7 @@ import {
   Sparkles,
   UserX,
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, getAuthHeaders } from '../context/AuthContext';
 import { useFeed } from '../context/FeedContext';
 import { useChat } from '../context/ChatContext';
 import { useToast } from '../context/ToastContext';
@@ -96,7 +96,7 @@ export const ProfilePage: React.FC = () => {
       try {
         const url = `/api/users/${encodeURIComponent(routeParam!)}/profile?viewerId=${currentUser.id}`;
         const res = await fetch(url, {
-          headers: { 'x-user-id': currentUser.id },
+          headers: { ...getAuthHeaders() },
         });
 
         if (res.ok) {

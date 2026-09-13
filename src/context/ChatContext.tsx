@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Conversation, Message, LocationData } from '../types';
-import { useAuth } from './AuthContext';
+import { useAuth, getAuthHeaders } from './AuthContext';
 import { useToast } from './ToastContext';
 
 interface ChatContextType {
@@ -52,7 +52,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      const res = await fetch(`/api/conversations?userId=${currentUser.id}`);
+      const res = await fetch(`/api/conversations?userId=${currentUser.id}`, { headers: { ...getAuthHeaders() } });
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.conversations)) {
@@ -71,7 +71,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await fetch(`/api/conversations/${convId}/read`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id }),
         });
       } catch (err) {
@@ -363,7 +363,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
           // Fetch full conversation messages (this marks them as read on the backend)
-          const res = await fetch(`/api/conversations/${active.id}/messages?userId=${currentUser.id}`);
+          const res = await fetch(`/api/conversations/${active.id}/messages?userId=${currentUser.id}`, { headers: { ...getAuthHeaders() } });
           if (res.ok) {
             const data = await res.json();
             if (data.success && Array.isArray(data.messages)) {
@@ -418,7 +418,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             senderId: currentUser.id,
@@ -507,7 +507,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             senderId: currentUser.id,
@@ -593,7 +593,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             senderId: currentUser.id,
@@ -635,7 +635,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!currentUser?.id) return;
       fetch(`/api/conversations/${convId}/typing`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ senderId: currentUser.id, isTyping }),
       }).catch(console.warn);
     },
