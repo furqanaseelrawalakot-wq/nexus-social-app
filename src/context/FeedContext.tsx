@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { Post, Story, Friend, ReactionType, Comment, User, UserStoryGroup, StoryType, StoryHighlightGroup } from '../types';
 import { initialPosts } from '../data/seedData';
-import { useAuth } from './AuthContext';
+import { useAuth, getAuthHeaders } from './AuthContext';
 import { useToast } from './ToastContext';
 
 export interface DiscoverUserItem extends Friend {
@@ -102,7 +102,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const url = currentUser?.id ? `/api/posts?viewerId=${currentUser.id}` : '/api/posts';
       const res = await fetch(url, {
-        headers: currentUser?.id ? { 'x-user-id': currentUser.id } : {},
+        headers: { ...getAuthHeaders() },
       });
       if (res.ok) {
         const data = await res.json();
@@ -131,7 +131,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     try {
       const res = await fetch(`/api/stories/feed?userId=${currentUser.id}`, {
-        headers: { 'x-user-id': currentUser.id },
+        headers: { ...getAuthHeaders() },
       });
       if (res.ok) {
         const data = await res.json();
@@ -155,7 +155,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const resFriends = await fetch(`/api/friends/list?userId=${currentUser.id}`, {
-        headers: { 'x-user-id': currentUser.id },
+        headers: { ...getAuthHeaders() },
       });
       if (resFriends.ok) {
         const data = await resFriends.json();
@@ -170,7 +170,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const resReqs = await fetch(`/api/friends/requests?userId=${currentUser.id}`, {
-        headers: { 'x-user-id': currentUser.id },
+        headers: { ...getAuthHeaders() },
       });
       if (resReqs.ok) {
         const data = await resReqs.json();
@@ -190,7 +190,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const url = `/api/users/discover?query=${encodeURIComponent(query)}&page=1&limit=20`;
         const res = await fetch(url, {
-          headers: { 'x-user-id': currentUser.id },
+          headers: { ...getAuthHeaders() },
         });
         if (res.ok) {
           const data = await res.json();
@@ -370,7 +370,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ senderId: currentUser.id }),
         });
@@ -408,7 +408,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ acceptorId: currentUser.id }),
         });
@@ -448,7 +448,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ userId: currentUser.id }),
         });
@@ -479,7 +479,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/friends/request/${targetUserId}`, {
           method: 'DELETE',
-          headers: { 'x-user-id': currentUser.id },
+          headers: { ...getAuthHeaders() },
         });
         const data = await res.json();
         if (res.ok && data.success) {
@@ -507,7 +507,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/friends/remove/${targetUserId}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id }),
         });
 
@@ -545,7 +545,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ followerId: currentUser.id }),
         });
@@ -585,7 +585,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ followerId: currentUser.id }),
         });
@@ -657,7 +657,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             userId: currentUser.id,
@@ -741,7 +741,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/posts/${postId}/share`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, content: caption }),
         });
 
@@ -772,7 +772,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await fetch(`/api/posts/${postId}`, {
           method: 'DELETE',
-          headers: { 'x-user-id': currentUser.id },
+          headers: { ...getAuthHeaders() },
         });
       } catch {}
     },
@@ -796,7 +796,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             userId: currentUser.id,
@@ -835,7 +835,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             userId: currentUser.id,
@@ -916,7 +916,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ userId: currentUser.id, type }),
         });
@@ -981,7 +981,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/posts/${postId}/comments`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, content: content.trim() }),
         });
 
@@ -1051,7 +1051,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/posts/${postId}/comments/${commentId}/replies`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, content: content.trim() }),
         });
 
@@ -1137,7 +1137,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await fetch(`/api/posts/${postId}/comments/${commentId}/like`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id }),
         });
       } catch (e) {
@@ -1174,7 +1174,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id, content: content.trim() }),
         });
         if (res.ok) {
@@ -1234,7 +1234,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/posts/${postId}/comments/${commentId}?userId=${currentUser.id}`, {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ userId: currentUser.id }),
         });
         if (res.ok) {
@@ -1291,7 +1291,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             userId: currentUser.id,
@@ -1332,7 +1332,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ userId: currentUser.id }),
         });
@@ -1349,7 +1349,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const res = await fetch(`/api/stories/${storyId}`, {
           method: 'DELETE',
-          headers: { 'x-user-id': currentUser.id },
+          headers: { ...getAuthHeaders() },
         });
         if (res.ok) {
           showToast('Story Deleted', 'Your story was removed.', 'info');
@@ -1372,7 +1372,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             userId: currentUser.id,
@@ -1404,7 +1404,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
     async (userId: string): Promise<StoryHighlightGroup[]> => {
       try {
         const res = await fetch(`/api/users/${encodeURIComponent(userId)}/highlights?viewerId=${encodeURIComponent(currentUser?.id || '')}`, {
-          headers: { 'x-user-id': currentUser?.id || '' },
+          headers: { ...getAuthHeaders() },
         });
         if (res.ok) {
           const data = await res.json();
@@ -1431,7 +1431,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             userId: currentUser.id,

@@ -11,7 +11,7 @@ import {
   Loader2,
   ShieldCheck,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, getAuthHeaders } from '../../context/AuthContext';
 import { useFeed } from '../../context/FeedContext';
 import { useChat } from '../../context/ChatContext';
 import { useNavigate } from 'react-router-dom';
@@ -89,7 +89,7 @@ export const UserConnectionsModal: React.FC<UserConnectionsModalProps> = ({
       try {
         const viewerId = currentUser?.id || '';
         const res = await fetch(`/api/users/${encodeURIComponent(userId)}/${activeTab}?viewerId=${viewerId}`, {
-          headers: { 'x-user-id': viewerId },
+          headers: { ...getAuthHeaders() },
         });
 
         const data = await res.json();

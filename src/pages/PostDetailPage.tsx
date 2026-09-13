@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useFeed } from '../context/FeedContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, getAuthHeaders } from '../context/AuthContext';
 import { PostCard } from '../components/feed/PostCard';
 import { Post } from '../types';
 
@@ -27,7 +27,7 @@ export const PostDetailPage: React.FC = () => {
       try {
         const viewerId = currentUser?.id || '';
         const res = await fetch(`/api/posts/${id}?viewerId=${viewerId}`, {
-          headers: viewerId ? { 'x-user-id': viewerId } : {},
+          headers: { ...getAuthHeaders() },
         });
         if (res.ok) {
           const data = await res.json();

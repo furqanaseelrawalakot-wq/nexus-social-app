@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { NotificationItem } from '../types';
-import { useAuth } from './AuthContext';
+import { useAuth, getAuthHeaders } from './AuthContext';
 import { useToast } from './ToastContext';
 
 interface NotificationContextType {
@@ -37,7 +37,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
     try {
       const res = await fetch(`/api/notifications?userId=${currentUser.id}`, {
-        headers: { 'x-user-id': currentUser.id },
+        headers: { ...getAuthHeaders() },
       });
       if (res.ok) {
         const data = await res.json();
@@ -121,9 +121,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           await fetch(`/api/notifications/${id}/read`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
-              'x-user-id': currentUser.id,
-            },
+            'Content-Type': 'application/json',
+            ...getAuthHeaders(),
+          },
             body: JSON.stringify({ userId: currentUser.id }),
           });
         } catch (err) {
@@ -144,7 +144,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': currentUser.id,
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({ userId: currentUser.id }),
         });
