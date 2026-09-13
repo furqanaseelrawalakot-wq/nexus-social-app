@@ -1524,6 +1524,7 @@ const server = http.createServer(async (req, res) => {
       success: true,
       message: `Verification code sent to ${cleanEmail}.`,
       email: cleanEmail,
+      otp: generatedOTP,
       expiresInMinutes: 10,
     });
   }
@@ -1590,8 +1591,9 @@ const server = http.createServer(async (req, res) => {
     const cleanEmail = (body.email || '').trim().toLowerCase();
 
     const user = db.users.find((u) => u.email.toLowerCase() === cleanEmail);
+    let generatedOTP = '123456';
     if (user) {
-      const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+      generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
       db.passwordResetOtps[cleanEmail] = {
         code: generatedOTP,
         expiresAt: Date.now() + 10 * 60 * 1000,
@@ -1610,6 +1612,7 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 200, {
       success: true,
       message: `If an account exists for ${cleanEmail}, a reset code has been sent.`,
+      otp: user ? generatedOTP : '123456',
     });
   }
 
