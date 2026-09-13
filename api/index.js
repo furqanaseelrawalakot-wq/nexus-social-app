@@ -96,8 +96,12 @@ export default async function handler(req, res) {
     try { body = JSON.parse(body); } catch {}
   }
 
-  // 1. Send OTP / Forgot Password
-  if (url.includes('/api/auth/forgot-password') || url.includes('/api/auth/send-otp')) {
+  // 1. Send OTP / Forgot Password / Registration OTP
+  if (
+    url.includes('/api/auth/forgot-password') ||
+    url.includes('/api/auth/send-otp') ||
+    url.includes('/api/auth/register')
+  ) {
     const email = (body.email || '').trim().toLowerCase();
     if (!email) {
       return res.status(400).json({ success: false, message: 'Email is required.' });
@@ -107,7 +111,7 @@ export default async function handler(req, res) {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
         <h2 style="color: #4f46e5; text-align: center; margin-bottom: 20px;">Nexus Social</h2>
-        <p style="color: #334155; font-size: 14px; line-height: 1.5;">Your 6-digit verification code is:</p>
+        <p style="color: #334155; font-size: 14px; line-height: 1.5;">Hello! Your 6-digit security verification code is:</p>
         <div style="background-color: #f1f5f9; padding: 18px; text-align: center; border-radius: 12px; font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #4f46e5; margin: 20px 0;">
           ${generatedOTP}
         </div>
@@ -126,14 +130,14 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         message: `Verification code sent to ${email}. Check your Gmail inbox/spam.`,
-        otp: generatedOTP
+        otp: generatedOTP,
       });
     } catch (err) {
       console.error('SMTP Error:', err.message);
       return res.status(200).json({
         success: true,
         message: `Verification code sent to ${email}.`,
-        otp: generatedOTP
+        otp: generatedOTP,
       });
     }
   }

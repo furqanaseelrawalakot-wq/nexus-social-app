@@ -679,34 +679,10 @@ export const LoginPage: React.FC = () => {
                   </form>
                 ) : (
                   <form onSubmit={handleResetPasswordSubmit} className="space-y-3.5">
-                    <div className="p-3 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs space-y-1">
-                      <p className="text-slate-700">
-                        Reset code sent to <strong>{forgotEmail}</strong>.
+                    <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs space-y-1">
+                      <p className="text-slate-700 leading-relaxed">
+                        A 6-digit password reset code has been sent to <strong>{forgotEmail}</strong>. Please check your Gmail inbox (and Spam folder).
                       </p>
-                      <div className="pt-1 flex items-center justify-between text-[11px]">
-                        <button
-                          type="button"
-                          onClick={() => setShowCodeHelper(!showCodeHelper)}
-                          className="text-indigo-600 font-semibold hover:underline flex items-center gap-1"
-                        >
-                          <HelpCircle className="w-3.5 h-3.5" />
-                          <span>{showCodeHelper ? 'Hide Code' : 'Check code here'}</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleQuickFill}
-                          className="font-bold text-indigo-700 bg-white hover:bg-indigo-100 px-2 py-0.5 rounded-lg border border-indigo-200 shadow-sm"
-                        >
-                          {copied ? 'Filled!' : 'Quick Auto-Fill'}
-                        </button>
-                      </div>
-                      {showCodeHelper && (
-                        <div className="p-2 rounded-xl bg-white border border-indigo-200 text-center">
-                          <p className="font-mono text-base font-extrabold tracking-widest text-indigo-600">
-                            {pendingOTP || '123456'}
-                          </p>
-                        </div>
-                      )}
                     </div>
 
                     {/* 6-Digit OTP Code */}
@@ -1357,35 +1333,9 @@ export const LoginPage: React.FC = () => {
                           Sent
                         </span>
                       </div>
-                      <p className="text-slate-600">
-                        We sent a 6-digit code to <strong>{email}</strong>. Enter it below to activate your account.
+                      <p className="text-slate-600 leading-relaxed">
+                        We sent a 6-digit security code to <strong>{email}</strong>. Please check your Gmail inbox (and Spam folder) and enter it below to activate your account.
                       </p>
-
-                      <div className="pt-1 flex items-center justify-between text-[11px]">
-                        <button
-                          type="button"
-                          onClick={() => setShowCodeHelper(!showCodeHelper)}
-                          className="text-indigo-600 font-semibold hover:underline flex items-center gap-1"
-                        >
-                          <HelpCircle className="w-3.5 h-3.5" />
-                          <span>{showCodeHelper ? 'Hide Code' : 'Check code here'}</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleQuickFill}
-                          className="font-bold text-indigo-700 bg-white hover:bg-indigo-100 px-2 py-0.5 rounded-lg border border-indigo-200 shadow-sm"
-                        >
-                          {copied ? 'Filled!' : 'Quick Auto-Fill'}
-                        </button>
-                      </div>
-
-                      {showCodeHelper && (
-                        <div className="p-2 rounded-xl bg-white border border-indigo-200 text-center">
-                          <p className="font-mono text-base font-extrabold tracking-widest text-indigo-600">
-                            {pendingOTP || '123456'}
-                          </p>
-                        </div>
-                      )}
                     </div>
 
                     <div>

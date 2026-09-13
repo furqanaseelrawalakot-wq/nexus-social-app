@@ -163,7 +163,7 @@ export const PostComposer: React.FC = () => {
           onClick={() => setIsExpanded(true)}
           className="flex-1 px-4 py-2.5 rounded-2xl bg-slate-100/90 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm text-slate-500 cursor-pointer transition-colors"
         >
-          {content || `What's on your mind, ${currentUser.fullName.split(' ')[0]}?`}
+          {content || `What's on your mind, ${(currentUser?.fullName || 'there').trim().split(' ')[0] || 'there'}?`}
         </div>
       </div>
 
