@@ -32,7 +32,7 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
   onClose,
 }) => {
   const { currentUser } = useAuth();
-  const { viewStory, deleteStory, replyToStory } = useFeed();
+  const { viewStory, deleteStory, replyToStory, toggleStoryHighlight } = useFeed();
 
   const [currentGroupIdx, setCurrentGroupIdx] = useState(initialGroupIndex);
   const [currentStoryIdx, setCurrentStoryIdx] = useState(0);
@@ -42,6 +42,8 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
   const [replyText, setReplyText] = useState('');
   const [showViewersSheet, setShowViewersSheet] = useState(false);
   const [isSendingReply, setIsSendingReply] = useState(false);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
+  const [highlightTitleInput, setHighlightTitleInput] = useState('Highlights');
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -86,12 +88,12 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
   // Handle audio play/pause synchronization
   useEffect(() => {
     if (!audioRef.current || currentStory?.type !== 'audio') return;
-    if (isPaused || showViewersSheet) {
+    if (isPaused || showViewersSheet || showHighlightModal) {
       audioRef.current.pause();
     } else {
       audioRef.current.play().catch(() => {});
     }
-  }, [isPaused, showViewersSheet, currentStory?.id, currentStory?.type]);
+  }, [isPaused, showViewersSheet, showHighlightModal, currentStory?.id, currentStory?.type]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -104,7 +106,7 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
 
   // Story Progress Timer for image/text (audio uses onTimeUpdate / onEnded)
   useEffect(() => {
-    if (isPaused || showViewersSheet || !currentStory) return;
+    if (isPaused || showViewersSheet || showHighlightModal || !currentStory) return;
     if (currentStory.type === 'audio') return; // Handled dynamically by audio element
 
     const intervalMs = 50;
@@ -121,7 +123,7 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
     }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [isPaused, showViewersSheet, currentStory, handleNextStory]);
+  }, [isPaused, showViewersSheet, showHighlightModal, currentStory, handleNextStory]);
 
   const handleQuickReaction = async (emoji: string) => {
     if (!currentStory?.id || isOwner) return;
@@ -162,6 +164,29 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
     }
   };
 
+  const handleToggleHighlight = async () => {
+    if (!currentStory?.id || !isOwner) return;
+    if (currentStory.isHighlighted) {
+      // Toggle off
+      await toggleStoryHighlight(currentStory.id, undefined, false);
+      currentStory.isHighlighted = false;
+    } else {
+      setIsPaused(true);
+      setShowHighlightModal(true);
+    }
+  };
+
+  const handleSaveHighlightSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentStory?.id || !isOwner) return;
+    const title = highlightTitleInput.trim() || 'Highlights';
+    await toggleStoryHighlight(currentStory.id, title, true);
+    currentStory.isHighlighted = true;
+    currentStory.highlightTitle = title;
+    setShowHighlightModal(false);
+    setIsPaused(false);
+  };
+
   if (!currentStory) return null;
 
   return (
@@ -199,13 +224,35 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
             <UserAvatarLink user={currentStory.author} size="sm" className="ring-2 ring-white/80" />
             <div className="min-w-0">
               <UserNameLink user={currentStory.author} className="text-xs font-bold text-white leading-tight drop-shadow truncate block" />
-              <span className="text-[10px] text-white/70 font-mono drop-shadow">
-                {new Date(currentStory.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-white/70 font-mono drop-shadow">
+                  {new Date(currentStory.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+                {currentStory.isHighlighted && (
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full bg-amber-500/80 text-[9px] font-bold text-white font-mono">
+                    ⭐ {currentStory.highlightTitle || 'Highlight'}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {isOwner && (
+              <button
+                type="button"
+                onClick={handleToggleHighlight}
+                className={`p-2 rounded-full backdrop-blur-md transition-colors ${
+                  currentStory.isHighlighted
+                    ? 'bg-amber-500 text-white shadow-lg'
+                    : 'bg-black/40 hover:bg-black/60 text-amber-300'
+                }`}
+                title={currentStory.isHighlighted ? 'Remove from Highlights' : 'Save to Highlights'}
+              >
+                <Sparkles className="w-4 h-4 fill-current" />
+              </button>
+            )}
+
             {(currentStory.type === 'video' || currentStory.type === 'audio') && (
               <button
                 type="button"
@@ -465,6 +512,67 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
                 </p>
               )}
             </div>
+          </div>
+        )}
+
+        {/* OWNER "SAVE TO HIGHLIGHTS" MODAL DRAWER */}
+        {showHighlightModal && isOwner && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="absolute inset-x-0 bottom-0 z-40 bg-slate-900/95 border-t border-slate-700 rounded-t-3xl p-5 space-y-4 backdrop-blur-xl animate-in slide-in-from-bottom duration-200"
+          >
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <h4 className="text-xs font-bold text-white">Save to Profile Highlights</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowHighlightModal(false);
+                  setIsPaused(false);
+                }}
+                className="p-1 text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveHighlightSubmit} className="space-y-3">
+              <div>
+                <label className="text-[11px] font-bold text-slate-300 block mb-1.5">
+                  Highlight Collection Name
+                </label>
+                <input
+                  type="text"
+                  value={highlightTitleInput}
+                  onChange={(e) => setHighlightTitleInput(e.target.value)}
+                  placeholder="e.g. Summer Vibes, Memories, Travel..."
+                  maxLength={25}
+                  autoFocus
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowHighlightModal(false);
+                    setIsPaused(false);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 shadow-lg"
+                >
+                  Save Highlight
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </div>

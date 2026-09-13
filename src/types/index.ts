@@ -1,11 +1,29 @@
 export type ReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'fire';
 
+export interface NotificationSettings {
+  notifyOnFriendRequest?: boolean;
+  notifyOnComment?: boolean;
+  notifyOnReaction?: boolean;
+  notifyOnMessage?: boolean;
+  notifyOnFollow?: boolean;
+}
+
 export interface UserPrivacySettings {
   isPrivate?: boolean;
   whoCanSeePosts: 'public' | 'friends' | 'only_me';
   whoCanSendRequests: 'everyone' | 'friends_of_friends';
   showOnlineStatus: boolean;
   showAge?: boolean;
+  notificationSettings?: NotificationSettings;
+}
+
+export interface BlockedUser {
+  id: string;
+  userId: string;
+  fullName: string;
+  username: string;
+  avatarUrl: string;
+  blockedAt: string;
 }
 
 export interface User {
@@ -36,8 +54,9 @@ export interface User {
   isOnline?: boolean;
   lastSeen?: string;
   isPrivate?: boolean;
-  accountStatus?: 'pending_verification' | 'active';
+  accountStatus?: 'pending_verification' | 'active' | 'deactivated';
   privacySettings?: UserPrivacySettings;
+  notificationSettings?: NotificationSettings;
 }
 
 export interface PostReaction {
@@ -114,6 +133,17 @@ export interface Story {
   expiresAt?: string;
   isViewed?: boolean;
   viewedBy?: StoryViewer[];
+  isHighlighted?: boolean;
+  highlightTitle?: string;
+}
+
+export interface StoryHighlightGroup {
+  id: string;
+  userId: string;
+  title: string;
+  coverUrl?: string;
+  stories: Story[];
+  createdAt: string;
 }
 
 export interface UserStoryGroup {

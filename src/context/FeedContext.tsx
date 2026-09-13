@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { Post, Story, Friend, ReactionType, Comment, User, UserStoryGroup, StoryType } from '../types';
+import { Post, Story, Friend, ReactionType, Comment, User, UserStoryGroup, StoryType, StoryHighlightGroup } from '../types';
 import { initialPosts } from '../data/seedData';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
@@ -35,6 +35,8 @@ interface FeedContextType {
   createStory: (data: { type: StoryType; mediaUrl?: string; textContent?: string; backgroundStyle?: string; caption?: string; mediaType?: 'image' | 'video' | 'audio'; duration?: string }) => Promise<boolean>;
   viewStory: (storyId: string) => Promise<void>;
   deleteStory: (storyId: string) => Promise<boolean>;
+  toggleStoryHighlight: (storyId: string, highlightTitle?: string, isHighlighted?: boolean) => Promise<boolean>;
+  getUserHighlights: (userId: string) => Promise<StoryHighlightGroup[]>;
   replyToStory: (storyId: string, reply: { type: 'reaction' | 'text'; content?: string; emoji?: string }) => Promise<boolean>;
   sendFriendRequest: (targetUserId: string) => Promise<boolean>;
   acceptFriendRequest: (targetUserId: string) => Promise<boolean>;
@@ -1362,6 +1364,62 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [currentUser?.id, fetchStories, showToast]
   );
 
+  const toggleStoryHighlight = useCallback(
+    async (storyId: string, highlightTitle?: string, isHighlighted?: boolean): Promise<boolean> => {
+      if (!currentUser?.id) return false;
+      try {
+        const res = await fetch(`/api/stories/${storyId}/highlight`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': currentUser.id,
+          },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            highlightTitle,
+            isHighlighted: isHighlighted !== undefined ? isHighlighted : true,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            showToast(
+              isHighlighted !== false ? 'Added to Highlights! ✨' : 'Removed from Highlights',
+              data.message || 'Highlight status updated.',
+              'success'
+            );
+            await fetchStories();
+            return true;
+          }
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [currentUser?.id, fetchStories, showToast]
+  );
+
+  const getUserHighlights = useCallback(
+    async (userId: string): Promise<StoryHighlightGroup[]> => {
+      try {
+        const res = await fetch(`/api/users/${encodeURIComponent(userId)}/highlights?viewerId=${encodeURIComponent(currentUser?.id || '')}`, {
+          headers: { 'x-user-id': currentUser?.id || '' },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.highlights)) {
+            return data.highlights;
+          }
+        }
+        return [];
+      } catch {
+        return [];
+      }
+    },
+    [currentUser?.id]
+  );
+
   const replyToStory = useCallback(
     async (
       storyId: string,
@@ -1437,6 +1495,8 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         createStory,
         viewStory,
         deleteStory,
+        toggleStoryHighlight,
+        getUserHighlights,
         replyToStory,
         sendFriendRequest,
         acceptFriendRequest,

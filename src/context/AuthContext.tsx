@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, UserPrivacySettings } from '../types';
+import { User, UserPrivacySettings, NotificationSettings, BlockedUser } from '../types';
 import { currentUser as defaultSeedUser } from '../data/seedData';
 import { useToast } from './ToastContext';
 
@@ -25,6 +25,15 @@ interface AuthContextType {
   otpEmail: string;
   updateProfile: (data: Partial<User>) => void;
   updatePrivacy: (settings: Partial<UserPrivacySettings>) => void;
+  updateNotificationSettings: (settings: Partial<NotificationSettings>) => Promise<boolean>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  changeEmail: (currentPassword: string, newEmail: string) => Promise<{ success: boolean; message: string }>;
+  verifyChangeEmail: (newEmail: string, otp: string) => Promise<{ success: boolean; message: string }>;
+  deactivateAccount: (password?: string) => Promise<{ success: boolean; message: string }>;
+  deleteAccount: (password: string) => Promise<{ success: boolean; message: string }>;
+  blockUser: (userId: string) => Promise<{ success: boolean; message: string }>;
+  unblockUser: (userId: string) => Promise<{ success: boolean; message: string }>;
+  getBlockedUsers: () => Promise<BlockedUser[]>;
   openAuthModal: () => void;
   closeAuthModal: () => void;
   sendOTP: (email: string) => Promise<string>;
@@ -629,6 +638,224 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [currentUser.id, currentUser.privacySettings, showToast]
   );
 
+  // 12. Change Password
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, currentPassword, newPassword }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('Password Changed! 🔒', 'Your password has been updated securely.', 'success');
+          return { success: true, message: data.message || 'Password changed successfully.' };
+        }
+        return { success: false, message: data.message || data.error || 'Failed to change password.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, showToast]
+  );
+
+  // 13. Request Change Email
+  const changeEmail = useCallback(
+    async (currentPassword: string, newEmail: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch('/api/auth/change-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, currentPassword, newEmail }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('Verification Code Sent 📧', `Check ${newEmail} for your verification code.`, 'info');
+          return { success: true, message: data.message || 'Verification code sent.' };
+        }
+        return { success: false, message: data.message || data.error || 'Failed to request email change.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, showToast]
+  );
+
+  // 14. Verify Change Email
+  const verifyChangeEmail = useCallback(
+    async (newEmail: string, otp: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch('/api/auth/verify-change-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, newEmail, otp }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success && data.user) {
+          setCurrentUser(data.user);
+          try {
+            localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(data.user));
+          } catch {}
+          showToast('Email Updated! 🎉', 'Your email address has been successfully changed.', 'success');
+          return { success: true, message: data.message || 'Email updated successfully.' };
+        }
+        return { success: false, message: data.message || data.error || 'Invalid verification code.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, showToast]
+  );
+
+  // 15. Deactivate Account
+  const deactivateAccount = useCallback(
+    async (password?: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch('/api/auth/deactivate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, password }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          logout();
+          showToast('Account Deactivated', 'Your account has been deactivated. You can reactivate anytime by logging in.', 'info');
+          return { success: true, message: data.message || 'Account deactivated.' };
+        }
+        return { success: false, message: data.message || 'Failed to deactivate account.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, logout, showToast]
+  );
+
+  // 16. Delete Account
+  const deleteAccount = useCallback(
+    async (password: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch('/api/auth/delete-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, password }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          logout();
+          showToast('Account Deleted', 'Your account and data have been permanently removed.', 'info');
+          return { success: true, message: data.message || 'Account deleted.' };
+        }
+        return { success: false, message: data.message || 'Failed to delete account.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, logout, showToast]
+  );
+
+  // 17. Update Notification Settings
+  const updateNotificationSettings = useCallback(
+    async (settings: Partial<NotificationSettings>): Promise<boolean> => {
+      try {
+        const res = await fetch(`/api/users/${encodeURIComponent(currentUser.id)}/notification-settings`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, notificationSettings: settings }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success && data.notificationSettings) {
+          setCurrentUser((prev) => {
+            const updated = {
+              ...prev,
+              notificationSettings: data.notificationSettings,
+              privacySettings: {
+                ...prev.privacySettings,
+                whoCanSeePosts: prev.privacySettings?.whoCanSeePosts || 'public',
+                whoCanSendRequests: prev.privacySettings?.whoCanSendRequests || 'everyone',
+                showOnlineStatus: prev.privacySettings?.showOnlineStatus ?? true,
+                notificationSettings: data.notificationSettings,
+              },
+            };
+            try {
+              localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(updated));
+            } catch {}
+            return updated;
+          });
+          showToast('Preferences Saved', 'Your notification settings were updated.', 'success');
+          return true;
+        }
+        return false;
+      } catch {
+        showToast('Update Failed', 'Could not save notification preferences.', 'error');
+        return false;
+      }
+    },
+    [currentUser.id, showToast]
+  );
+
+  // 18. Block User
+  const blockUser = useCallback(
+    async (targetUserId: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch(`/api/users/${encodeURIComponent(targetUserId)}/block`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('User Blocked 🚫', data.message || 'User has been blocked.', 'info');
+          return { success: true, message: data.message };
+        }
+        return { success: false, message: data.message || 'Failed to block user.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, showToast]
+  );
+
+  // 19. Unblock User
+  const unblockUser = useCallback(
+    async (targetUserId: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const res = await fetch(`/api/users/${encodeURIComponent(targetUserId)}/unblock`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('User Unblocked', data.message || 'User has been unblocked.', 'success');
+          return { success: true, message: data.message };
+        }
+        return { success: false, message: data.message || 'Failed to unblock user.' };
+      } catch (err: any) {
+        return { success: false, message: err?.message || 'Network error.' };
+      }
+    },
+    [currentUser.id, showToast]
+  );
+
+  // 20. Get Blocked Users
+  const getBlockedUsers = useCallback(async (): Promise<BlockedUser[]> => {
+    try {
+      const res = await fetch(`/api/users/${encodeURIComponent(currentUser.id)}/blocked`, {
+        headers: { 'x-user-id': currentUser.id },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.blocked)) {
+          return data.blocked;
+        }
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }, [currentUser.id]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -641,6 +868,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         otpEmail,
         updateProfile,
         updatePrivacy,
+        updateNotificationSettings,
+        changePassword,
+        changeEmail,
+        verifyChangeEmail,
+        deactivateAccount,
+        deleteAccount,
+        blockUser,
+        unblockUser,
+        getBlockedUsers,
         openAuthModal,
         closeAuthModal,
         sendOTP,
