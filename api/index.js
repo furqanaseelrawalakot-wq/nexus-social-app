@@ -91,7 +91,7 @@ export default async function handler(req, res) {
 
   const url = req.url || '';
   const emailUser = process.env.EMAIL_USER || 'furqanaseelrawalakot@gmail.com';
-  const emailPass = process.env.EMAIL_PASS || 'txbjacvssedcheex';
+  const emailPass = process.env.EMAIL_PASS || 'kzhyrclzcgzdngoq';
 
   // Parse JSON Body
   let body = req.body || {};
