@@ -377,6 +377,10 @@
     "zain.malik.tech2026@gmail.com": {
       "count": 1,
       "lockedUntil": null
+    },
+    "kfasi5032@gmail.com": {
+      "count": 1,
+      "lockedUntil": null
     }
   },
   "posts": [
@@ -1816,6 +1820,38 @@
       "createdAt": "Just now",
       "timestamp": 1787294568089,
       "status": "pending"
+    },
+    {
+      "id": "freq-1787498037850-3xg2a",
+      "fromUserId": "user-1787250050266",
+      "toUserId": "user-1787251473349",
+      "createdAt": "Just now",
+      "timestamp": 1787498037850,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1787498266013-mf83z",
+      "fromUserId": "user-1787250050266",
+      "toUserId": "user-1787252230767",
+      "createdAt": "Just now",
+      "timestamp": 1787498266013,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1787498266911-yr3sv",
+      "fromUserId": "user-1787250050266",
+      "toUserId": "user-1787255663175",
+      "createdAt": "Just now",
+      "timestamp": 1787498266911,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1787498267951-xah1q",
+      "fromUserId": "user-1787250050266",
+      "toUserId": "user-1787253951640",
+      "createdAt": "Just now",
+      "timestamp": 1787498267951,
+      "status": "pending"
     }
   ],
   "friendships": [
@@ -1875,10 +1911,10 @@
           "duration": "0:05",
           "createdAt": "11:12 AM",
           "timestamp": 1787296348943,
-          "status": "delivered",
+          "status": "read",
           "deliveredAt": "2026-08-21T07:12:28.942Z",
-          "readAt": null,
-          "isRead": false
+          "readAt": "2026-08-23T15:12:16.155Z",
+          "isRead": true
         },
         {
           "id": "msg-1787296371328-2o22",
@@ -2258,6 +2294,66 @@
   ],
   "notifications": [
     {
+      "id": "notif-1787498267951",
+      "userId": "user-1787253951640",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787498267951-xah1q",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787498266911",
+      "userId": "user-1787255663175",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787498266911-yr3sv",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787498266013",
+      "userId": "user-1787252230767",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787498266013-mf83z",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1787498037850",
+      "userId": "user-1787251473349",
+      "actor": {
+        "id": "user-1787250050266",
+        "fullName": "kfasi5032",
+        "username": "kfasi5032",
+        "avatarUrl": "/uploads/avatars/avatar-1787261725983-647b3ff1.jpg"
+      },
+      "type": "friend_request",
+      "content": "kfasi5032 sent you a friend request.",
+      "targetId": "freq-1787498037850-3xg2a",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
       "id": "notif-1787296371328",
       "userId": "user-1787295354834",
       "actor": {
@@ -2283,7 +2379,7 @@
       "content": "khan rehman sent you a voice message.",
       "targetId": "conv-user-1787250050266-user-1787295354834",
       "createdAt": "Just now",
-      "isRead": false
+      "isRead": true
     },
     {
       "id": "notif-1787295549965",

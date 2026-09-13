@@ -38,19 +38,19 @@ export const SidebarLeft: React.FC = () => {
       <div className="rounded-3xl bg-white border border-slate-200 shadow-card p-5 space-y-4">
         <Link to="/profile" className="flex items-center gap-3 group">
           <UserAvatar
-            src={currentUser.avatarUrl}
-            name={currentUser.fullName}
+            src={currentUser?.avatarUrl}
+            name={currentUser?.fullName || 'User'}
             size="lg"
             className="group-hover:scale-105 transition-transform"
           />
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate flex items-center gap-1">
-              <span>{currentUser.fullName}</span>
-              {currentUser.isVerified && (
+              <span>{currentUser?.fullName || 'User'}</span>
+              {currentUser?.isVerified && (
                 <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 fill-indigo-100" />
               )}
             </h3>
-            <p className="text-[11px] text-slate-500 truncate">@{currentUser.username}</p>
+            <p className="text-[11px] text-slate-500 truncate">@{currentUser?.username || 'member'}</p>
           </div>
         </Link>
 

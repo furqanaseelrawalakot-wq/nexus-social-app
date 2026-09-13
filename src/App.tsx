@@ -96,7 +96,7 @@ const ProtectedRoot: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated || !currentUser?.id) {
+  if (!isAuthenticated || !currentUser?.id || !currentUser?.fullName) {
     return <LoginPage />;
   }
 
