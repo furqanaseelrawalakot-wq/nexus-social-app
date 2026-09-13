@@ -499,6 +499,106 @@
   ],
   "stories": [
     {
+      "id": "story-1789338300117-887af4",
+      "author": {
+        "id": "user-faseeh",
+        "username": "faseeh_rehman",
+        "fullName": "Faseeh-ur-Rehman",
+        "email": "furqanaslamrkt@gmail.com",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+        "coverUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80",
+        "bio": "Software Engineering (8th Sem) @ CUST Islamabad 🎓 | Software Engineering Intern @ 07B Arch Technologies 💻 | Full-Stack & AI Builder",
+        "location": "Islamabad, Pakistan",
+        "occupation": "Software Engineering Intern @ 07B Arch Technologies",
+        "education": "Capital University of Science and Technology (CUST)",
+        "website": "https://github.com/faseeh",
+        "joinedDate": "Joined January 2024",
+        "friendsCount": 5,
+        "followersCount": 5,
+        "followingCount": 3,
+        "isVerified": true,
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true
+        }
+      },
+      "type": "audio",
+      "mediaUrl": "/uploads/stories/story-1789338300115-8a84cb53.webm",
+      "mediaType": "audio",
+      "duration": "0:06",
+      "textContent": "",
+      "backgroundStyle": "from-rose-500 via-orange-500 to-amber-500",
+      "caption": "My First Audio Story 🎙️",
+      "createdAt": "2026-09-13T22:25:00.117Z",
+      "expiresAt": "2026-09-14T22:25:00.117Z",
+      "viewedBy": [
+        {
+          "userId": "user-sarah",
+          "user": {
+            "id": "user-sarah",
+            "username": "sarah_ai",
+            "fullName": "Dr. Sarah Jenkins",
+            "email": "sarah@ai.org",
+            "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80",
+            "coverUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&auto=format&fit=crop&q=80",
+            "bio": "Senior AI Research Scientist @ Stanford AI Lab. Exploring LLM alignment & reasoning.",
+            "location": "San Francisco, CA",
+            "occupation": "Senior AI Researcher",
+            "education": "Stanford University",
+            "joinedDate": "Joined March 2023",
+            "friendsCount": 2,
+            "followersCount": 4,
+            "followingCount": 2,
+            "isVerified": true,
+            "isPrivate": false,
+            "privacySettings": {
+              "whoCanSeePosts": "public",
+              "isPrivate": false,
+              "showOnlineStatus": true
+            }
+          },
+          "viewedAt": "2026-09-13T22:25:00.131Z"
+        }
+      ]
+    },
+    {
+      "id": "story-1789338293710-39eb92",
+      "author": {
+        "id": "user-faseeh",
+        "username": "faseeh_rehman",
+        "fullName": "Faseeh-ur-Rehman",
+        "email": "furqanaslamrkt@gmail.com",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+        "coverUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80",
+        "bio": "Software Engineering (8th Sem) @ CUST Islamabad 🎓 | Software Engineering Intern @ 07B Arch Technologies 💻 | Full-Stack & AI Builder",
+        "location": "Islamabad, Pakistan",
+        "occupation": "Software Engineering Intern @ 07B Arch Technologies",
+        "education": "Capital University of Science and Technology (CUST)",
+        "website": "https://github.com/faseeh",
+        "joinedDate": "Joined January 2024",
+        "friendsCount": 5,
+        "followersCount": 5,
+        "followingCount": 3,
+        "isVerified": true,
+        "privacySettings": {
+          "whoCanSeePosts": "public",
+          "whoCanSendRequests": "everyone",
+          "showOnlineStatus": true
+        }
+      },
+      "type": "audio",
+      "mediaUrl": "/uploads/stories/story-1789338293707-6a34fffa.webm",
+      "mediaType": "audio",
+      "duration": "0:06",
+      "textContent": "",
+      "backgroundStyle": "from-rose-500 via-orange-500 to-amber-500",
+      "caption": "My First Audio Story 🎙️",
+      "createdAt": "2026-09-13T22:24:53.711Z",
+      "expiresAt": "2026-09-14T22:24:53.713Z",
+      "viewedBy": []
+    },
+    {
       "id": "story-1",
       "author": {
         "id": "user-faseeh",
@@ -671,10 +771,10 @@
         "user-faseeh",
         "user-sarah"
       ],
-      "lastMessage": "Sent over the research notes on LLM agents!",
-      "lastMessageType": "text",
-      "lastMessageTime": "1h ago",
-      "unreadCount": 0,
+      "lastMessage": "Reacted 🔥 to your story",
+      "lastMessageType": "story_reply",
+      "lastMessageTime": "2026-09-13T22:25:00.138Z",
+      "unreadCount": 1,
       "messages": [
         {
           "id": "msg-4",
@@ -687,11 +787,43 @@
           "timestamp": 1789328651157,
           "status": "read",
           "isRead": true
+        },
+        {
+          "id": "msg-1789338300138-b69ad4",
+          "conversationId": "conv-user-faseeh-user-sarah",
+          "senderId": "user-sarah",
+          "recipientId": "user-faseeh",
+          "text": "Reacted 🔥 to your story",
+          "type": "story_reply",
+          "storyReply": {
+            "storyId": "story-1789338300117-887af4",
+            "type": "audio",
+            "mediaUrl": "/uploads/stories/story-1789338300115-8a84cb53.webm",
+            "textContent": "",
+            "backgroundStyle": "from-rose-500 via-orange-500 to-amber-500",
+            "caption": "My First Audio Story 🎙️"
+          },
+          "createdAt": "2026-09-13T22:25:00.138Z",
+          "status": "sent"
         }
       ]
     }
   ],
   "notifications": [
+    {
+      "id": "notif-1789338300138-c9e77f",
+      "userId": "user-faseeh",
+      "actor": {
+        "id": "user-sarah",
+        "fullName": "Dr. Sarah Jenkins",
+        "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "message",
+      "content": "Dr. Sarah Jenkins reacted to your story: \"Reacted 🔥 to your story\"",
+      "targetId": "conv-user-faseeh-user-sarah",
+      "createdAt": "Just now",
+      "isRead": false
+    },
     {
       "id": "notif-1789336468022-6c70",
       "userId": "user-faseeh",

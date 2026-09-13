@@ -92,7 +92,7 @@ export interface Report {
   status: 'pending' | 'resolved' | 'dismissed';
 }
 
-export type StoryType = 'image' | 'video' | 'text';
+export type StoryType = 'image' | 'video' | 'text' | 'audio';
 
 export interface StoryViewer {
   userId: string;
@@ -105,7 +105,8 @@ export interface Story {
   author: User;
   type: StoryType;
   mediaUrl?: string;
-  mediaType?: 'image' | 'video';
+  mediaType?: 'image' | 'video' | 'audio';
+  duration?: string | number;
   textContent?: string;
   backgroundStyle?: string;
   caption?: string;

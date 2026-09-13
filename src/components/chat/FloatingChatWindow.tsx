@@ -21,6 +21,7 @@ import { UserAvatarLink, UserNameLink } from '../common/UserLink';
 import { VoiceMessagePlayer } from './VoiceMessagePlayer';
 import { VideoRecorderModal } from './VideoRecorderModal';
 import { formatLastSeen } from '../../utils/presence';
+import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 
 export const FloatingChatWindow: React.FC = () => {
   const {
@@ -35,16 +36,18 @@ export const FloatingChatWindow: React.FC = () => {
 
   const { currentUser } = useAuth();
   const [inputMessage, setInputMessage] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  const {
+    isRecording,
+    recordingSeconds,
+    startRecording: startVoiceRecording,
+    stopRecording,
+    cancelRecording: cancelVoiceRecording,
+  } = useAudioRecorder();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const recordingTimerRef = useRef<any>(null);
-  const recordingStartTimeRef = useRef<number>(0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -83,73 +86,17 @@ export const FloatingChatWindow: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const startVoiceRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunksRef.current = [];
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      recordingStartTimeRef.current = Date.now();
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const elapsedSecs = Math.max(1, Math.round((Date.now() - recordingStartTimeRef.current) / 1000));
-        const m = Math.floor(elapsedSecs / 60);
-        const s = elapsedSecs % 60;
-        const durationFormatted = `${m}:${s < 10 ? '0' : ''}${s}`;
-
-        if (audioBlob.size > 0 && activeConversation) {
-          const reader = new FileReader();
-          reader.onload = async (ev) => {
-            const base64 = ev.target?.result as string;
-            await sendMediaMessage(activeConversation.id, {
-              mediaBase64: base64,
-              mediaType: 'voice',
-              fileName: 'voice_note.webm',
-              fileSize: `${(audioBlob.size / 1024).toFixed(0)} KB`,
-              duration: durationFormatted,
-            });
-          };
-          reader.readAsDataURL(audioBlob);
-        }
-        setIsRecording(false);
-        setRecordingSeconds(0);
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      setRecordingSeconds(0);
-
-      recordingTimerRef.current = setInterval(() => {
-        setRecordingSeconds((prev) => prev + 1);
-      }, 1000);
-    } catch {
-      alert('Microphone access is required to send voice messages.');
+  const stopAndSendVoice = async () => {
+    const result = await stopRecording();
+    if (result && activeConversation) {
+      await sendMediaMessage(activeConversation.id, {
+        mediaBase64: result.base64,
+        mediaType: 'voice',
+        fileName: 'voice_note.webm',
+        fileSize: `${(result.blob.size / 1024).toFixed(0)} KB`,
+        duration: result.duration,
+      });
     }
-  };
-
-  const stopAndSendVoice = () => {
-    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
-  const cancelVoiceRecording = () => {
-    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      audioChunksRef.current = [];
-      mediaRecorderRef.current.stop();
-    }
-    setIsRecording(false);
-    setRecordingSeconds(0);
   };
 
   const handleSendVideo = async (data: {
