@@ -49,11 +49,14 @@ export interface PostReaction {
 export interface Comment {
   id: string;
   postId: string;
+  parentCommentId?: string;
   author: User;
   content: string;
   createdAt: string;
   likesCount: number;
-  isLiked: boolean;
+  isLiked?: boolean;
+  likedBy?: string[];
+  isEdited?: boolean;
   replies?: Comment[];
 }
 

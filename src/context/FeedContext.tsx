@@ -25,8 +25,10 @@ interface FeedContextType {
   deletePost: (postId: string) => Promise<void>;
   reactToPost: (postId: string, type: ReactionType) => Promise<void>;
   addComment: (postId: string, content: string) => Promise<void>;
-  addReply: (postId: string, commentId: string, content: string) => void;
+  addReply: (postId: string, commentId: string, content: string) => Promise<boolean>;
   likeComment: (postId: string, commentId: string) => Promise<void>;
+  editComment: (postId: string, commentId: string, content: string) => Promise<boolean>;
+  deleteComment: (postId: string, commentId: string) => Promise<boolean>;
   toggleSavePost: (postId: string) => void;
   createStory: (data: { type: StoryType; mediaUrl?: string; textContent?: string; backgroundStyle?: string; caption?: string; mediaType?: 'image' | 'video' }) => Promise<boolean>;
   viewStory: (storyId: string) => Promise<void>;
@@ -68,6 +70,29 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [discoverList, setDiscoverList] = useState<DiscoverUserItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Helper mapping comments & reactions per viewer
+  const mapCommentWithViewer = useCallback((c: Comment, uid?: string): Comment => ({
+    ...c,
+    isLiked: uid && Array.isArray(c.likedBy) ? c.likedBy.includes(uid) : Boolean(c.isLiked),
+    likesCount: Array.isArray(c.likedBy) ? c.likedBy.length : (c.likesCount || 0),
+    replies: (c.replies || []).map((r) => ({
+      ...r,
+      isLiked: uid && Array.isArray(r.likedBy) ? r.likedBy.includes(uid) : Boolean(r.isLiked),
+      likesCount: Array.isArray(r.likedBy) ? r.likedBy.length : (r.likesCount || 0),
+    })),
+  }), []);
+
+  const mapPostWithViewer = useCallback((post: Post, uid?: string): Post => ({
+    ...post,
+    reactions: (post.reactions || []).map((r) => ({
+      ...r,
+      userReacted: post.reactionsList?.some(
+        (rl) => rl.userId === uid && rl.type === r.type
+      ) ?? false,
+    })),
+    comments: (post.comments || []).map((c) => mapCommentWithViewer(c, uid)),
+  }), [mapCommentWithViewer]);
+
   // 1. Fetch Posts from Server Database
   const fetchPosts = useCallback(async () => {
     try {
@@ -78,15 +103,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.posts)) {
-          const mappedPosts = data.posts.map((post: Post) => ({
-            ...post,
-            reactions: (post.reactions || []).map((r) => ({
-              ...r,
-              userReacted: post.reactionsList?.some(
-                (rl) => rl.userId === currentUser?.id && rl.type === r.type
-              ) ?? false,
-            })),
-          }));
+          const mappedPosts = data.posts.map((post: Post) => mapPostWithViewer(post, currentUser?.id));
 
           setPosts(mappedPosts);
           try {
@@ -99,7 +116,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.warn('Error fetching posts:', err);
     }
-  }, [currentUser?.id]);
+  }, [currentUser?.id, mapPostWithViewer]);
 
   // 2. Fetch Stories Feed from Server (Friends & Own active stories)
   const fetchStories = useCallback(async () => {
@@ -201,15 +218,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // A. Real-time New Post Created
         if (payload.type === 'post_created' && payload.data?.post) {
-          const newPost: Post = {
-            ...payload.data.post,
-            reactions: (payload.data.post.reactions || []).map((r: any) => ({
-              ...r,
-              userReacted: payload.data.post.reactionsList?.some(
-                (rl: any) => rl.userId === currentUser.id && rl.type === r.type
-              ) ?? false,
-            })),
-          };
+          const newPost = mapPostWithViewer(payload.data.post, currentUser.id);
 
           setPosts((prev) => {
             if (prev.some((p) => p.id === newPost.id)) return prev;
@@ -219,15 +228,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // B. Real-time Post Updated (Reactions, Comments, Likes)
         else if (payload.type === 'post_updated' && payload.data?.post) {
-          const updatedPost: Post = {
-            ...payload.data.post,
-            reactions: (payload.data.post.reactions || []).map((r: any) => ({
-              ...r,
-              userReacted: payload.data.post.reactionsList?.some(
-                (rl: any) => rl.userId === currentUser.id && rl.type === r.type
-              ) ?? false,
-            })),
-          };
+          const updatedPost = mapPostWithViewer(payload.data.post, currentUser.id);
 
           setPosts((prev) =>
             prev.map((p) => (p.id === updatedPost.id ? updatedPost : p))
@@ -877,7 +878,9 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         content: content.trim(),
         createdAt: 'Just now',
         likesCount: 0,
+        likedBy: [],
         isLiked: false,
+        isEdited: false,
         replies: [],
       };
 
@@ -903,11 +906,12 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.comment) {
+            const mappedComment = mapCommentWithViewer(data.comment, currentUser.id);
             setPosts((prev) =>
               prev.map((post) => {
                 if (post.id !== postId) return post;
                 const comments = (post.comments || []).map((c) =>
-                  c.id === tempId ? data.comment : c
+                  c.id === tempId ? mappedComment : c
                 );
                 return {
                   ...post,
@@ -923,20 +927,25 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         showToast('Comment Failed', 'Could not post comment.', 'error');
       }
     },
-    [currentUser, showToast]
+    [currentUser, mapCommentWithViewer, showToast]
   );
 
+  // Add Reply to Comment Handler
   const addReply = useCallback(
-    (postId: string, commentId: string, content: string) => {
-      if (!content.trim()) return;
+    async (postId: string, commentId: string, content: string): Promise<boolean> => {
+      if (!content.trim() || !currentUser?.id) return false;
+      const tempId = `reply-${Date.now()}`;
       const newReply: Comment = {
-        id: `reply-${Date.now()}`,
+        id: tempId,
         postId,
+        parentCommentId: commentId,
         author: currentUser,
         content: content.trim(),
         createdAt: 'Just now',
         likesCount: 0,
+        likedBy: [],
         isLiked: false,
+        isEdited: false,
       };
 
       setPosts((prev) =>
@@ -949,25 +958,95 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
               replies: [...(c.replies || []), newReply],
             };
           });
-          return { ...post, comments: updatedComments };
+          return {
+            ...post,
+            commentsCount: (post.commentsCount || 0) + 1,
+            comments: updatedComments,
+          };
         })
       );
+
+      try {
+        const res = await fetch(`/api/posts/${postId}/comments/${commentId}/replies`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, content: content.trim() }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.reply) {
+            const mappedReply = mapCommentWithViewer(data.reply, currentUser.id);
+            setPosts((prev) =>
+              prev.map((post) => {
+                if (post.id !== postId) return post;
+                const updatedComments = (post.comments || []).map((c) => {
+                  if (c.id !== commentId) return c;
+                  const replies = (c.replies || []).map((r) => (r.id === tempId ? mappedReply : r));
+                  return { ...c, replies };
+                });
+                return {
+                  ...post,
+                  commentsCount: data.commentsCount || post.commentsCount,
+                  comments: updatedComments,
+                };
+              })
+            );
+            return true;
+          }
+        }
+      } catch (err) {
+        console.warn('Reply server sync error:', err);
+        showToast('Reply Failed', 'Could not post reply.', 'error');
+      }
+      return false;
     },
-    [currentUser]
+    [currentUser, mapCommentWithViewer, showToast]
   );
 
+  // Like Comment or Reply Handler (Per-User Likes)
   const likeComment = useCallback(
     async (postId: string, commentId: string) => {
+      if (!currentUser?.id) return;
+      const uid = currentUser.id;
+
       setPosts((prev) =>
         prev.map((post) => {
           if (post.id !== postId) return post;
           const updatedComments = (post.comments || []).map((c) => {
-            if (c.id !== commentId) return c;
-            return {
-              ...c,
-              isLiked: !c.isLiked,
-              likesCount: c.isLiked ? Math.max(0, c.likesCount - 1) : c.likesCount + 1,
-            };
+            if (c.id === commentId) {
+              const prevLikedBy = Array.isArray(c.likedBy) ? [...c.likedBy] : [];
+              const idx = prevLikedBy.indexOf(uid);
+              if (idx > -1) prevLikedBy.splice(idx, 1);
+              else prevLikedBy.push(uid);
+              return {
+                ...c,
+                likedBy: prevLikedBy,
+                isLiked: prevLikedBy.includes(uid),
+                likesCount: prevLikedBy.length,
+              };
+            }
+
+            if (c.replies) {
+              const updatedReplies = c.replies.map((r) => {
+                if (r.id === commentId) {
+                  const prevLikedBy = Array.isArray(r.likedBy) ? [...r.likedBy] : [];
+                  const idx = prevLikedBy.indexOf(uid);
+                  if (idx > -1) prevLikedBy.splice(idx, 1);
+                  else prevLikedBy.push(uid);
+                  return {
+                    ...r,
+                    likedBy: prevLikedBy,
+                    isLiked: prevLikedBy.includes(uid),
+                    likesCount: prevLikedBy.length,
+                  };
+                }
+                return r;
+              });
+              return { ...c, replies: updatedReplies };
+            }
+
+            return c;
           });
           return { ...post, comments: updatedComments };
         })
@@ -977,10 +1056,119 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await fetch(`/api/posts/${postId}/comments/${commentId}/like`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id }),
         });
-      } catch {}
+      } catch (e) {
+        console.warn('Like comment sync error:', e);
+      }
     },
     [currentUser?.id]
+  );
+
+  // Edit Comment or Reply Handler
+  const editComment = useCallback(
+    async (postId: string, commentId: string, content: string): Promise<boolean> => {
+      if (!content.trim() || !currentUser?.id) return false;
+
+      setPosts((prev) =>
+        prev.map((post) => {
+          if (post.id !== postId) return post;
+          const updatedComments = (post.comments || []).map((c) => {
+            if (c.id === commentId) {
+              return { ...c, content: content.trim(), isEdited: true };
+            }
+            if (c.replies) {
+              const updatedReplies = c.replies.map((r) =>
+                r.id === commentId ? { ...r, content: content.trim(), isEdited: true } : r
+              );
+              return { ...c, replies: updatedReplies };
+            }
+            return c;
+          });
+          return { ...post, comments: updatedComments };
+        })
+      );
+
+      try {
+        const res = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id, content: content.trim() }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            showToast('Comment Updated', 'Your comment has been edited.', 'success');
+            return true;
+          }
+        }
+      } catch (err) {
+        console.warn('Edit comment error:', err);
+        showToast('Edit Failed', 'Could not update comment.', 'error');
+      }
+      return false;
+    },
+    [currentUser?.id, showToast]
+  );
+
+  // Delete Comment or Reply Handler
+  const deleteComment = useCallback(
+    async (postId: string, commentId: string): Promise<boolean> => {
+      if (!currentUser?.id) return false;
+
+      setPosts((prev) =>
+        prev.map((post) => {
+          if (post.id !== postId) return post;
+          const topLevel = (post.comments || []).find((c) => c.id === commentId);
+          if (topLevel) {
+            const countToSubtract = 1 + ((topLevel.replies && topLevel.replies.length) || 0);
+            return {
+              ...post,
+              comments: (post.comments || []).filter((c) => c.id !== commentId),
+              commentsCount: Math.max(0, (post.commentsCount || 0) - countToSubtract),
+            };
+          }
+
+          let wasReply = false;
+          const updatedComments = (post.comments || []).map((c) => {
+            if (c.replies && c.replies.some((r) => r.id === commentId)) {
+              wasReply = true;
+              return {
+                ...c,
+                replies: c.replies.filter((r) => r.id !== commentId),
+              };
+            }
+            return c;
+          });
+
+          return {
+            ...post,
+            comments: updatedComments,
+            commentsCount: wasReply ? Math.max(0, (post.commentsCount || 0) - 1) : post.commentsCount,
+          };
+        })
+      );
+
+      try {
+        const res = await fetch(`/api/posts/${postId}/comments/${commentId}?userId=${currentUser.id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id },
+          body: JSON.stringify({ userId: currentUser.id }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            showToast('Deleted', 'Comment deleted successfully.', 'info');
+            return true;
+          }
+        }
+      } catch (err) {
+        console.warn('Delete comment error:', err);
+        showToast('Delete Failed', 'Could not delete comment.', 'error');
+      }
+      return false;
+    },
+    [currentUser?.id, showToast]
   );
 
   const toggleSavePost = useCallback(
@@ -1159,6 +1347,8 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addComment,
         addReply,
         likeComment,
+        editComment,
+        deleteComment,
         toggleSavePost,
         createStory,
         viewStory,
