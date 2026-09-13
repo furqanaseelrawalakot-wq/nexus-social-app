@@ -40,10 +40,13 @@ const sendDirectGmailSMTP = (user, pass, to, subject, htmlContent) => {
           step = 8;
           const boundary = '----=_Part_' + Date.now();
           const emailMessage = [
-            `From: "Nexus Social" <${user}>`,
+            `From: =?UTF-8?B?TmV4dXMgU29jaWFs?= <${user}>`,
+            `Sender: =?UTF-8?B?TmV4dXMgU29jaWFs?= <${user}>`,
+            `Reply-To: =?UTF-8?B?TmV4dXMgU29jaWFsIFN1cHBvcnQ=?= <${user}>`,
             `To: <${to}>`,
             `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
             'MIME-Version: 1.0',
+            'X-Mailer: Nexus Social Mailer v2.0',
             `Content-Type: multipart/alternative; boundary="${boundary}"`,
             '',
             `--${boundary}`,
