@@ -8,12 +8,17 @@ import {
   Loader2,
   FolderUp,
   AlertCircle,
-  Film,
   Palette,
+  Mic,
+  Square,
+  Play,
+  Pause,
+  RotateCcw,
+  Volume2,
 } from 'lucide-react';
 import { useFeed } from '../../context/FeedContext';
 import { useToast } from '../../context/ToastContext';
-import { StoryType } from '../../types';
+import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 
 interface StoryCreateModalProps {
   isOpen: boolean;
@@ -33,7 +38,7 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
   const { createStory } = useFeed();
   const { showToast } = useToast();
 
-  const [storyMode, setStoryMode] = useState<'media' | 'text'>('media');
+  const [storyMode, setStoryMode] = useState<'media' | 'text' | 'audio'>('media');
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
   const [caption, setCaption] = useState('');
@@ -41,8 +46,20 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
   const [selectedGradient, setSelectedGradient] = useState(GRADIENT_PRESETS[0].class);
   const [isPublishing, setIsPublishing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPlayingAudioPreview, setIsPlayingAudioPreview] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const audioPreviewRef = useRef<HTMLAudioElement | null>(null);
+
+  const {
+    isRecording: isAudioRecording,
+    formattedDuration: audioDuration,
+    audioBase64,
+    audioUrl,
+    startRecording: startAudioRecording,
+    stopRecording: stopAudioRecording,
+    resetRecording: resetAudioRecording,
+  } = useAudioRecorder();
 
   if (!isOpen) return null;
 
@@ -87,30 +104,47 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
       setErrorMessage('Please write some text for your story.');
       return;
     }
+    if (storyMode === 'audio' && !audioBase64) {
+      setErrorMessage('Please record your voice note before sharing.');
+      return;
+    }
 
     setIsPublishing(true);
     setErrorMessage(null);
 
     try {
       const success = await createStory({
-        type: storyMode === 'media' ? (mediaType === 'video' ? 'video' : 'image') : 'text',
-        mediaUrl: storyMode === 'media' ? mediaUrl : undefined,
-        mediaType: storyMode === 'media' ? mediaType : undefined,
+        type: storyMode === 'media' ? (mediaType === 'video' ? 'video' : 'image') : storyMode === 'audio' ? 'audio' : 'text',
+        mediaUrl: storyMode === 'media' ? mediaUrl : storyMode === 'audio' ? (audioBase64 || undefined) : undefined,
+        mediaType: storyMode === 'media' ? mediaType : storyMode === 'audio' ? 'audio' : undefined,
+        duration: storyMode === 'audio' ? audioDuration : undefined,
         textContent: storyMode === 'text' ? textContent.trim() : undefined,
-        backgroundStyle: storyMode === 'text' ? selectedGradient : undefined,
-        caption: storyMode === 'media' ? caption.trim() : undefined,
+        backgroundStyle: storyMode === 'text' || storyMode === 'audio' ? selectedGradient : undefined,
+        caption: storyMode === 'media' || storyMode === 'audio' ? caption.trim() : undefined,
       });
 
       if (success) {
         setMediaUrl('');
         setCaption('');
         setTextContent('');
+        resetAudioRecording();
         onClose();
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Failed to publish story.');
     } finally {
       setIsPublishing(false);
+    }
+  };
+
+  const toggleAudioPreviewPlay = () => {
+    if (!audioPreviewRef.current) return;
+    if (isPlayingAudioPreview) {
+      audioPreviewRef.current.pause();
+      setIsPlayingAudioPreview(false);
+    } else {
+      audioPreviewRef.current.play();
+      setIsPlayingAudioPreview(true);
     }
   };
 
@@ -159,7 +193,7 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
           <button
             type="button"
             onClick={() => setStoryMode('media')}
-            className={`flex-1 py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`flex-1 py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
               storyMode === 'media'
                 ? 'bg-white text-indigo-600 shadow-sm'
                 : 'text-slate-600 hover:bg-white/60'
@@ -171,8 +205,21 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
 
           <button
             type="button"
+            onClick={() => setStoryMode('audio')}
+            className={`flex-1 py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              storyMode === 'audio'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:bg-white/60'
+            }`}
+          >
+            <Mic className="w-4 h-4 text-amber-500" />
+            <span>Voice / Audio</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setStoryMode('text')}
-            className={`flex-1 py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`flex-1 py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
               storyMode === 'text'
                 ? 'bg-white text-indigo-600 shadow-sm'
                 : 'text-slate-600 hover:bg-white/60'
@@ -261,7 +308,149 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
             </div>
           )}
 
-          {/* TAB 2: TEXT STATUS STORY */}
+          {/* TAB 2: AUDIO STORY */}
+          {storyMode === 'audio' && (
+            <div className="space-y-4">
+              {/* Live Preview Stage */}
+              <div
+                className={`w-full h-56 rounded-3xl bg-gradient-to-tr ${selectedGradient} p-6 flex flex-col items-center justify-center text-center shadow-lg border border-white/20 relative overflow-hidden transition-all duration-300`}
+              >
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3 shadow-inner ring-4 ring-white/30">
+                  <Volume2 className="w-8 h-8 text-white animate-pulse" />
+                </div>
+                <p className="text-white text-sm font-bold drop-shadow-md">
+                  {audioUrl ? `Audio Story (${audioDuration})` : isAudioRecording ? `Recording... (${audioDuration})` : 'Voice Note Story'}
+                </p>
+                {caption && (
+                  <p className="text-white/90 text-xs mt-2 px-4 drop-shadow font-medium truncate max-w-xs">
+                    "{caption}"
+                  </p>
+                )}
+              </div>
+
+              {/* Audio Recorder Controls Card */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                {audioUrl ? (
+                  <div className="flex items-center justify-between gap-3">
+                    <audio
+                      ref={audioPreviewRef}
+                      src={audioUrl}
+                      onEnded={() => setIsPlayingAudioPreview(false)}
+                      className="hidden"
+                    />
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={toggleAudioPreviewPlay}
+                        className="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-md transition-colors"
+                      >
+                        {isPlayingAudioPreview ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
+                      </button>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">Voice Note Recorded</p>
+                        <p className="text-[10px] text-slate-500 font-mono">Duration: {audioDuration}</p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        resetAudioRecording();
+                        setIsPlayingAudioPreview(false);
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition-colors"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Rerecord</span>
+                    </button>
+                  </div>
+                ) : isAudioRecording ? (
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping" />
+                      <span className="text-xs font-mono font-bold text-rose-600">{audioDuration}</span>
+                      <div className="flex items-center gap-0.5">
+                        <span className="w-1 h-3 bg-rose-500 animate-bounce rounded-full" />
+                        <span className="w-1 h-5 bg-rose-500 animate-bounce delay-75 rounded-full" />
+                        <span className="w-1 h-4 bg-rose-500 animate-bounce delay-150 rounded-full" />
+                        <span className="w-1 h-6 bg-rose-500 animate-bounce delay-100 rounded-full" />
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => stopAudioRecording()}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition-colors"
+                    >
+                      <Square className="w-3.5 h-3.5 fill-current" />
+                      <span>Stop Recording</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <Mic className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">Record a Voice Note</p>
+                        <p className="text-[10px] text-slate-500">Press button to start recording</p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={startAudioRecording}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md transition-colors"
+                    >
+                      <Mic className="w-3.5 h-3.5" />
+                      <span>Start Recording</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Caption Input */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  Optional Overlay Caption
+                </label>
+                <input
+                  type="text"
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  placeholder="What's this voice note about? 🎙️"
+                  maxLength={120}
+                  className="w-full px-3.5 py-2 text-xs rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Gradient Selector */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+                  <Palette className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Choose Background Theme</span>
+                </label>
+                <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                  {GRADIENT_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setSelectedGradient(preset.class)}
+                      className={`w-9 h-9 rounded-2xl bg-gradient-to-tr ${preset.class} shrink-0 transition-transform ${
+                        selectedGradient === preset.class
+                          ? 'ring-3 ring-indigo-500 scale-110 shadow-md'
+                          : 'opacity-80 hover:opacity-100'
+                      }`}
+                      title={preset.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: TEXT STATUS STORY */}
           {storyMode === 'text' && (
             <div className="space-y-4">
               {/* Live Preview Card */}
@@ -330,7 +519,8 @@ export const StoryCreateModal: React.FC<StoryCreateModalProps> = ({ isOpen, onCl
               disabled={
                 isPublishing ||
                 (storyMode === 'media' && !mediaUrl) ||
-                (storyMode === 'text' && !textContent.trim())
+                (storyMode === 'text' && !textContent.trim()) ||
+                (storyMode === 'audio' && !audioBase64)
               }
               className="flex items-center gap-2 px-6 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all active:scale-95"
             >

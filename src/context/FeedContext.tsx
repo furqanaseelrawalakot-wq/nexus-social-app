@@ -32,7 +32,7 @@ interface FeedContextType {
   editComment: (postId: string, commentId: string, content: string) => Promise<boolean>;
   deleteComment: (postId: string, commentId: string) => Promise<boolean>;
   toggleSavePost: (postId: string) => void;
-  createStory: (data: { type: StoryType; mediaUrl?: string; textContent?: string; backgroundStyle?: string; caption?: string; mediaType?: 'image' | 'video' }) => Promise<boolean>;
+  createStory: (data: { type: StoryType; mediaUrl?: string; textContent?: string; backgroundStyle?: string; caption?: string; mediaType?: 'image' | 'video' | 'audio'; duration?: string }) => Promise<boolean>;
   viewStory: (storyId: string) => Promise<void>;
   deleteStory: (storyId: string) => Promise<boolean>;
   replyToStory: (storyId: string, reply: { type: 'reaction' | 'text'; content?: string; emoji?: string }) => Promise<boolean>;
@@ -1279,7 +1279,8 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
       textContent?: string;
       backgroundStyle?: string;
       caption?: string;
-      mediaType?: 'image' | 'video';
+      mediaType?: 'image' | 'video' | 'audio';
+      duration?: string;
     }): Promise<boolean> => {
       if (!currentUser?.id) return false;
 
@@ -1298,6 +1299,7 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
             backgroundStyle: data.backgroundStyle,
             caption: data.caption,
             mediaType: data.mediaType,
+            duration: data.duration,
           }),
         });
 

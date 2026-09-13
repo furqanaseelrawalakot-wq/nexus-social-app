@@ -216,6 +216,9 @@ const saveBase64File = (base64String, targetDir, prefix = 'file') => {
     else if (mimeType.includes('mp4')) ext = 'mp4';
     else if (mimeType.includes('webm')) ext = 'webm';
     else if (mimeType.includes('quicktime') || mimeType.includes('mov')) ext = 'mov';
+    else if (mimeType.includes('ogg')) ext = 'ogg';
+    else if (mimeType.includes('mp3') || mimeType.includes('mpeg')) ext = 'mp3';
+    else if (mimeType.includes('wav')) ext = 'wav';
     else if (mimeType.includes('pdf')) ext = 'pdf';
 
     const fileName = `${prefix}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}.${ext}`;
@@ -2684,13 +2687,13 @@ const server = http.createServer(async (req, res) => {
     }
     const { passwordHash, ...safeAuthor } = authorUser;
 
-    const storyType = body.type || (body.mediaUrl ? (body.mediaType === 'video' ? 'video' : 'image') : 'text');
+    const storyType = body.type || (body.mediaUrl ? (body.mediaType === 'video' ? 'video' : body.mediaType === 'audio' ? 'audio' : 'image') : 'text');
     let processedMediaUrl = body.mediaUrl || '';
 
     if (
       processedMediaUrl &&
       typeof processedMediaUrl === 'string' &&
-      (processedMediaUrl.startsWith('data:image') || processedMediaUrl.startsWith('data:video'))
+      (processedMediaUrl.startsWith('data:image') || processedMediaUrl.startsWith('data:video') || processedMediaUrl.startsWith('data:audio'))
     ) {
       const saved = saveBase64File(processedMediaUrl, STORIES_DIR, 'story');
       if (saved) {
@@ -2703,7 +2706,8 @@ const server = http.createServer(async (req, res) => {
       author: safeAuthor,
       type: storyType,
       mediaUrl: processedMediaUrl,
-      mediaType: body.mediaType || (storyType === 'video' ? 'video' : 'image'),
+      mediaType: body.mediaType || (storyType === 'video' ? 'video' : storyType === 'audio' ? 'audio' : 'image'),
+      duration: body.duration,
       textContent: (body.textContent || '').trim(),
       backgroundStyle: body.backgroundStyle || 'from-indigo-600 to-purple-600',
       caption: (body.caption || '').trim(),

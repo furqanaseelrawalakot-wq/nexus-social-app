@@ -11,6 +11,7 @@ import {
   Clock,
   Sparkles,
   Users,
+  Mic,
 } from 'lucide-react';
 import { Story, UserStoryGroup } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -23,7 +24,7 @@ interface StoryViewerModalProps {
   onClose: () => void;
 }
 
-const STORY_DURATION_MS = 5000; // 5 seconds per story
+const STORY_DURATION_MS = 5000; // 5 seconds per photo/text story
 
 export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
   storyGroups,
@@ -37,12 +38,13 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
   const [currentStoryIdx, setCurrentStoryIdx] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [showViewersSheet, setShowViewersSheet] = useState(false);
   const [isSendingReply, setIsSendingReply] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentGroup = storyGroups[currentGroupIdx];
   const stories = currentGroup?.stories || [];
@@ -81,9 +83,29 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
     }
   }, [currentStoryIdx, currentGroupIdx, storyGroups]);
 
-  // Story Progress Timer
+  // Handle audio play/pause synchronization
+  useEffect(() => {
+    if (!audioRef.current || currentStory?.type !== 'audio') return;
+    if (isPaused || showViewersSheet) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [isPaused, showViewersSheet, currentStory?.id, currentStory?.type]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  // Story Progress Timer for image/text (audio uses onTimeUpdate / onEnded)
   useEffect(() => {
     if (isPaused || showViewersSheet || !currentStory) return;
+    if (currentStory.type === 'audio') return; // Handled dynamically by audio element
 
     const intervalMs = 50;
     const step = (intervalMs / STORY_DURATION_MS) * 100;
@@ -184,11 +206,12 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {currentStory.type === 'video' && (
+            {(currentStory.type === 'video' || currentStory.type === 'audio') && (
               <button
                 type="button"
                 onClick={() => setIsMuted((prev) => !prev)}
                 className="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md transition-colors"
+                title={isMuted ? 'Unmute' : 'Mute'}
               >
                 {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </button>
@@ -249,6 +272,70 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({
               muted={isMuted}
               className="relative z-10 w-full h-full object-contain"
             />
+          )}
+
+          {/* TYPE: AUDIO VOICE STORY */}
+          {currentStory.type === 'audio' && (
+            <div
+              className={`w-full h-full bg-gradient-to-tr ${
+                currentStory.backgroundStyle || 'from-indigo-600 via-purple-600 to-pink-600'
+              } flex flex-col items-center justify-center p-8 text-center relative overflow-hidden`}
+            >
+              {currentStory.mediaUrl && (
+                <audio
+                  ref={audioRef}
+                  src={currentStory.mediaUrl}
+                  autoPlay
+                  playsInline
+                  muted={isMuted}
+                  onTimeUpdate={() => {
+                    if (audioRef.current && audioRef.current.duration) {
+                      const pct = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+                      setProgress(Math.min(100, Math.max(0, pct)));
+                    }
+                  }}
+                  onEnded={handleNextStory}
+                  className="hidden"
+                />
+              )}
+
+              {/* Ambient visualizer background glows */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className={`w-72 h-72 rounded-full bg-white/10 blur-3xl ${!isPaused ? 'animate-pulse' : ''}`} />
+              </div>
+
+              {/* Pulsing visualizer & Avatar */}
+              <div className="relative mb-6 flex items-center justify-center z-10">
+                <div className={`absolute w-36 h-36 rounded-full bg-white/15 ${!isPaused ? 'animate-ping' : ''}`} />
+                <div className={`absolute w-28 h-28 rounded-full bg-white/20 ${!isPaused ? 'animate-pulse' : ''}`} />
+                <div className="relative w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-white/40 to-white/10 backdrop-blur-md shadow-2xl flex items-center justify-center">
+                  <UserAvatarLink user={currentStory.author} size="xl" className="w-full h-full rounded-full ring-2 ring-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 p-2 rounded-full bg-indigo-600 text-white shadow-lg ring-2 ring-white">
+                  <Mic className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* Dynamic sound equalizer bars */}
+              <div className="flex items-center justify-center gap-1.5 h-12 mb-4 z-10">
+                {[45, 80, 60, 95, 70, 100, 75, 90, 50, 85, 65, 90, 55].map((h, i) => (
+                  <div
+                    key={i}
+                    className="w-1.5 bg-white/90 rounded-full transition-all duration-150 shadow-sm"
+                    style={{
+                      height: !isPaused ? `${Math.max(20, (h * ((progress + i * 8) % 30 + 10)) / 35)}%` : '20%',
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Audio badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-mono mb-3 z-10">
+                <Volume2 className="w-3.5 h-3.5 text-indigo-300" />
+                <span>Voice Story</span>
+                {currentStory.duration && <span className="text-white/70">• {currentStory.duration}</span>}
+              </div>
+            </div>
           )}
 
           {/* TYPE: TEXT STATUS */}
