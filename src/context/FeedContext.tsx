@@ -21,6 +21,8 @@ interface FeedContextType {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   createPost: (data: { content: string; mediaUrls?: string[]; visibility?: 'public' | 'friends' | 'private'; feeling?: string; location?: string; mediaType?: 'image' | 'video' }) => Promise<void>;
+  editPost: (postId: string, data: { content: string; visibility?: 'public' | 'friends' | 'private'; feeling?: string; location?: string }) => Promise<boolean>;
+  reportPost: (postId: string, reason: string) => Promise<boolean>;
   sharePost: (postId: string, caption?: string) => Promise<void>;
   deletePost: (postId: string) => Promise<void>;
   reactToPost: (postId: string, type: ReactionType) => Promise<void>;
@@ -775,6 +777,84 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [currentUser.id, showToast]
   );
 
+  // Edit Post Handler (Step 2)
+  const editPost = useCallback(
+    async (
+      postId: string,
+      data: {
+        content: string;
+        visibility?: 'public' | 'friends' | 'private';
+        feeling?: string;
+        location?: string;
+      }
+    ): Promise<boolean> => {
+      if (!currentUser?.id) return false;
+      try {
+        const res = await fetch(`/api/posts/${postId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': currentUser.id,
+          },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            content: data.content,
+            visibility: data.visibility,
+            feeling: data.feeling,
+            location: data.location,
+          }),
+        });
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.success && resData.post) {
+            const mappedPost = mapPostWithViewer(resData.post, currentUser.id);
+            setPosts((prev) => prev.map((p) => (p.id === postId ? mappedPost : p)));
+            showToast('Post Updated', 'Your changes have been saved.', 'success');
+            return true;
+          }
+        }
+        showToast('Update Failed', 'Could not update post.', 'error');
+        return false;
+      } catch (err) {
+        console.error('Error editing post:', err);
+        showToast('Network Error', 'Failed to update post.', 'error');
+        return false;
+      }
+    },
+    [currentUser?.id, mapPostWithViewer, showToast]
+  );
+
+  // Report Post Handler (Step 2)
+  const reportPost = useCallback(
+    async (postId: string, reason: string): Promise<boolean> => {
+      if (!currentUser?.id) return false;
+      try {
+        const res = await fetch(`/api/posts/${postId}/report`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': currentUser.id,
+          },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            reason,
+          }),
+        });
+        if (res.ok) {
+          showToast('Report Submitted', 'Thank you for your report. Our team will review this post.', 'success');
+          return true;
+        }
+        showToast('Report Failed', 'Could not submit report.', 'error');
+        return false;
+      } catch (err) {
+        console.error('Error reporting post:', err);
+        showToast('Network Error', 'Failed to submit report.', 'error');
+        return false;
+      }
+    },
+    [currentUser?.id, showToast]
+  );
+
   // Reaction Handler
   const reactToPost = useCallback(
     async (postId: string, type: ReactionType) => {
@@ -1341,6 +1421,8 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
         searchQuery,
         setSearchQuery,
         createPost,
+        editPost,
+        reportPost,
         sharePost,
         deletePost,
         reactToPost,

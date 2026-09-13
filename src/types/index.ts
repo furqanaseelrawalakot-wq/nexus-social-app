@@ -75,10 +75,21 @@ export interface Post {
   commentsCount: number;
   sharesCount: number;
   isSaved: boolean;
+  isEdited?: boolean;
   comments?: Comment[];
   reactionsList?: { userId: string; user?: User; type: ReactionType; createdAt?: string }[];
   sharedFrom?: string;
   sharedPost?: Post;
+}
+
+export interface Report {
+  id: string;
+  type: 'post' | 'comment' | 'user';
+  targetId: string;
+  reporterId: string;
+  reason: string;
+  createdAt: string;
+  status: 'pending' | 'resolved' | 'dismissed';
 }
 
 export type StoryType = 'image' | 'video' | 'text';
