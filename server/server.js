@@ -38,6 +38,7 @@ let db = {
   friendships: [],    // [ { id, userA, userB, createdAt } ]
   conversations: [],  // [ { id, participants: [idA, idB], lastMessage, lastMessageType, lastMessageTime, messages: [...] } ]
   notifications: [],  // [ { id, userId, actor, type, content, targetId, createdAt, isRead } ]
+  reports: [],        // [ { id, type: 'post', targetId, reporterId, reason, createdAt, status: 'pending' } ]
   otps: {}
 };
 
@@ -62,6 +63,7 @@ const loadDB = () => {
       if (!db.follows) db.follows = [];
       if (!db.conversations) db.conversations = [];
       if (!db.notifications) db.notifications = [];
+      if (!db.reports) db.reports = [];
       if (!db.posts) db.posts = [];
     }
   } catch (err) {
@@ -2580,6 +2582,77 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { success: true, post });
     }
     return sendJSON(res, 404, { success: false, message: 'Post not found.' });
+  }
+
+  // 12c. Edit Post (PUT /api/posts/:postId - Step 2)
+  if (pathname.match(/^\/api\/posts\/[^\/]+$/) && method === 'PUT') {
+    const postId = pathname.split('/')[3];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+
+    const post = db.posts.find((p) => p.id === postId);
+    if (!post) {
+      return sendJSON(res, 404, { success: false, message: 'Post not found.' });
+    }
+
+    if (post.author?.id !== userId) {
+      return sendJSON(res, 403, { success: false, message: 'Only the author may edit this post.' });
+    }
+
+    if (typeof body.content === 'string') {
+      post.content = body.content.trim();
+    }
+    if (body.visibility && ['public', 'friends', 'private'].includes(body.visibility)) {
+      post.visibility = body.visibility;
+    }
+    if (body.feeling !== undefined) {
+      post.feeling = body.feeling;
+    }
+    if (body.location !== undefined) {
+      post.location = body.location;
+    }
+    post.isEdited = true;
+
+    saveDB();
+    broadcastRealtimeEvent('post_updated', { post });
+    return sendJSON(res, 200, { success: true, post });
+  }
+
+  // 12d. Report Post (POST /api/posts/:postId/report - Step 2)
+  if (pathname.match(/^\/api\/posts\/[^\/]+\/report$/) && method === 'POST') {
+    const postId = pathname.split('/')[3];
+    const body = await parseBody(req);
+    const userId = currentUserId || body.userId;
+    const reason = (body.reason || '').trim();
+
+    if (!userId) {
+      return sendJSON(res, 400, { success: false, message: 'User ID is required.' });
+    }
+    if (!reason) {
+      return sendJSON(res, 400, { success: false, message: 'Report reason is required.' });
+    }
+
+    const post = db.posts.find((p) => p.id === postId);
+    if (!post) {
+      return sendJSON(res, 404, { success: false, message: 'Post not found.' });
+    }
+
+    if (!db.reports) db.reports = [];
+
+    const newReport = {
+      id: `report-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+      type: 'post',
+      targetId: postId,
+      reporterId: userId,
+      reason,
+      createdAt: new Date().toISOString(),
+      status: 'pending',
+    };
+
+    db.reports.push(newReport);
+    saveDB();
+
+    return sendJSON(res, 201, { success: true, message: 'Post reported successfully.', report: newReport });
   }
 
   // 13. Delete Post

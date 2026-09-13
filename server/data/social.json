@@ -836,6 +836,17 @@
       "isRead": false
     }
   ],
+  "reports": [
+    {
+      "id": "report-1789337498313-95155771",
+      "type": "post",
+      "targetId": "post-1789337498267",
+      "reporterId": "user-sarah",
+      "reason": "Spam or unwanted promotional content",
+      "createdAt": "2026-09-13T22:11:38.314Z",
+      "status": "pending"
+    }
+  ],
   "otps": {},
   "follows": [
     {
