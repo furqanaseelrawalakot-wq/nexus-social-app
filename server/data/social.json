@@ -16,7 +16,7 @@
       "joinedDate": "Joined January 2024",
       "friendsCount": 5,
       "followersCount": 5,
-      "followingCount": 5,
+      "followingCount": 3,
       "isVerified": true,
       "privacySettings": {
         "whoCanSeePosts": "public",
@@ -38,7 +38,7 @@
       "education": "Stanford University",
       "joinedDate": "Joined March 2023",
       "friendsCount": 2,
-      "followersCount": 2,
+      "followersCount": 4,
       "followingCount": 2,
       "isVerified": true
     },
@@ -92,8 +92,8 @@
       "education": "NUST Islamabad",
       "joinedDate": "Joined February 2024",
       "friendsCount": 1,
-      "followersCount": 1,
-      "followingCount": 1
+      "followersCount": 0,
+      "followingCount": 2
     },
     {
       "id": "user-zainab",
@@ -109,14 +109,19 @@
       "education": "MIT",
       "joinedDate": "Joined August 2022",
       "friendsCount": 1,
-      "followersCount": 1,
-      "followingCount": 1,
+      "followersCount": 0,
+      "followingCount": 2,
       "isVerified": true
     }
   ],
   "pendingRegistrations": {},
   "passwordResetOtps": {},
-  "failedLoginAttempts": {},
+  "failedLoginAttempts": {
+    "hassantrae236@gmail.com": {
+      "count": 5,
+      "lockedUntil": 1789333314504
+    }
+  },
   "posts": [
     {
       "id": "post-1",
@@ -421,9 +426,9 @@
         "user-faseeh",
         "user-ahmad"
       ],
-      "lastMessage": "Let me know whenever you want to do a code review on the microservices!",
-      "lastMessageType": "text",
-      "lastMessageTime": "10m ago",
+      "lastMessage": "🎤 Voice message",
+      "lastMessageType": "voice",
+      "lastMessageTime": "01:15 AM",
       "unreadCount": 1,
       "messages": [
         {
@@ -461,6 +466,23 @@
           "timestamp": 1789331651157,
           "status": "delivered",
           "isRead": false
+        },
+        {
+          "id": "msg-1789334126210-ufc8",
+          "conversationId": "conv-user-ahmad-user-faseeh",
+          "senderId": "user-faseeh",
+          "recipientId": "user-ahmad",
+          "type": "voice",
+          "mediaUrl": "/uploads/chat-media/media-1789334126170-c864b5673b203d42.webm",
+          "fileName": "voice-note.webm",
+          "fileSize": "0.0 MB",
+          "duration": "0:04",
+          "createdAt": "01:15 AM",
+          "timestamp": 1789334126210,
+          "status": "sent",
+          "deliveredAt": null,
+          "readAt": null,
+          "isRead": false
         }
       ]
     },
@@ -492,6 +514,35 @@
   ],
   "notifications": [
     {
+      "id": "notif-1789334126210",
+      "userId": "user-ahmad",
+      "actor": {
+        "id": "user-faseeh",
+        "fullName": "Faseeh-ur-Rehman",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "message",
+      "content": "Faseeh-ur-Rehman sent you a voice message.",
+      "targetId": "conv-user-ahmad-user-faseeh",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789334069357-c93ce9",
+      "userId": "user-hamza",
+      "actor": {
+        "id": "user-sarah",
+        "fullName": "Dr. Sarah Jenkins",
+        "username": "sarah_ai",
+        "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "follow",
+      "content": "Dr. Sarah Jenkins started following you.",
+      "targetId": "user-sarah",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
       "id": "notif-1",
       "userId": "user-faseeh",
       "actor": {
@@ -522,5 +573,91 @@
       "isRead": false
     }
   ],
-  "otps": {}
+  "otps": {},
+  "follows": [
+    {
+      "id": "fol-1",
+      "followerId": "user-faseeh",
+      "followingId": "user-ahmad",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-2",
+      "followerId": "user-ahmad",
+      "followingId": "user-faseeh",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-3",
+      "followerId": "user-faseeh",
+      "followingId": "user-sarah",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-4",
+      "followerId": "user-sarah",
+      "followingId": "user-faseeh",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-5",
+      "followerId": "user-faseeh",
+      "followingId": "user-elena",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-6",
+      "followerId": "user-elena",
+      "followingId": "user-faseeh",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-7",
+      "followerId": "user-ahmad",
+      "followingId": "user-sarah",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-8",
+      "followerId": "user-sarah",
+      "followingId": "user-ahmad",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-9",
+      "followerId": "user-ahmad",
+      "followingId": "user-elena",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-10",
+      "followerId": "user-elena",
+      "followingId": "user-ahmad",
+      "createdAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "fol-11",
+      "followerId": "user-hamza",
+      "followingId": "user-faseeh",
+      "createdAt": "2026-09-12T10:00:00.000Z"
+    },
+    {
+      "id": "fol-12",
+      "followerId": "user-zainab",
+      "followingId": "user-faseeh",
+      "createdAt": "2026-09-12T12:00:00.000Z"
+    },
+    {
+      "id": "fol-13",
+      "followerId": "user-hamza",
+      "followingId": "user-sarah",
+      "createdAt": "2026-09-12T14:00:00.000Z"
+    },
+    {
+      "id": "fol-14",
+      "followerId": "user-zainab",
+      "followingId": "user-sarah",
+      "createdAt": "2026-09-12T15:00:00.000Z"
+    }
+  ]
 }

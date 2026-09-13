@@ -30,6 +30,8 @@ export interface User {
   friendsCount: number;
   followersCount: number;
   followingCount: number;
+  isFollowing?: boolean;
+  isFollowedBy?: boolean;
   isVerified?: boolean;
   isOnline?: boolean;
   lastSeen?: string;

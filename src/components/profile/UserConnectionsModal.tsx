@@ -30,6 +30,8 @@ interface ConnectionUser {
   friendsCount?: number;
   relationshipStatus?: 'self' | 'friends' | 'pending_sent' | 'pending_received' | 'none';
   isFriend?: boolean;
+  isFollowing?: boolean;
+  isFollowedBy?: boolean;
 }
 
 interface UserConnectionsModalProps {
@@ -50,7 +52,14 @@ export const UserConnectionsModal: React.FC<UserConnectionsModalProps> = ({
   isOwnProfile = false,
 }) => {
   const { currentUser } = useAuth();
-  const { unfriendUser, sendFriendRequest, acceptFriendRequest, cancelFriendRequest } = useFeed();
+  const {
+    unfriendUser,
+    sendFriendRequest,
+    acceptFriendRequest,
+    cancelFriendRequest,
+    followUser,
+    unfollowUser,
+  } = useFeed();
   const { openChat } = useChat();
   const navigate = useNavigate();
 
@@ -155,6 +164,21 @@ export const UserConnectionsModal: React.FC<UserConnectionsModalProps> = ({
       setUsers((prev) =>
         prev.map((u) => (u.id === targetUser.id ? { ...u, relationshipStatus: 'none' } : u))
       );
+    }
+  };
+
+  const handleFollowToggle = async (targetUser: ConnectionUser) => {
+    const isCurrentlyFollowing = Boolean(targetUser.isFollowing);
+    if (isCurrentlyFollowing) {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === targetUser.id ? { ...u, isFollowing: false } : u))
+      );
+      await unfollowUser(targetUser.id);
+    } else {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === targetUser.id ? { ...u, isFollowing: true } : u))
+      );
+      await followUser(targetUser.id);
     }
   };
 
@@ -308,6 +332,28 @@ export const UserConnectionsModal: React.FC<UserConnectionsModalProps> = ({
                   {/* Actions */}
                   {!isSelf && (
                     <div className="flex items-center gap-2 shrink-0">
+                      {/* Follow / Following Button */}
+                      {(activeTab === 'followers' || activeTab === 'following' || !isFriend) && (
+                        <button
+                          type="button"
+                          onClick={() => handleFollowToggle(user)}
+                          className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
+                            user.isFollowing
+                              ? 'bg-slate-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 border border-slate-200 text-slate-700'
+                              : 'bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700'
+                          }`}
+                        >
+                          <UserCheck className="w-3.5 h-3.5 text-current" />
+                          <span className={user.isFollowing ? 'group-hover:hidden' : ''}>
+                            {user.isFollowing ? 'Following' : 'Follow'}
+                          </span>
+                          {user.isFollowing && (
+                            <span className="hidden group-hover:inline text-rose-600">Unfollow</span>
+                          )}
+                        </button>
+                      )}
+
+                      {/* Unfriend (Own Friends List Only) */}
                       {isOwnProfile && activeTab === 'friends' ? (
                         <button
                           type="button"

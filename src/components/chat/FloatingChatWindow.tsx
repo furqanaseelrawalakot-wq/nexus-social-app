@@ -1,5 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, ShieldCheck, Check, CheckCheck, Paperclip, FileText, MapPin, Download, ExternalLink } from 'lucide-react';
+import {
+  Send,
+  X,
+  ShieldCheck,
+  Check,
+  CheckCheck,
+  Paperclip,
+  FileText,
+  MapPin,
+  Download,
+  ExternalLink,
+  Mic,
+  Trash2,
+} from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import { useAuth } from '../../context/AuthContext';
 import { UserAvatar } from '../common/UserAvatar';
@@ -19,8 +32,15 @@ export const FloatingChatWindow: React.FC = () => {
 
   const { currentUser } = useAuth();
   const [inputMessage, setInputMessage] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<any>(null);
+  const recordingStartTimeRef = useRef<number>(0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,6 +77,75 @@ export const FloatingChatWindow: React.FC = () => {
     };
     reader.readAsDataURL(file);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const startVoiceRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      recordingStartTimeRef.current = Date.now();
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const elapsedSecs = Math.max(1, Math.round((Date.now() - recordingStartTimeRef.current) / 1000));
+        const m = Math.floor(elapsedSecs / 60);
+        const s = elapsedSecs % 60;
+        const durationFormatted = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+        if (audioBlob.size > 0 && activeConversation) {
+          const reader = new FileReader();
+          reader.onload = async (ev) => {
+            const base64 = ev.target?.result as string;
+            await sendMediaMessage(activeConversation.id, {
+              mediaBase64: base64,
+              mediaType: 'voice',
+              fileName: 'voice_note.webm',
+              fileSize: `${(audioBlob.size / 1024).toFixed(0)} KB`,
+              duration: durationFormatted,
+            });
+          };
+          reader.readAsDataURL(audioBlob);
+        }
+        setIsRecording(false);
+        setRecordingSeconds(0);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingSeconds(0);
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds((prev) => prev + 1);
+      }, 1000);
+    } catch {
+      alert('Microphone access is required to send voice messages.');
+    }
+  };
+
+  const stopAndSendVoice = () => {
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  const cancelVoiceRecording = () => {
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      audioChunksRef.current = [];
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+    setRecordingSeconds(0);
   };
 
   return (
@@ -223,36 +312,78 @@ export const FloatingChatWindow: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Footer Chat Input */}
-      <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-100 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-indigo-600 transition-colors"
-          title="Attach Media or Document"
-        >
-          <Paperclip className="w-4 h-4" />
-        </button>
+      {/* Footer Chat Input / Voice Recording Bar */}
+      <div className="p-3 bg-white border-t border-slate-100">
+        {isRecording ? (
+          <div className="flex items-center justify-between gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+              <span className="text-xs font-bold text-rose-600 font-mono">
+                0:{recordingSeconds < 10 ? '0' : ''}{recordingSeconds}
+              </span>
+            </div>
 
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => {
-            setInputMessage(e.target.value);
-            if (activeConversation?.id) sendTyping(activeConversation.id, true);
-          }}
-          placeholder="Type a message..."
-          className="flex-1 px-3.5 py-2 text-xs rounded-full bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500"
-        />
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={cancelVoiceRecording}
+                className="p-1.5 rounded-full hover:bg-rose-100 text-rose-600 transition-colors"
+                title="Cancel Recording"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={stopAndSendVoice}
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition-colors"
+              >
+                <Send className="w-3 h-3" />
+                <span>Send</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSend} className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-indigo-600 transition-colors"
+              title="Attach Media or Document"
+            >
+              <Paperclip className="w-4 h-4" />
+            </button>
 
-        <button
-          type="submit"
-          disabled={!inputMessage.trim()}
-          className="p-2 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white shadow-sm transition-colors"
-        >
-          <Send className="w-3.5 h-3.5" />
-        </button>
-      </form>
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => {
+                setInputMessage(e.target.value);
+                if (activeConversation?.id) sendTyping(activeConversation.id, true);
+              }}
+              placeholder="Type a message..."
+              className="flex-1 px-3.5 py-2 text-xs rounded-full bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500"
+            />
+
+            {/* Voice Record Button */}
+            <button
+              type="button"
+              onClick={startVoiceRecording}
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-indigo-600 transition-colors"
+              title="Record Voice Note"
+            >
+              <Mic className="w-4 h-4" />
+            </button>
+
+            <button
+              type="submit"
+              disabled={!inputMessage.trim()}
+              className="p-2 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white shadow-sm transition-colors"
+            >
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

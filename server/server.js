@@ -59,6 +59,7 @@ const loadDB = () => {
       if (!db.failedLoginAttempts) db.failedLoginAttempts = {};
       if (!db.friendRequests) db.friendRequests = [];
       if (!db.friendships) db.friendships = [];
+      if (!db.follows) db.follows = [];
       if (!db.conversations) db.conversations = [];
       if (!db.notifications) db.notifications = [];
       if (!db.posts) db.posts = [];
@@ -72,27 +73,35 @@ const syncUserSocialCounts = (userId) => {
   if (!userId) return;
   const user = db.users.find((u) => u.id === userId);
   if (!user) return;
-  const count = (db.friendships || []).filter(
+  user.friendsCount = (db.friendships || []).filter(
     (f) => f.userA === userId || f.userB === userId
   ).length;
-
-  user.friendsCount = count;
-  user.followersCount = count;
-  user.followingCount = count;
+  user.followersCount = (db.follows || []).filter(
+    (f) => f.followingId === userId
+  ).length;
+  user.followingCount = (db.follows || []).filter(
+    (f) => f.followerId === userId
+  ).length;
 };
 
 const repairAllSocialCounts = () => {
   if (!db.users || !Array.isArray(db.users)) return;
   let changed = false;
   db.users.forEach((u) => {
-    const count = (db.friendships || []).filter(
+    const friends = (db.friendships || []).filter(
       (f) => f.userA === u.id || f.userB === u.id
     ).length;
+    const followers = (db.follows || []).filter(
+      (f) => f.followingId === u.id
+    ).length;
+    const following = (db.follows || []).filter(
+      (f) => f.followerId === u.id
+    ).length;
 
-    if (u.friendsCount !== count || u.followersCount !== count || u.followingCount !== count) {
-      u.friendsCount = count;
-      u.followersCount = count;
-      u.followingCount = count;
+    if (u.friendsCount !== friends || u.followersCount !== followers || u.followingCount !== following) {
+      u.friendsCount = friends;
+      u.followersCount = followers;
+      u.followingCount = following;
       changed = true;
     }
   });
@@ -546,11 +555,20 @@ const server = http.createServer(async (req, res) => {
         else if (receivedReq) relationship = 'pending_received';
       }
 
+      const isFollowing = currentUserId
+        ? (db.follows || []).some((f) => f.followerId === currentUserId && f.followingId === targetUser.id)
+        : false;
+      const isFollowedBy = currentUserId
+        ? (db.follows || []).some((f) => f.followerId === targetUser.id && f.followingId === currentUserId)
+        : false;
+
       const { passwordHash, ...safeUser } = targetUser;
       return {
         ...safeUser,
         relationshipStatus: relationship,
         isFriend,
+        isFollowing,
+        isFollowedBy,
       };
     });
 
@@ -665,6 +683,25 @@ const server = http.createServer(async (req, res) => {
         createdAt: new Date().toISOString(),
       });
 
+      // Auto-create mutual follows (A follows B and B follows A)
+      if (!db.follows) db.follows = [];
+      if (!db.follows.some((f) => f.followerId === acceptorId && f.followingId === targetUserId)) {
+        db.follows.push({
+          id: `follow-${Date.now()}-1`,
+          followerId: acceptorId,
+          followingId: targetUserId,
+          createdAt: new Date().toISOString(),
+        });
+      }
+      if (!db.follows.some((f) => f.followerId === targetUserId && f.followingId === acceptorId)) {
+        db.follows.push({
+          id: `follow-${Date.now()}-2`,
+          followerId: targetUserId,
+          followingId: acceptorId,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
       syncUserSocialCounts(acceptorId);
       syncUserSocialCounts(targetUserId);
 
@@ -736,6 +773,15 @@ const server = http.createServer(async (req, res) => {
     db.friendships = (db.friendships || []).filter(
       (f) =>
         !((f.userA === userId && f.userB === targetUserId) || (f.userA === targetUserId && f.userB === userId))
+    );
+
+    // Remove mutual follows on unfriend
+    db.follows = (db.follows || []).filter(
+      (f) =>
+        !(
+          (f.followerId === userId && f.followingId === targetUserId) ||
+          (f.followerId === targetUserId && f.followingId === userId)
+        )
     );
 
     syncUserSocialCounts(userId);
@@ -844,22 +890,52 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
-    // Mutual friendships mirror both followers & following
-    const friendIds = (db.friendships || [])
-      .filter((f) => f.userA === targetUser.id || f.userB === targetUser.id)
-      .map((f) => (f.userA === targetUser.id ? f.userB : f.userA));
+    let targetIds = [];
+    if (connectionType === 'friends') {
+      targetIds = (db.friendships || [])
+        .filter((f) => f.userA === targetUser.id || f.userB === targetUser.id)
+        .map((f) => (f.userA === targetUser.id ? f.userB : f.userA));
+    } else if (connectionType === 'followers') {
+      targetIds = (db.follows || [])
+        .filter((f) => f.followingId === targetUser.id)
+        .map((f) => f.followerId);
+    } else if (connectionType === 'following') {
+      targetIds = (db.follows || [])
+        .filter((f) => f.followerId === targetUser.id)
+        .map((f) => f.followingId);
+    }
 
     const connectedUsers = (db.users || [])
-      .filter((u) => friendIds.includes(u.id))
+      .filter((u) => targetIds.includes(u.id))
       .map((u) => {
         const { passwordHash, ...safe } = u;
         const viewerIsFriend = viewerId ? areUsersFriends(viewerId, u.id) : false;
         const viewerIsSelf = viewerId === u.id;
+        const viewerIsFollowing = viewerId
+          ? (db.follows || []).some((f) => f.followerId === viewerId && f.followingId === u.id)
+          : false;
+        const viewerIsFollowedBy = viewerId
+          ? (db.follows || []).some((f) => f.followerId === u.id && f.followingId === viewerId)
+          : false;
+
+        let relationship = viewerIsSelf ? 'self' : viewerIsFriend ? 'friends' : 'none';
+        if (!viewerIsSelf && !viewerIsFriend && viewerId) {
+          const sentReq = db.friendRequests.find(
+            (r) => r.fromUserId === viewerId && r.toUserId === u.id && r.status === 'pending'
+          );
+          const receivedReq = db.friendRequests.find(
+            (r) => r.fromUserId === u.id && r.toUserId === viewerId && r.status === 'pending'
+          );
+          if (sentReq) relationship = 'pending_sent';
+          else if (receivedReq) relationship = 'pending_received';
+        }
 
         return {
           ...safe,
-          relationshipStatus: viewerIsSelf ? 'self' : viewerIsFriend ? 'friends' : 'none',
+          relationshipStatus: relationship,
           isFriend: viewerIsFriend,
+          isFollowing: viewerIsFollowing,
+          isFollowedBy: viewerIsFollowedBy,
           isOnline: isUserOnline(u.id),
         };
       });
@@ -877,6 +953,142 @@ const server = http.createServer(async (req, res) => {
       pages: Math.ceil(connectedUsers.length / limit) || 1,
       users: paginatedUsers,
       isPrivate: false,
+    });
+  }
+
+  // 4d. Follow User: POST /api/users/:id/follow
+  if (
+    (pathname.match(/^\/api\/users\/[^\/]+\/follow$/) || pathname.match(/^\/api\/users\/follow\/[^\/]+$/)) &&
+    method === 'POST'
+  ) {
+    const parts = pathname.split('/');
+    const targetUserId = pathname.startsWith('/api/users/follow/') ? parts[4] : parts[3];
+    const body = await parseBody(req);
+    const followerId = currentUserId || body.followerId || body.userId;
+
+    if (!followerId || !targetUserId || followerId === targetUserId) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid follower or target user ID.' });
+    }
+
+    const targetUser = db.users.find((u) => u.id === targetUserId);
+    const followerUser = db.users.find((u) => u.id === followerId);
+
+    if (!targetUser || !followerUser) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    if (!db.follows) db.follows = [];
+    const alreadyFollowing = db.follows.some(
+      (f) => f.followerId === followerId && f.followingId === targetUserId
+    );
+
+    if (!alreadyFollowing) {
+      db.follows.push({
+        id: `follow-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+        followerId,
+        followingId: targetUserId,
+        createdAt: new Date().toISOString(),
+      });
+
+      syncUserSocialCounts(followerId);
+      syncUserSocialCounts(targetUserId);
+
+      const notif = {
+        id: `notif-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+        userId: targetUserId,
+        actor: {
+          id: followerUser.id,
+          fullName: followerUser.fullName,
+          username: followerUser.username,
+          avatarUrl: followerUser.avatarUrl,
+        },
+        type: 'follow',
+        content: `${followerUser.fullName} started following you.`,
+        targetId: followerUser.id,
+        createdAt: 'Just now',
+        isRead: false,
+      };
+      db.notifications.unshift(notif);
+      saveDB();
+
+      dispatchRealtimeEvent(targetUserId, 'new_notification', { notification: notif });
+      dispatchRealtimeEvent(targetUserId, 'user_followed', {
+        follower: {
+          id: followerUser.id,
+          fullName: followerUser.fullName,
+          username: followerUser.username,
+          avatarUrl: followerUser.avatarUrl,
+        },
+        followersCount: targetUser.followersCount,
+      });
+
+      broadcastRealtimeEvent('counts_updated', {
+        userId: targetUserId,
+        followersCount: targetUser.followersCount,
+        followingCount: targetUser.followingCount,
+        friendsCount: targetUser.friendsCount,
+      });
+      broadcastRealtimeEvent('counts_updated', {
+        userId: followerId,
+        followersCount: followerUser.followersCount,
+        followingCount: followerUser.followingCount,
+        friendsCount: followerUser.friendsCount,
+      });
+    }
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: `Now following ${targetUser.fullName}.`,
+      isFollowing: true,
+      followersCount: targetUser.followersCount,
+      followingCount: followerUser.followingCount,
+    });
+  }
+
+  // 4e. Unfollow User: POST /api/users/:id/unfollow or DELETE /api/users/:id/follow
+  if (
+    (pathname.match(/^\/api\/users\/[^\/]+\/unfollow$/) ||
+      pathname.match(/^\/api\/users\/unfollow\/[^\/]+$/) ||
+      (pathname.match(/^\/api\/users\/[^\/]+\/follow$/) && method === 'DELETE')) &&
+    (method === 'POST' || method === 'DELETE')
+  ) {
+    const parts = pathname.split('/');
+    const targetUserId = pathname.startsWith('/api/users/unfollow/') ? parts[4] : parts[3];
+    const body = await parseBody(req);
+    const followerId = currentUserId || body.followerId || body.userId;
+
+    if (!followerId || !targetUserId) {
+      return sendJSON(res, 400, { success: false, message: 'Invalid follower or target user ID.' });
+    }
+
+    db.follows = (db.follows || []).filter(
+      (f) => !(f.followerId === followerId && f.followingId === targetUserId)
+    );
+
+    syncUserSocialCounts(followerId);
+    syncUserSocialCounts(targetUserId);
+    saveDB();
+
+    const targetUser = db.users.find((u) => u.id === targetUserId);
+    const followerUser = db.users.find((u) => u.id === followerId);
+
+    broadcastRealtimeEvent('counts_updated', {
+      userId: targetUserId,
+      followersCount: targetUser ? targetUser.followersCount : 0,
+      followingCount: targetUser ? targetUser.followingCount : 0,
+    });
+    broadcastRealtimeEvent('counts_updated', {
+      userId: followerId,
+      followersCount: followerUser ? followerUser.followersCount : 0,
+      followingCount: followerUser ? followerUser.followingCount : 0,
+    });
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: `Unfollowed successfully.`,
+      isFollowing: false,
+      followersCount: targetUser ? targetUser.followersCount : 0,
+      followingCount: followerUser ? followerUser.followingCount : 0,
     });
   }
 
@@ -1705,11 +1917,24 @@ const server = http.createServer(async (req, res) => {
           isPrivate: isUserPrivate,
         };
 
+    const isFollowing = viewerId
+      ? (db.follows || []).some((f) => f.followerId === viewerId && f.followingId === user.id)
+      : false;
+    const isFollowedBy = viewerId
+      ? (db.follows || []).some((f) => f.followerId === user.id && f.followingId === viewerId)
+      : false;
+
     return sendJSON(res, 200, {
       success: true,
-      user: profilePayloadUser,
+      user: {
+        ...profilePayloadUser,
+        isFollowing,
+        isFollowedBy,
+      },
       relationshipStatus,
       isFriend,
+      isFollowing,
+      isFollowedBy,
       isLocked: isRestrictedPrivate,
       isPrivate: isUserPrivate,
       posts: userPosts,
