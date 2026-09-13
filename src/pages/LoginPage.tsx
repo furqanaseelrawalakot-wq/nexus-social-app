@@ -510,8 +510,81 @@ export const LoginPage: React.FC = () => {
                 <div>
                   <h2 className="text-xl font-extrabold text-slate-900">Sign In to Your Account</h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Enter your email and password to access your feed
+                    Enter your email and password or use a 1-click demo profile below
                   </p>
+                </div>
+
+                {/* 1-Click Fast Demo Accounts Bar */}
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-600">
+                    <span className="flex items-center gap-1 text-indigo-600">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>1-Click Quick Demo Sign In</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">Password: Password123</span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginEmail('furqanaslamrkt@gmail.com');
+                        setLoginPassword('Password123');
+                        setLoginError('');
+                      }}
+                      className="flex flex-col items-center p-2 rounded-xl bg-white border border-slate-200 hover:border-indigo-500 hover:shadow-sm text-center transition-all group"
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                        alt="Faseeh"
+                        className="w-7 h-7 rounded-full object-cover mb-1 border border-indigo-200"
+                      />
+                      <span className="text-[10px] font-bold text-slate-800 group-hover:text-indigo-600 truncate w-full">
+                        Faseeh (Intern)
+                      </span>
+                      <span className="text-[9px] text-slate-400 truncate w-full">07B Arch</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginEmail('ahmad@careem.com');
+                        setLoginPassword('Password123');
+                        setLoginError('');
+                      }}
+                      className="flex flex-col items-center p-2 rounded-xl bg-white border border-slate-200 hover:border-indigo-500 hover:shadow-sm text-center transition-all group"
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
+                        alt="Ahmad"
+                        className="w-7 h-7 rounded-full object-cover mb-1 border border-indigo-200"
+                      />
+                      <span className="text-[10px] font-bold text-slate-800 group-hover:text-indigo-600 truncate w-full">
+                        Ahmad Tariq
+                      </span>
+                      <span className="text-[9px] text-slate-400 truncate w-full">Careem</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginEmail('sarah@ai.org');
+                        setLoginPassword('Password123');
+                        setLoginError('');
+                      }}
+                      className="flex flex-col items-center p-2 rounded-xl bg-white border border-slate-200 hover:border-indigo-500 hover:shadow-sm text-center transition-all group"
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80"
+                        alt="Dr. Sarah"
+                        className="w-7 h-7 rounded-full object-cover mb-1 border border-indigo-200"
+                      />
+                      <span className="text-[10px] font-bold text-slate-800 group-hover:text-indigo-600 truncate w-full">
+                        Dr. Sarah
+                      </span>
+                      <span className="text-[9px] text-slate-400 truncate w-full">Stanford AI</span>
+                    </button>
+                  </div>
                 </div>
 
                 {loginError && (
