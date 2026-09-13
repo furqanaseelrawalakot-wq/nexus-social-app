@@ -136,13 +136,15 @@ export const sendDirectGmailSMTP = (user, pass, to, subject, htmlContent) => {
           step++;
           send('DATA');
         } else if (step === 7 && response.startsWith('354')) {
-          step++;
           const emailMessage = [
-            `From: "Nexus Social" <${user}>`,
+            `From: =?UTF-8?B?TmV4dXMgU29jaWFs?= <${user}>`,
+            `Sender: =?UTF-8?B?TmV4dXMgU29jaWFs?= <${user}>`,
+            `Reply-To: =?UTF-8?B?TmV4dXMgU29jaWFsIFN1cHBvcnQ=?= <${user}>`,
             `To: <${to}>`,
-            `Subject: ${subject}`,
+            `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
             'MIME-Version: 1.0',
             'Content-Type: text/html; charset=UTF-8',
+            'X-Mailer: Nexus Social Mailer v2.0',
             '',
             htmlContent,
             '.',
