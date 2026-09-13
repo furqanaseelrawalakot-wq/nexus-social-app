@@ -1,52 +1,526 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": "user-faseeh",
+      "username": "faseeh_rehman",
+      "fullName": "Faseeh-ur-Rehman",
+      "email": "furqanaslamrkt@gmail.com",
+      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Software Engineering (8th Sem) @ CUST Islamabad 🎓 | Software Engineering Intern @ 07B Arch Technologies 💻 | Full-Stack & AI Builder",
+      "location": "Islamabad, Pakistan",
+      "occupation": "Software Engineering Intern @ 07B Arch Technologies",
+      "education": "Capital University of Science and Technology (CUST)",
+      "website": "https://github.com/faseeh",
+      "joinedDate": "Joined January 2024",
+      "friendsCount": 5,
+      "followersCount": 5,
+      "followingCount": 5,
+      "isVerified": true,
+      "privacySettings": {
+        "whoCanSeePosts": "public",
+        "whoCanSendRequests": "everyone",
+        "showOnlineStatus": true
+      }
+    },
+    {
+      "id": "user-sarah",
+      "username": "sarah_ai",
+      "fullName": "Dr. Sarah Jenkins",
+      "email": "sarah@ai.org",
+      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Senior AI Research Scientist @ Stanford AI Lab. Exploring LLM alignment & reasoning.",
+      "location": "San Francisco, CA",
+      "occupation": "Senior AI Researcher",
+      "education": "Stanford University",
+      "joinedDate": "Joined March 2023",
+      "friendsCount": 2,
+      "followersCount": 2,
+      "followingCount": 2,
+      "isVerified": true
+    },
+    {
+      "id": "user-ahmad",
+      "username": "ahmad_dev",
+      "fullName": "Ahmad Tariq",
+      "email": "ahmad@careem.com",
+      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Lead Full-Stack Engineer @ Careem | CUST Alum | React & Node Architect 🚀",
+      "location": "Islamabad, Pakistan",
+      "occupation": "Lead Full-Stack Engineer @ Careem",
+      "education": "CUST Islamabad",
+      "joinedDate": "Joined June 2022",
+      "friendsCount": 3,
+      "followersCount": 3,
+      "followingCount": 3,
+      "isVerified": true
+    },
+    {
+      "id": "user-elena",
+      "username": "elena_design",
+      "fullName": "Elena Rostova",
+      "email": "elena@figma.com",
+      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Design Systems Lead @ Figma | Minimalist UI / UX advocate ✨",
+      "location": "London, UK",
+      "occupation": "Product Design Lead",
+      "education": "Royal College of Art",
+      "joinedDate": "Joined September 2023",
+      "friendsCount": 2,
+      "followersCount": 2,
+      "followingCount": 2,
+      "isVerified": true
+    },
+    {
+      "id": "user-hamza",
+      "username": "hamza_mobile",
+      "fullName": "Hamza Malik",
+      "email": "hamza@flutter.dev",
+      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Mobile App Developer | Flutter & iOS enthusiast | Building cross-platform wonders 📱",
+      "location": "Lahore, Pakistan",
+      "occupation": "Senior Mobile Engineer",
+      "education": "NUST Islamabad",
+      "joinedDate": "Joined February 2024",
+      "friendsCount": 1,
+      "followersCount": 1,
+      "followingCount": 1
+    },
+    {
+      "id": "user-zainab",
+      "username": "zainab_cloud",
+      "fullName": "Zainab Khan",
+      "email": "zainab@microsoft.com",
+      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1600&auto=format&fit=crop&q=80",
+      "bio": "Cloud Architect @ Microsoft Azure | Kubernetes & DevOps Speaker ☁️",
+      "location": "Seattle, WA",
+      "occupation": "Cloud Solutions Architect",
+      "education": "MIT",
+      "joinedDate": "Joined August 2022",
+      "friendsCount": 1,
+      "followersCount": 1,
+      "followingCount": 1,
+      "isVerified": true
+    }
+  ],
   "pendingRegistrations": {},
   "passwordResetOtps": {},
   "failedLoginAttempts": {},
   "posts": [
     {
-      "id": "post-welcome-1",
+      "id": "post-1",
       "author": {
-        "id": "user-nexus-team",
-        "fullName": "Nexus Social Team",
-        "username": "nexus_official",
-        "avatarUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80",
+        "id": "user-faseeh",
+        "fullName": "Faseeh-ur-Rehman",
+        "username": "faseeh_rehman",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
         "isVerified": true
       },
-      "content": "Welcome to Nexus Social! 🚀 Connect with fellow engineers, share updates, send WhatsApp-style messages, post 24h stories, and collaborate in real time.",
+      "content": "Thrilled to share that we completed our 8th semester capstone and internship deliverables for 07B Arch Technologies! Built full-stack microservices with WhatsApp-style real-time SSE chat, 24-hour status stories, encrypted auth, and responsive UI! Big thanks to mentors at CUST! 🚀💻✨",
       "mediaUrls": [
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80"
       ],
+      "mediaType": "image",
       "visibility": "public",
-      "createdAt": "Just now",
+      "feeling": "celebrating 🎓",
+      "location": "Islamabad, Pakistan",
+      "createdAt": "15m ago",
       "reactions": [
         {
           "type": "like",
-          "count": 12,
+          "count": 42,
           "userReacted": false
         },
         {
           "type": "love",
-          "count": 8,
+          "count": 68,
+          "userReacted": true
+        },
+        {
+          "type": "fire",
+          "count": 35,
+          "userReacted": false
+        },
+        {
+          "type": "haha",
+          "count": 0,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 12,
+          "userReacted": false
+        },
+        {
+          "type": "sad",
+          "count": 0,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 157,
+      "commentsCount": 2,
+      "sharesCount": 14,
+      "isSaved": false,
+      "comments": [
+        {
+          "id": "comm-1",
+          "postId": "post-1",
+          "author": {
+            "id": "user-ahmad",
+            "fullName": "Ahmad Tariq",
+            "username": "ahmad_dev",
+            "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
+            "isVerified": true
+          },
+          "content": "MashaAllah, outstanding milestone Faseeh! The architecture is pristine and clean. Keep soaring! 🔥",
+          "createdAt": "10m ago",
+          "likesCount": 8,
+          "isLiked": true,
+          "replies": []
+        },
+        {
+          "id": "comm-2",
+          "postId": "post-1",
+          "author": {
+            "id": "user-sarah",
+            "fullName": "Dr. Sarah Jenkins",
+            "username": "sarah_ai",
+            "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80",
+            "isVerified": true
+          },
+          "content": "Impressive progress Faseeh! The clean architectural modularity is evident. Great job!",
+          "createdAt": "8m ago",
+          "likesCount": 5,
+          "isLiked": false,
+          "replies": []
+        }
+      ]
+    },
+    {
+      "id": "post-2",
+      "author": {
+        "id": "user-sarah",
+        "fullName": "Dr. Sarah Jenkins",
+        "username": "sarah_ai",
+        "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80",
+        "isVerified": true
+      },
+      "content": "Published our new preprint on Multi-Agent Reasoning Chains! We observed a 34% reduction in hallucinations when combining iterative self-correction with structured verification passes. Link to the paper in bio! 📄🤖 #ArtificialIntelligence #Research",
+      "mediaUrls": [
+        "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80"
+      ],
+      "mediaType": "image",
+      "visibility": "public",
+      "feeling": "excited 🧠",
+      "location": "Stanford, California",
+      "createdAt": "2h ago",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 180,
+          "userReacted": true
+        },
+        {
+          "type": "love",
+          "count": 95,
+          "userReacted": false
+        },
+        {
+          "type": "wow",
+          "count": 42,
           "userReacted": false
         },
         {
           "type": "fire",
-          "count": 15,
+          "count": 68,
           "userReacted": false
         }
       ],
-      "totalReactions": 35,
+      "totalReactions": 385,
+      "commentsCount": 1,
+      "sharesCount": 45,
+      "isSaved": true,
+      "comments": [
+        {
+          "id": "comm-3",
+          "postId": "post-2",
+          "author": {
+            "id": "user-zainab",
+            "fullName": "Zainab Khan",
+            "username": "zainab_cloud",
+            "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&auto=format&fit=crop&q=80",
+            "isVerified": true
+          },
+          "content": "Fascinating findings Sarah! How does this scale with multi-modal inputs?",
+          "createdAt": "1h ago",
+          "likesCount": 8,
+          "isLiked": false,
+          "replies": []
+        }
+      ]
+    },
+    {
+      "id": "post-3",
+      "author": {
+        "id": "user-elena",
+        "fullName": "Elena Rostova",
+        "username": "elena_design",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+        "isVerified": true
+      },
+      "content": "Design tip of the day: Clean whitespace and subtle 1px border contrast make complex enterprise apps feel 10x lighter and faster to navigate than heavy gradients. Here is a preview of our updated component library! ✨🖌️",
+      "mediaUrls": [
+        "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200&auto=format&fit=crop&q=80"
+      ],
+      "mediaType": "image",
+      "visibility": "public",
+      "feeling": "inspired 🎨",
+      "location": "London Design Studio",
+      "createdAt": "4h ago",
+      "reactions": [
+        {
+          "type": "like",
+          "count": 85,
+          "userReacted": false
+        },
+        {
+          "type": "love",
+          "count": 62,
+          "userReacted": true
+        },
+        {
+          "type": "fire",
+          "count": 31,
+          "userReacted": false
+        }
+      ],
+      "totalReactions": 178,
       "commentsCount": 0,
-      "sharesCount": 0,
+      "sharesCount": 12,
       "isSaved": false,
       "comments": []
     }
   ],
-  "stories": [],
-  "friendRequests": [],
-  "friendships": [],
-  "conversations": [],
-  "notifications": [],
+  "stories": [
+    {
+      "id": "story-1",
+      "author": {
+        "id": "user-faseeh",
+        "fullName": "Faseeh-ur-Rehman",
+        "username": "faseeh_rehman",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "text",
+      "textContent": "Capstone Final Sprint Completed! 🚀 All systems live and deployed on cloud.",
+      "backgroundStyle": "from-indigo-600 to-purple-600",
+      "createdAt": "2026-09-13T20:44:11.157Z",
+      "expiresAt": "2026-09-14T20:44:11.157Z",
+      "viewedBy": []
+    },
+    {
+      "id": "story-2",
+      "author": {
+        "id": "user-ahmad",
+        "fullName": "Ahmad Tariq",
+        "username": "ahmad_dev",
+        "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80",
+      "caption": "Careem microservices refactor in progress 💻",
+      "createdAt": "2026-09-13T20:44:11.157Z",
+      "expiresAt": "2026-09-14T20:44:11.157Z",
+      "viewedBy": []
+    },
+    {
+      "id": "story-3",
+      "author": {
+        "id": "user-sarah",
+        "fullName": "Dr. Sarah Jenkins",
+        "username": "sarah_ai",
+        "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80",
+      "caption": "Stanford AI Symposium Keynote 🎙️",
+      "createdAt": "2026-09-13T20:44:11.157Z",
+      "expiresAt": "2026-09-14T20:44:11.157Z",
+      "viewedBy": []
+    }
+  ],
+  "friendRequests": [
+    {
+      "id": "freq-demo-1",
+      "fromUserId": "user-hamza",
+      "toUserId": "user-faseeh",
+      "createdAt": "10m ago",
+      "timestamp": 1789331651157,
+      "status": "pending"
+    }
+  ],
+  "friendships": [
+    {
+      "id": "f-1",
+      "userA": "user-faseeh",
+      "userB": "user-ahmad",
+      "createdAt": "2026-09-13T20:44:11.156Z"
+    },
+    {
+      "id": "f-2",
+      "userA": "user-faseeh",
+      "userB": "user-sarah",
+      "createdAt": "2026-09-13T20:44:11.157Z"
+    },
+    {
+      "id": "f-3",
+      "userA": "user-faseeh",
+      "userB": "user-elena",
+      "createdAt": "2026-09-13T20:44:11.157Z"
+    },
+    {
+      "id": "f-4",
+      "userA": "user-faseeh",
+      "userB": "user-hamza",
+      "createdAt": "2026-09-13T20:44:11.157Z"
+    },
+    {
+      "id": "f-5",
+      "userA": "user-faseeh",
+      "userB": "user-zainab",
+      "createdAt": "2026-09-13T20:44:11.157Z"
+    },
+    {
+      "id": "f-6",
+      "userA": "user-ahmad",
+      "userB": "user-sarah",
+      "createdAt": "2026-09-13T20:44:11.157Z"
+    },
+    {
+      "id": "f-7",
+      "userA": "user-ahmad",
+      "userB": "user-elena",
+      "createdAt": "2026-09-13T20:44:11.157Z"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conv-user-ahmad-user-faseeh",
+      "participants": [
+        "user-faseeh",
+        "user-ahmad"
+      ],
+      "lastMessage": "Let me know whenever you want to do a code review on the microservices!",
+      "lastMessageType": "text",
+      "lastMessageTime": "10m ago",
+      "unreadCount": 1,
+      "messages": [
+        {
+          "id": "msg-1",
+          "conversationId": "conv-user-ahmad-user-faseeh",
+          "senderId": "user-ahmad",
+          "recipientId": "user-faseeh",
+          "type": "text",
+          "text": "Hey Faseeh! How is the internship project going?",
+          "createdAt": "15m ago",
+          "timestamp": 1789331351157,
+          "status": "read",
+          "isRead": true
+        },
+        {
+          "id": "msg-2",
+          "conversationId": "conv-user-ahmad-user-faseeh",
+          "senderId": "user-faseeh",
+          "recipientId": "user-ahmad",
+          "type": "text",
+          "text": "Going great Ahmad Bhai! Just completed real-time WhatsApp ticks, voice messages, and 24h stories.",
+          "createdAt": "12m ago",
+          "timestamp": 1789331531157,
+          "status": "read",
+          "isRead": true
+        },
+        {
+          "id": "msg-3",
+          "conversationId": "conv-user-ahmad-user-faseeh",
+          "senderId": "user-ahmad",
+          "recipientId": "user-faseeh",
+          "type": "text",
+          "text": "Let me know whenever you want to do a code review on the microservices!",
+          "createdAt": "10m ago",
+          "timestamp": 1789331651157,
+          "status": "delivered",
+          "isRead": false
+        }
+      ]
+    },
+    {
+      "id": "conv-user-faseeh-user-sarah",
+      "participants": [
+        "user-faseeh",
+        "user-sarah"
+      ],
+      "lastMessage": "Sent over the research notes on LLM agents!",
+      "lastMessageType": "text",
+      "lastMessageTime": "1h ago",
+      "unreadCount": 0,
+      "messages": [
+        {
+          "id": "msg-4",
+          "conversationId": "conv-user-faseeh-user-sarah",
+          "senderId": "user-sarah",
+          "recipientId": "user-faseeh",
+          "type": "text",
+          "text": "Sent over the research notes on LLM agents!",
+          "createdAt": "1h ago",
+          "timestamp": 1789328651157,
+          "status": "read",
+          "isRead": true
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1",
+      "userId": "user-faseeh",
+      "actor": {
+        "id": "user-ahmad",
+        "fullName": "Ahmad Tariq",
+        "username": "ahmad_dev",
+        "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "comment",
+      "content": "Ahmad Tariq commented on your capstone post: \"MashaAllah, outstanding milestone...\"",
+      "targetId": "post-1",
+      "createdAt": "10m ago",
+      "isRead": false
+    },
+    {
+      "id": "notif-2",
+      "userId": "user-faseeh",
+      "actor": {
+        "id": "user-sarah",
+        "fullName": "Dr. Sarah Jenkins",
+        "username": "sarah_ai",
+        "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80"
+      },
+      "type": "like",
+      "content": "Dr. Sarah Jenkins loved your capstone post.",
+      "targetId": "post-1",
+      "createdAt": "15m ago",
+      "isRead": false
+    }
+  ],
   "otps": {}
 }

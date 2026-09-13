@@ -112,7 +112,38 @@ export const initialUsers: User[] = [
   }
 ];
 
-export const initialStories: Story[] = [];
+export const initialStories: Story[] = [
+  {
+    id: 'story-1',
+    author: currentUser,
+    type: 'text',
+    textContent: 'Capstone Final Sprint Completed! 🚀 All systems live and deployed on cloud.',
+    backgroundStyle: 'from-indigo-600 to-purple-600',
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    viewedBy: []
+  },
+  {
+    id: 'story-2',
+    author: initialUsers[2], // Ahmad
+    type: 'image',
+    mediaUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
+    caption: 'Careem microservices refactor in progress 💻',
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    viewedBy: []
+  },
+  {
+    id: 'story-3',
+    author: initialUsers[1], // Dr. Sarah
+    type: 'image',
+    mediaUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80',
+    caption: 'Stanford AI Symposium Keynote 🎙️',
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    viewedBy: []
+  }
+];
 
 export const initialPosts: Post[] = [
   {
