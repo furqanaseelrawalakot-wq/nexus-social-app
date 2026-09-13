@@ -136,6 +136,7 @@ export const sendDirectGmailSMTP = (user, pass, to, subject, htmlContent) => {
           step++;
           send('DATA');
         } else if (step === 7 && response.startsWith('354')) {
+          step++;
           const emailMessage = [
             `From: =?UTF-8?B?TmV4dXMgU29jaWFs?= <${user}>`,
             `Sender: =?UTF-8?B?TmV4dXMgU29jaWFs?= <${user}>`,
