@@ -183,11 +183,18 @@ export const PostCard: React.FC<{ post: Post }> = ({ post }) => {
         {post.mediaUrls && post.mediaUrls.length > 0 && (
           <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 flex items-center justify-center max-h-[450px]">
             {isVideoUrl(post.mediaUrls[0]) ? (
-              <video src={post.mediaUrls[0]} controls className="max-h-[450px] w-full object-contain" />
+              <video
+                src={post.mediaUrls[0]}
+                controls
+                preload="metadata"
+                playsInline
+                className="max-h-[450px] w-full object-contain"
+              />
             ) : (
               <img
                 src={post.mediaUrls[0]}
                 alt="Post Media"
+                loading="lazy"
                 className="max-h-[450px] w-full object-contain bg-slate-100"
               />
             )}
@@ -214,11 +221,18 @@ export const PostCard: React.FC<{ post: Post }> = ({ post }) => {
             {post.sharedPost.mediaUrls && post.sharedPost.mediaUrls.length > 0 && (
               <div className="rounded-xl overflow-hidden border border-slate-200 max-h-60 bg-black/5">
                 {isVideoUrl(post.sharedPost.mediaUrls[0]) ? (
-                  <video src={post.sharedPost.mediaUrls[0]} controls className="max-h-60 w-full object-contain" />
+                  <video
+                    src={post.sharedPost.mediaUrls[0]}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="max-h-60 w-full object-contain"
+                  />
                 ) : (
                   <img
                     src={post.sharedPost.mediaUrls[0]}
                     alt="Shared Media"
+                    loading="lazy"
                     className="max-h-60 w-full object-cover"
                   />
                 )}
