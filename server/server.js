@@ -27,6 +27,22 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
   }
 });
 
+// Robust User Finder (Matches by ID, username, or email case-insensitively)
+const findUser = (idOrUsernameOrEmail) => {
+  if (!idOrUsernameOrEmail) return null;
+  const str = String(idOrUsernameOrEmail).trim();
+  const lower = str.toLowerCase();
+  return (
+    (db.users || []).find(
+      (u) =>
+        u.id === str ||
+        (u.username && u.username.toLowerCase() === lower) ||
+        (u.email && u.email.toLowerCase() === lower) ||
+        (u.id && u.id.toLowerCase() === lower)
+    ) || null
+  );
+};
+
 // Database in memory + disk persistence
 let db = {
   users: [],
@@ -790,14 +806,24 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 429, { success: false, message: 'Friend request rate limit exceeded. Please wait a moment.' });
     }
 
-    const sender = db.users.find((u) => u.id === senderId);
-    const target = db.users.find((u) => u.id === targetUserId);
+    const sender = findUser(senderId) || (body.sender && body.sender.id ? findUser(body.sender.id) : null) || (currentUserId ? findUser(currentUserId) : null);
+    const target = findUser(targetUserId);
 
-    if (!sender || !target) {
-      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    if (!target) {
+      return sendJSON(res, 404, { success: false, message: 'Target user not found.' });
+    }
+    if (!sender) {
+      return sendJSON(res, 404, { success: false, message: 'Your user session was not found. Please refresh or re-login.' });
     }
 
-    if (areUsersFriends(senderId, targetUserId)) {
+    const realSenderId = sender.id;
+    const realTargetId = target.id;
+
+    if (realSenderId === realTargetId) {
+      return sendJSON(res, 400, { success: false, message: 'You cannot send a friend request to yourself.' });
+    }
+
+    if (areUsersFriends(realSenderId, realTargetId)) {
       return sendJSON(res, 400, { success: false, message: 'You are already friends with this user.' });
     }
 
@@ -808,11 +834,11 @@ const server = http.createServer(async (req, res) => {
     }
     if (whoCanSend === 'friends_of_friends') {
       const senderFriends = (db.friendships || [])
-        .filter((f) => f.userA === senderId || f.userB === senderId)
-        .map((f) => (f.userA === senderId ? f.userB : f.userA));
+        .filter((f) => f.userA === realSenderId || f.userB === realSenderId)
+        .map((f) => (f.userA === realSenderId ? f.userB : f.userA));
       const targetFriends = (db.friendships || [])
-        .filter((f) => f.userA === targetUserId || f.userB === targetUserId)
-        .map((f) => (f.userA === targetUserId ? f.userB : f.userA));
+        .filter((f) => f.userA === realTargetId || f.userB === realTargetId)
+        .map((f) => (f.userA === realTargetId ? f.userB : f.userA));
       const hasMutual = senderFriends.some((fid) => targetFriends.includes(fid));
       if (!hasMutual) {
         return sendJSON(res, 403, {
@@ -825,8 +851,8 @@ const server = http.createServer(async (req, res) => {
     const existingReq = db.friendRequests.find(
       (r) =>
         r.status === 'pending' &&
-        ((r.fromUserId === senderId && r.toUserId === targetUserId) ||
-          (r.fromUserId === targetUserId && r.toUserId === senderId))
+        ((r.fromUserId === realSenderId && r.toUserId === realTargetId) ||
+          (r.fromUserId === realTargetId && r.toUserId === realSenderId))
     );
 
     if (existingReq) {
@@ -835,8 +861,8 @@ const server = http.createServer(async (req, res) => {
 
     const newRequest = {
       id: `freq-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      fromUserId: senderId,
-      toUserId: targetUserId,
+      fromUserId: realSenderId,
+      toUserId: realTargetId,
       createdAt: 'Just now',
       timestamp: Date.now(),
       status: 'pending',
@@ -846,7 +872,7 @@ const server = http.createServer(async (req, res) => {
 
     const notification = {
       id: `notif-${Date.now()}`,
-      userId: targetUserId,
+      userId: realTargetId,
       actor: {
         id: sender.id,
         fullName: sender.fullName,
@@ -862,7 +888,7 @@ const server = http.createServer(async (req, res) => {
     db.notifications.unshift(notification);
     saveDB();
 
-    dispatchRealtimeEvent(targetUserId, 'friend_request_received', {
+    dispatchRealtimeEvent(realTargetId, 'friend_request_received', {
       request: newRequest,
       sender: { id: sender.id, fullName: sender.fullName, avatarUrl: sender.avatarUrl },
       notification,
@@ -876,9 +902,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (pathname.startsWith('/api/friends/accept/') && method === 'POST') {
-    const targetUserId = pathname.replace('/api/friends/accept/', '');
+    const rawTarget = pathname.replace('/api/friends/accept/', '');
     const body = await parseBody(req);
-    const acceptorId = currentUserId || body.acceptorId;
+    const rawAcceptor = currentUserId || body.acceptorId;
+
+    const target = findUser(rawTarget);
+    const acceptor = findUser(rawAcceptor);
+
+    if (!target || !acceptor) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    const targetUserId = target.id;
+    const acceptorId = acceptor.id;
 
     if (!acceptorId || !targetUserId) {
       return sendJSON(res, 400, { success: false, message: 'Invalid user IDs.' });
@@ -982,9 +1018,19 @@ const server = http.createServer(async (req, res) => {
     (pathname.startsWith('/api/friends/remove/') || pathname.startsWith('/api/friends/unfriend/')) &&
     (method === 'DELETE' || method === 'POST')
   ) {
-    const targetUserId = pathname.replace('/api/friends/remove/', '').replace('/api/friends/unfriend/', '');
+    const rawTarget = pathname.replace('/api/friends/remove/', '').replace('/api/friends/unfriend/', '');
     const body = await parseBody(req);
-    const userId = currentUserId || body.userId;
+    const rawUser = currentUserId || body.userId;
+
+    const target = findUser(rawTarget);
+    const user = findUser(rawUser);
+
+    if (!target || !user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    const targetUserId = target.id;
+    const userId = user.id;
 
     if (!userId || !targetUserId) {
       return sendJSON(res, 400, { success: false, message: 'User IDs are required.' });
@@ -1012,9 +1058,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (pathname.startsWith('/api/friends/reject/') && method === 'POST') {
-    const targetUserId = pathname.replace('/api/friends/reject/', '');
+    const rawTarget = pathname.replace('/api/friends/reject/', '');
     const body = await parseBody(req);
-    const userId = currentUserId || body.userId;
+    const rawUser = currentUserId || body.userId;
+
+    const target = findUser(rawTarget);
+    const user = findUser(rawUser);
+
+    if (!target || !user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    const targetUserId = target.id;
+    const userId = user.id;
 
     db.friendRequests = db.friendRequests.filter(
       (r) =>
@@ -1029,8 +1085,16 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (pathname.startsWith('/api/friends/request/') && method === 'DELETE') {
-    const targetUserId = pathname.replace('/api/friends/request/', '');
-    const userId = currentUserId;
+    const rawTarget = pathname.replace('/api/friends/request/', '');
+    const target = findUser(rawTarget);
+    const user = findUser(currentUserId);
+
+    if (!target || !user) {
+      return sendJSON(res, 404, { success: false, message: 'User not found.' });
+    }
+
+    const targetUserId = target.id;
+    const userId = user.id;
 
     db.friendRequests = db.friendRequests.filter(
       (r) => !(r.fromUserId === userId && r.toUserId === targetUserId)
@@ -1206,8 +1270,8 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 429, { success: false, message: 'Follow rate limit exceeded. Please wait a moment.' });
     }
 
-    const targetUser = db.users.find((u) => u.id === targetUserId);
-    const followerUser = db.users.find((u) => u.id === followerId);
+    const targetUser = findUser(targetUserId);
+    const followerUser = findUser(followerId);
 
     if (!targetUser || !followerUser) {
       return sendJSON(res, 404, { success: false, message: 'User not found.' });
@@ -2090,12 +2154,16 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname === '/api/auth/register' && method === 'POST') {
     const body = await parseBody(req);
-    const { firstName, lastName, username, email, password, dateOfBirth, gender, phone } = body;
+    const { firstName, lastName, username, email, password, dateOfBirth, gender, phone, fullName } = body;
 
-    const cleanUsername = (username || '').trim().toLowerCase();
+    const parsedFirstName = (firstName || (fullName ? fullName.split(' ')[0] : '') || 'User').trim();
+    const parsedLastName = (lastName || (fullName ? fullName.split(' ').slice(1).join(' ') : '') || '').trim();
+    const parsedFullName = fullName ? fullName.trim() : `${parsedFirstName} ${parsedLastName}`.trim();
+
+    let cleanUsername = (username || parsedFullName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Math.floor(1000 + Math.random() * 9000)).trim().toLowerCase();
     const cleanEmail = (email || '').trim().toLowerCase();
 
-    if (db.users.some((u) => u.username && u.username.toLowerCase() === cleanUsername)) {
+    if (username && db.users.some((u) => u.username && u.username.toLowerCase() === cleanUsername)) {
       return sendJSON(res, 400, { field: 'username', message: 'This username was just taken.' });
     }
 
@@ -2107,13 +2175,13 @@ const server = http.createServer(async (req, res) => {
     const expiresAt = Date.now() + 10 * 60 * 1000;
 
     db.pendingRegistrations[cleanEmail] = {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      fullName: `${firstName.trim()} ${lastName.trim()}`,
+      firstName: parsedFirstName,
+      lastName: parsedLastName,
+      fullName: parsedFullName,
       username: cleanUsername,
       email: cleanEmail,
-      passwordHash: hashPassword(password),
-      dateOfBirth,
+      passwordHash: hashPassword(password || 'Password123!'),
+      dateOfBirth: dateOfBirth || '2000-01-01',
       gender: gender || 'prefer_not_to_say',
       phone: phone ? phone.trim() : '',
       otp: generatedOTP,
@@ -2164,10 +2232,10 @@ const server = http.createServer(async (req, res) => {
 
     if (pending) {
       user = {
-        id: `user-${Date.now()}`,
+        id: `user-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`,
         firstName: pending.firstName,
         lastName: pending.lastName,
-        fullName: `${pending.firstName} ${pending.lastName}`,
+        fullName: pending.fullName || `${pending.firstName} ${pending.lastName}`.trim(),
         username: pending.username,
         email: cleanEmail,
         passwordHash: pending.passwordHash,
@@ -2483,12 +2551,7 @@ const server = http.createServer(async (req, res) => {
     const rawParam = decodeURIComponent(pathname.split('/')[3]);
     const viewerId = urlObj.searchParams.get('viewerId') || currentUserId;
 
-    const user = db.users.find(
-      (u) =>
-        u.id === rawParam ||
-        (u.username && u.username.toLowerCase() === rawParam.toLowerCase()) ||
-        (rawParam === 'me' && (viewerId ? u.id === viewerId : false))
-    );
+    const user = findUser(rawParam) || (rawParam === 'me' && viewerId ? findUser(viewerId) : null);
 
     if (!user) {
       return sendJSON(res, 404, { success: false, message: 'User profile not found.' });
@@ -2580,6 +2643,8 @@ const server = http.createServer(async (req, res) => {
       success: true,
       user: {
         ...profilePayloadUser,
+        relationshipStatus,
+        isFriend,
         isFollowing,
         isFollowedBy,
         isOnline,
