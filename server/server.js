@@ -709,6 +709,14 @@ const server = http.createServer(async (req, res) => {
       (u) => u.id !== currentUserId && u.accountStatus !== 'deactivated' && !areUsersBlocked(currentUserId, u.id)
     );
 
+    // Sort users so newly registered community members appear first (newest IDs first)
+    allUsers.sort((a, b) => {
+      const aTime = a.id.startsWith('user-1') ? parseInt(a.id.replace('user-', '')) : 0;
+      const bTime = b.id.startsWith('user-1') ? parseInt(b.id.replace('user-', '')) : 0;
+      if (aTime !== bTime) return bTime - aTime;
+      return 0;
+    });
+
     if (query) {
       allUsers = allUsers.filter(
         (u) =>
@@ -2190,6 +2198,10 @@ const server = http.createServer(async (req, res) => {
 
     const token = generateSessionToken(user.id);
     const { passwordHash, ...safeUser } = user;
+
+    // Real-time broadcast to all connected users that a new member joined the community!
+    broadcastRealtimeEvent('user_registered', { user: safeUser });
+
     return sendJSON(res, 200, { success: true, message: 'Account verified.', user: safeUser, token });
   }
 
@@ -2472,7 +2484,10 @@ const server = http.createServer(async (req, res) => {
     const viewerId = urlObj.searchParams.get('viewerId') || currentUserId;
 
     const user = db.users.find(
-      (u) => u.id === rawParam || (u.username && u.username.toLowerCase() === rawParam.toLowerCase())
+      (u) =>
+        u.id === rawParam ||
+        (u.username && u.username.toLowerCase() === rawParam.toLowerCase()) ||
+        (rawParam === 'me' && (viewerId ? u.id === viewerId : false))
     );
 
     if (!user) {

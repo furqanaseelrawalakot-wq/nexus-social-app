@@ -26,7 +26,7 @@ export const Navbar: React.FC<{ onOpenCreatePost?: () => void }> = ({ onOpenCrea
   const { currentUser, isAuthenticated, openAuthModal, logout } = useAuth();
   const { unreadCount: notifCount } = useNotifications();
   const { unreadCount: msgCount } = useChat();
-  const { pendingRequests } = useFeed();
+  const { pendingRequests, setSearchQuery: setFeedSearch, fetchDiscoverUsers } = useFeed();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,6 +35,15 @@ export const Navbar: React.FC<{ onOpenCreatePost?: () => void }> = ({ onOpenCrea
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setFeedSearch(searchQuery.trim());
+      fetchDiscoverUsers(searchQuery.trim());
+      navigate('/friends');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm px-4 sm:px-8 flex items-center justify-between gap-4">
@@ -55,7 +64,7 @@ export const Navbar: React.FC<{ onOpenCreatePost?: () => void }> = ({ onOpenCrea
         </Link>
 
         {/* Global Search Bar */}
-        <div className="relative w-full max-w-xs hidden md:block">
+        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-xs hidden md:block">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -64,7 +73,7 @@ export const Navbar: React.FC<{ onOpenCreatePost?: () => void }> = ({ onOpenCrea
             placeholder="Search people, posts, tags..."
             className="w-full pl-9 pr-4 py-2 text-xs rounded-full bg-slate-100/90 border border-slate-200/80 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
           />
-        </div>
+        </form>
       </div>
 
       {/* Center: Main App Navigation Links */}
