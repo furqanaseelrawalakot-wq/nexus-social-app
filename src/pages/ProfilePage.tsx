@@ -72,6 +72,7 @@ export const ProfilePage: React.FC = () => {
 
   const isOwnProfile =
     !routeParam ||
+    routeParam === 'me' ||
     routeParam === currentUser.id ||
     routeParam === currentUser.username ||
     (profileUser && profileUser.id === currentUser.id);

@@ -315,6 +315,25 @@ export const FeedProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setPosts((prev) => prev.filter((p) => p.id !== payload.data.postId));
         }
 
+        // D2. Real-time New User Registered
+        else if (payload.type === 'user_registered' && payload.data?.user) {
+          const registeredUser: User = payload.data.user;
+          setDiscoverList((prev) => {
+            if (prev.some((u) => u.id === registeredUser.id)) return prev;
+            const newDiscoverItem: DiscoverUserItem = {
+              ...registeredUser,
+              mutualFriends: 0,
+              status: 'suggested',
+              relationshipStatus: 'none',
+              isFriend: false,
+              isFollowing: false,
+              isFollowedBy: false,
+              isOnline: false,
+            };
+            return [newDiscoverItem, ...prev];
+          });
+        }
+
         // E. Real-time Story Created or Deleted
         else if (payload.type === 'story_created' || payload.type === 'story_deleted') {
           fetchStories();
