@@ -161,6 +161,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   setIsLoadingAuth(false);
                   return;
                 }
+              } else if (res.status === 404 && parsed.email) {
+                const emailRes = await fetch(`/api/users/${encodeURIComponent(parsed.email)}/profile`, {
+                  headers: { ...getAuthHeaders() },
+                });
+                if (emailRes.ok) {
+                  const emailData = await emailRes.json();
+                  if (isMounted && emailData.success && emailData.user) {
+                    setCurrentUser(emailData.user);
+                    setIsAuthenticated(true);
+                    localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(emailData.user));
+                    localStorage.setItem(AUTH_STATE_KEY, JSON.stringify(true));
+                    setIsLoadingAuth(false);
+                    return;
+                  }
+                }
               }
             } catch {
               // Maintain local session if offline / server booting

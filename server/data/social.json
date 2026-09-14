@@ -130,8 +130,8 @@
       "phone": "+923456789654",
       "dateOfBirth": "2001-06-15",
       "gender": "male",
-      "avatarUrl": "",
-      "coverUrl": "",
+      "avatarUrl": "/uploads/avatars/avatar-1789366249278-b082a9fa.png",
+      "coverUrl": "/uploads/covers/cover-1789366254477-65da2544.png",
       "bio": "",
       "location": "",
       "occupation": "",
@@ -142,7 +142,8 @@
       "followersCount": 0,
       "followingCount": 0,
       "isVerified": false,
-      "accountStatus": "active"
+      "accountStatus": "active",
+      "lastSeen": "2026-09-14T06:16:43.538Z"
     },
     {
       "id": "user-1789365147600",
@@ -248,10 +249,6 @@
       "userId": "user-1789340265055",
       "createdAt": "2026-09-13T22:57:45.061Z"
     },
-    "8d0126ab4a31701fe932bba056ea9f90e76ec71962b6d44e91580bcfb14c4736": {
-      "userId": "user-1789364167554",
-      "createdAt": "2026-09-14T05:36:07.579Z"
-    },
     "822f313f58c695c1d4fd1f9774500c455e7b8d8f6aae2d801a273199da01a514": {
       "userId": "user-1789365147600",
       "createdAt": "2026-09-14T05:52:27.693Z"
@@ -259,14 +256,26 @@
     "7299fdc06e6f457853c2bdf19fc333ce16b66782a0adefd599b75c6b432b740b": {
       "userId": "user-1789365154788",
       "createdAt": "2026-09-14T05:52:34.793Z"
+    },
+    "e8a57668b87c66a483d6b40995f71b6c4df6c186d51e142c3d8bd1838a75d3c9": {
+      "userId": "user-1789367580967-651",
+      "createdAt": "2026-09-14T06:33:01.115Z"
+    },
+    "0bc72e600fc172c51f6fabf44024799dc13fb05f3df31c2611de0db50a735e60": {
+      "userId": "user-1789367583231-331",
+      "createdAt": "2026-09-14T06:33:03.237Z"
+    },
+    "c742220d68953ba7dbef09fe03c4b09d0d0b927d6bdbaa61e47913ffeb872229": {
+      "userId": "user-1789367585393-758",
+      "createdAt": "2026-09-14T06:33:05.397Z"
     }
   },
   "pendingRegistrations": {},
   "passwordResetOtps": {},
   "failedLoginAttempts": {
     "hassantrae236@gmail.com": {
-      "count": 6,
-      "lockedUntil": 1789364785114
+      "count": 7,
+      "lockedUntil": 1789367581697
     },
     "alice_new_1789339284984@test.com": {
       "count": 1,
@@ -274,6 +283,10 @@
     },
     "abduky3e@gmail.com": {
       "count": 1,
+      "lockedUntil": null
+    },
+    "tabuty456cghc@gmail.com": {
+      "count": 4,
       "lockedUntil": null
     }
   },
@@ -935,6 +948,46 @@
       "createdAt": "10m ago",
       "timestamp": 1789331651157,
       "status": "pending"
+    },
+    {
+      "id": "freq-1789366226942-6jvrr",
+      "fromUserId": "user-1789364167554",
+      "toUserId": "user-faseeh",
+      "createdAt": "Just now",
+      "timestamp": 1789366226942,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789366232677-kdlgk",
+      "fromUserId": "user-1789364167554",
+      "toUserId": "user-1789365154788",
+      "createdAt": "Just now",
+      "timestamp": 1789366232677,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789366234044-k1e9x",
+      "fromUserId": "user-1789364167554",
+      "toUserId": "user-1789365147600",
+      "createdAt": "Just now",
+      "timestamp": 1789366234044,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789366235873-kcz5q",
+      "fromUserId": "user-1789364167554",
+      "toUserId": "user-sarah",
+      "createdAt": "Just now",
+      "timestamp": 1789366235873,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789366236823-9rtyj",
+      "fromUserId": "user-1789364167554",
+      "toUserId": "user-ahmad",
+      "createdAt": "Just now",
+      "timestamp": 1789366236823,
+      "status": "pending"
     }
   ],
   "friendships": [
@@ -1155,6 +1208,81 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif-1789366236823",
+      "userId": "user-ahmad",
+      "actor": {
+        "id": "user-1789364167554",
+        "fullName": "abdul wahab",
+        "username": "abdul_w",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "abdul wahab sent you a friend request.",
+      "targetId": "freq-1789366236823-9rtyj",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789366235873",
+      "userId": "user-sarah",
+      "actor": {
+        "id": "user-1789364167554",
+        "fullName": "abdul wahab",
+        "username": "abdul_w",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "abdul wahab sent you a friend request.",
+      "targetId": "freq-1789366235873-kcz5q",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789366234044",
+      "userId": "user-1789365147600",
+      "actor": {
+        "id": "user-1789364167554",
+        "fullName": "abdul wahab",
+        "username": "abdul_w",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "abdul wahab sent you a friend request.",
+      "targetId": "freq-1789366234044-k1e9x",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789366232677",
+      "userId": "user-1789365154788",
+      "actor": {
+        "id": "user-1789364167554",
+        "fullName": "abdul wahab",
+        "username": "abdul_w",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "abdul wahab sent you a friend request.",
+      "targetId": "freq-1789366232677-kdlgk",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789366226942",
+      "userId": "user-faseeh",
+      "actor": {
+        "id": "user-1789364167554",
+        "fullName": "abdul wahab",
+        "username": "abdul_w",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "abdul wahab sent you a friend request.",
+      "targetId": "freq-1789366226942-6jvrr",
+      "createdAt": "Just now",
+      "isRead": false
+    },
     {
       "id": "notif-1789340240932-631cde",
       "userId": "user-faseeh",
