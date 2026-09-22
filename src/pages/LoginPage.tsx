@@ -528,7 +528,7 @@ export const LoginPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        setLoginEmail('furqanaslamrkt@gmail.com');
+                        setLoginEmail('kfasi5032@gmail.com');
                         setLoginPassword('Password123');
                         setLoginError('');
                       }}

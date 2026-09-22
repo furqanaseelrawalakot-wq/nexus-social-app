@@ -4,8 +4,8 @@
       "id": "user-faseeh",
       "username": "faseeh_rehman",
       "fullName": "Faseeh-ur-Rehman",
-      "email": "furqanaslamrkt@gmail.com",
-      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "email": "kfasi5032@gmail.com",
+      "passwordHash": "b292246ace180ad3263d8126f985bc0a:3685106f6718a214b266d24ae7b60e5e3dc74b032cad071e60c4041795f314b77569fb621a836d0da58f8c6152b5c94d4d8093499c77f542aab4074bb1f34647",
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
       "coverUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80",
       "bio": "Software Engineering (8th Sem) @ CUST Islamabad 🎓 | Software Engineering Intern @ 07B Arch Technologies 💻 | Full-Stack & AI Builder",
@@ -22,14 +22,19 @@
         "whoCanSeePosts": "public",
         "whoCanSendRequests": "everyone",
         "showOnlineStatus": true
-      }
+      },
+      "aliases": [
+        "furqanaslamrkt@gmail.com",
+        "fasikhan@gmail.com",
+        "kfasi5032@gmail.com"
+      ]
     },
     {
       "id": "user-sarah",
       "username": "sarah_ai",
       "fullName": "Dr. Sarah Jenkins",
       "email": "sarah@ai.org",
-      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "passwordHash": "b1f75ee84180f3f69d30edd541fe157a:edd3845d20ae1ce5d8ef29e10f3828173702008a829f83a844bcb72941575f71f530d244da327103d23962f6378df6707162bc1b73c1adcc9bd3ced8a6cb12fe",
       "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80",
       "coverUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&auto=format&fit=crop&q=80",
       "bio": "Senior AI Research Scientist @ Stanford AI Lab. Exploring LLM alignment & reasoning.",
@@ -53,7 +58,7 @@
       "username": "ahmad_dev",
       "fullName": "Ahmad Tariq",
       "email": "ahmad@careem.com",
-      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "passwordHash": "03b4378da36989358704efc4094b1f16:a8d4127340bca57e1040940faf1ef7afd82a5e611d26ae4c6fd4f386bb16011e83911d2bdf22ebc0b15a075e81995c5e5d0964eb4b41bdcc6496f3965a7f2d3c",
       "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
       "coverUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop&q=80",
       "bio": "Lead Full-Stack Engineer @ Careem | CUST Alum | React & Node Architect 🚀",
@@ -71,7 +76,7 @@
       "username": "elena_design",
       "fullName": "Elena Rostova",
       "email": "elena@figma.com",
-      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "passwordHash": "e70df2f7cf86196fc5b8b71902a99f5a:c032cd58a5491693afdb120a8e3b5a591b3d42946962c0ecb6657f373ea26fae36b101a70f3fce3d1393a9ccece33ff7d861960ae224fd2f7b45c57a4200edc8",
       "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
       "coverUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&auto=format&fit=crop&q=80",
       "bio": "Design Systems Lead @ Figma | Minimalist UI / UX advocate ✨",
@@ -89,7 +94,7 @@
       "username": "hamza_mobile",
       "fullName": "Hamza Malik",
       "email": "hamza@flutter.dev",
-      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "passwordHash": "f5ee3a73703da84ce34d587de31b1620:770c692986f90b3bc9b8821406a538ea5d7bd00bdb34389119610fb9288028cbce2e5d5560e2437f6a15efd87410da36a37db889bf31723226d84f6504610ae7",
       "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80",
       "coverUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1600&auto=format&fit=crop&q=80",
       "bio": "Mobile App Developer | Flutter & iOS enthusiast | Building cross-platform wonders 📱",
@@ -106,7 +111,7 @@
       "username": "zainab_cloud",
       "fullName": "Zainab Khan",
       "email": "zainab@microsoft.com",
-      "passwordHash": "592a068beb48777cf4ae935a651ba376:847a08697557c67b409bdcc81cfca0f4b365b093959d862f2f23de3e8e363b7ced727c773dca73b732e2806fee30468797d68df4e072b24da7fa6c1cbb810601",
+      "passwordHash": "98a5ec39056c8bc128ba9b469b9bd618:299b13d7500308b8f3f067e2963d365326d5f7316eb22da89812e6d00ea28e484b52bee2bfe37c824e78e478897050ea561e829aa92b2ff81dcddcf6809a8151",
       "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&auto=format&fit=crop&q=80",
       "coverUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1600&auto=format&fit=crop&q=80",
       "bio": "Cloud Architect @ Microsoft Azure | Kubernetes & DevOps Speaker ☁️",
@@ -126,7 +131,7 @@
       "fullName": "abdul wahab",
       "username": "abdul_w",
       "email": "abduky3e@gmail.com",
-      "passwordHash": "6204bb793d6dfa41707a61daff0552de:32d8c1766c3689ee5bc60d29f1e7dc01cf06aee6b2febf77ff4f6913b8d808577be216b8898a019f8387f3c3a8a0b0f880f9a7bc8bfd7773da3d37d90455311c",
+      "passwordHash": "39b470bef18c6579e021da0ad0ccaf55:7c7115aedce123c8f78608992fae2e614f491449460b8cfbc85d5b78cd497083d24f603b9bc09f59cf6fe5b9da099998feb7f714935b86042e9e51980c2700a0",
       "phone": "+923456789654",
       "dateOfBirth": "2001-06-15",
       "gender": "male",
@@ -152,7 +157,7 @@
       "fullName": "Usman Ali",
       "username": "usman_7966",
       "email": "usman_1789365137966@gmail.com",
-      "passwordHash": "8bc2792bdc4a5b55f087a1adae5fa96a:8949cb84e0b07ac40ca4757feda2304f2d105c8a56200b63e5ff3bbc436b0f34e43d1a8d69f014d2038ca0b744ef10fa58dfd919f1edc6cf7fb5cb7ca556a96b",
+      "passwordHash": "4e969cb056cfd25b72e95e71b5a074b1:a9b6fea2060bad7ca631e54b0ddaa90310fbc2eff31adda2c8bf66fe1a49ae6ca90f3022d49907f777f7d3a0d469ee7305971a1cf74eff7af8c9a1757a968238",
       "phone": "",
       "dateOfBirth": "1998-04-12",
       "gender": "prefer_not_to_say",
@@ -177,7 +182,7 @@
       "fullName": "Bilal Khan",
       "username": "bilal_7699",
       "email": "bilal_1789365147699@gmail.com",
-      "passwordHash": "4a1cbc590885660eb336e70d7a59a2e5:94bd10affc19d015dc95f43e580eb4feb180e7c4813efc9ff47971aea896eb159bec78f265100b11fc7c307c0844ef258e6189b4dc3a762dbf91b43a5d25c979",
+      "passwordHash": "e94fde71b6ff462fe6fb31b92d28993b:5ee540a1081f38163bba741540d6f4455fd52f46c53c58bc77a95b25a4212486d81dfeb6ecf179187fcd00617d84cf1ecd1531a6a9a5d0a9428e500547ebd4ed",
       "phone": "",
       "dateOfBirth": "1999-08-20",
       "gender": "prefer_not_to_say",
@@ -194,6 +199,32 @@
       "followingCount": 0,
       "isVerified": false,
       "accountStatus": "active"
+    },
+    {
+      "id": "user-1789823887035-186",
+      "firstName": "khan",
+      "lastName": "rehnan",
+      "fullName": "khan rehnan",
+      "username": "khan_r",
+      "email": "fasikhan@gmail.com",
+      "passwordHash": "76dfbf14673c308ef7c43b3f0c044ece:94328b9a748718526efd28fd1f516f06dc99517c78ff9aecf322e4dc9b2a4e369d49adf4364b34fa97b73e682a02df7c92c69b39d10613d1940d68c2218dfc37",
+      "phone": "+923009864572",
+      "dateOfBirth": "2001-06-15",
+      "gender": "male",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "bio": "",
+      "location": "",
+      "occupation": "",
+      "education": "",
+      "website": "",
+      "joinedDate": "Joined Sep 2026",
+      "friendsCount": 0,
+      "followersCount": 0,
+      "followingCount": 0,
+      "isVerified": false,
+      "accountStatus": "active",
+      "lastSeen": "2026-09-19T13:19:18.408Z"
     }
   ],
   "sessions": {
@@ -268,28 +299,35 @@
     "c742220d68953ba7dbef09fe03c4b09d0d0b927d6bdbaa61e47913ffeb872229": {
       "userId": "user-1789367585393-758",
       "createdAt": "2026-09-14T06:33:05.397Z"
+    },
+    "d97bbb60ae8a643542fdf4c7577c0904171e34215e5903cbd947646de467f293": {
+      "userId": "user-faseeh",
+      "createdAt": "2026-09-22T14:31:08.169Z"
+    },
+    "0cf1deef0a831edd8c27f65a99ffa117a474c2d54a155edc9a5eb6c589898a6d": {
+      "userId": "user-faseeh",
+      "createdAt": "2026-09-22T14:31:08.217Z"
+    },
+    "5cdb06140400556128cfb41e06a3ffd4458d87df1b7c0b0d2b75746ab795b639": {
+      "userId": "user-faseeh",
+      "createdAt": "2026-09-22T14:31:08.235Z"
+    },
+    "101cdccde0c4406e9737a61df1d61d3c5e30eb391ebec27b180b64dd4f62a227": {
+      "userId": "user-faseeh",
+      "createdAt": "2026-09-22T14:31:08.254Z"
+    },
+    "05f151a965ab311f10e4b469eaef7cd6850f54d672ff64f3c8c35deb6c4250b3": {
+      "userId": "user-ahmad",
+      "createdAt": "2026-09-22T14:31:08.274Z"
+    },
+    "b464f7514e737546f43c8fc1bd16a0b8f8dedcd23c9675dbef8d4d8a1d2cfecb": {
+      "userId": "user-sarah",
+      "createdAt": "2026-09-22T14:31:08.291Z"
     }
   },
   "pendingRegistrations": {},
   "passwordResetOtps": {},
-  "failedLoginAttempts": {
-    "hassantrae236@gmail.com": {
-      "count": 7,
-      "lockedUntil": 1789367581697
-    },
-    "alice_new_1789339284984@test.com": {
-      "count": 1,
-      "lockedUntil": null
-    },
-    "abduky3e@gmail.com": {
-      "count": 1,
-      "lockedUntil": null
-    },
-    "tabuty456cghc@gmail.com": {
-      "count": 4,
-      "lockedUntil": null
-    }
-  },
+  "failedLoginAttempts": {},
   "posts": [
     {
       "id": "post-1789363939408",
@@ -988,6 +1026,78 @@
       "createdAt": "Just now",
       "timestamp": 1789366236823,
       "status": "pending"
+    },
+    {
+      "id": "freq-1789823896823-339z9",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-1789364167554",
+      "createdAt": "Just now",
+      "timestamp": 1789823896823,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823900636-5c0ca",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-faseeh",
+      "createdAt": "Just now",
+      "timestamp": 1789823900636,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823931410-7kvbn",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-sarah",
+      "createdAt": "Just now",
+      "timestamp": 1789823931410,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823934158-n5tvk",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-ahmad",
+      "createdAt": "Just now",
+      "timestamp": 1789823934158,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823935299-3sa4i",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-1789365147600",
+      "createdAt": "Just now",
+      "timestamp": 1789823935299,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823936367-cclwa",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-1789365154788",
+      "createdAt": "Just now",
+      "timestamp": 1789823936367,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823939120-ixrk4",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-elena",
+      "createdAt": "Just now",
+      "timestamp": 1789823939120,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823939948-0ybtj",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-hamza",
+      "createdAt": "Just now",
+      "timestamp": 1789823939948,
+      "status": "pending"
+    },
+    {
+      "id": "freq-1789823940731-qeoj3",
+      "fromUserId": "user-1789823887035-186",
+      "toUserId": "user-zainab",
+      "createdAt": "Just now",
+      "timestamp": 1789823940731,
+      "status": "pending"
     }
   ],
   "friendships": [
@@ -1208,6 +1318,141 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif-1789823940731",
+      "userId": "user-zainab",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823940731-qeoj3",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823939948",
+      "userId": "user-hamza",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823939948-0ybtj",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823939120",
+      "userId": "user-elena",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823939120-ixrk4",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823936367",
+      "userId": "user-1789365154788",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823936367-cclwa",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823935299",
+      "userId": "user-1789365147600",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823935299-3sa4i",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823934158",
+      "userId": "user-ahmad",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823934158-n5tvk",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823931410",
+      "userId": "user-sarah",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823931410-7kvbn",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823900636",
+      "userId": "user-faseeh",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823900636-5c0ca",
+      "createdAt": "Just now",
+      "isRead": false
+    },
+    {
+      "id": "notif-1789823896823",
+      "userId": "user-1789364167554",
+      "actor": {
+        "id": "user-1789823887035-186",
+        "fullName": "khan rehnan",
+        "username": "khan_r",
+        "avatarUrl": ""
+      },
+      "type": "friend_request",
+      "content": "khan rehnan sent you a friend request.",
+      "targetId": "freq-1789823896823-339z9",
+      "createdAt": "Just now",
+      "isRead": false
+    },
     {
       "id": "notif-1789366236823",
       "userId": "user-ahmad",
